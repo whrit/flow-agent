@@ -10,7 +10,7 @@
     "claude-flow": "bin/claude-flow.js"
   },
   "scripts": {
-    "preinstall": "node -e \"if(process.platform === 'win32' && process.env.npm_config_user_agent && process.env.npm_config_user_agent.includes('npm')) { console.warn('⚠️  Warning: On Windows, it is recommended to use pnpm to install this package to avoid potential native dependency build issues.'); console.warn('💡 Try: pnpm install or pnpx bot-flow@alpha'); }\"",
+    "preinstall": "node -e \"if(process.platform === 'win32' && process.env.npm_config_user_agent && process.env.npm_config_user_agent.includes('npm')) { console.warn('⚠️  Warning: On Windows, it is recommended to use npm to install this package to avoid potential native dependency build issues.'); console.warn('💡 Try: npm install or pnpx bot-flow@alpha'); }\"",
     "dev": "tsx src/cli/main.ts",
     "init:neural": "node scripts/init-neural.js",
     "init:goal": "node scripts/init-goal.js",
@@ -96,7 +96,7 @@
   "homepage": "https://github.com/whrit/bot-flow#readme",
   "engines": {
     "node": ">=22.0.0",
-    "pnpm": ">=10.18.0"
+    "npm": ">=11.0.0"
   },
   "files": [
     "cli.js",
