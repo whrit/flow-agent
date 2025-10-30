@@ -159,8 +159,17 @@ export class WorkflowExecutor {
     }
     
     // Check if Claude CLI is available
-    if (!await this.isClaudeAvailable()) {
-      throw new Error('Claude CLI not found. Please install Claude Code: https://claude.ai/code');
+    const usingCodex = this.provider === 'codex';
+    const cliAvailable = usingCodex
+      ? await this.isCodexAvailable()
+      : await this.isClaudeAvailable();
+
+    if (!cliAvailable) {
+      const providerName = usingCodex ? 'Codex CLI' : 'Claude CLI';
+      const installHint = usingCodex
+        ? 'https://docs.openai.com/codex'
+        : 'https://claude.ai/code';
+      throw new Error(`${providerName} not found. Please install it: ${installHint}`);
     }
 
     if (this.options.nonInteractive) {
@@ -172,7 +181,8 @@ export class WorkflowExecutor {
       return;
     } else {
       // Interactive mode: spawn single Claude instance with master coordination prompt
-      console.log(`🤖 Interactive mode: Initializing single Claude instance for workflow coordination...`);
+      const providerLabel = usingCodex ? 'Codex' : 'Claude';
+      console.log(`🤖 Interactive mode: Initializing single ${providerLabel} instance for workflow coordination...`);
       
       try {
         // Create master coordination prompt for all agents and workflow

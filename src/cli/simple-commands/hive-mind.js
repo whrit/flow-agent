@@ -2240,6 +2240,38 @@ async function spawnClaudeCodeInstances(swarmId, swarmName, objective, workers, 
 }
 
 /**
+ * Build Codex CLI launch configuration (args + env)
+ */
+export function buildCodexLaunchConfig(workspaceDir, prompt, flags = {}) {
+  const args = ['-C', workspaceDir];
+
+  if (flags['dangerously-bypass-approvals-and-sandbox']) {
+    args.push('--dangerously-bypass-approvals-and-sandbox');
+  } else if (flags['full-auto'] !== false) {
+    args.push('--full-auto');
+  }
+
+  if (flags['ask-for-approval']) {
+    args.push('-a', flags['ask-for-approval']);
+  } else if (!flags['dangerously-bypass-approvals-and-sandbox']) {
+    args.push('-a', 'on-failure');
+  }
+
+  const model = flags.model || 'gpt-5-codex';
+  args.push('-m', model);
+
+  args.push(prompt);
+
+  const env = {
+    ...process.env,
+    HOME: os.homedir(),
+    CODEX_CONFIG_DIR: path.join(os.homedir(), '.codex'),
+  };
+
+  return { args, env };
+}
+
+/**
  * Spawn Codex instances with hive-mind coordination
  */
 async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags) {
@@ -2335,23 +2367,13 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
           console.log(chalk.gray('Could not verify project trust status'));
         }
 
-        // Build arguments for Codex with workspace access
-        const codexArgs = [];
-
-        // Add working directory flag to ensure workspace access
-        codexArgs.push('-C', workspaceDir);
-
-        // Add sandbox permissions for file access
         if (flags['dangerously-bypass-approvals-and-sandbox']) {
-          codexArgs.push('--dangerously-bypass-approvals-and-sandbox');
           console.log(
             chalk.yellow(
               '🔓 Using --dangerously-bypass-approvals-and-sandbox for seamless hive-mind execution',
             ),
           );
         } else if (flags['full-auto'] !== false) {
-          // Default to full-auto for workspace write access
-          codexArgs.push('--full-auto');
           console.log(
             chalk.cyan(
               '🤖 Using --full-auto mode (workspace-write with approval on failure)',
@@ -2359,29 +2381,28 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
           );
         }
 
-        // Add approval policy
         if (flags['ask-for-approval']) {
-          codexArgs.push('-a', flags['ask-for-approval']);
+          console.log(
+            chalk.cyan(
+              `🛡️ Using approval policy: ${flags['ask-for-approval']}`,
+            ),
+          );
         } else if (!flags['dangerously-bypass-approvals-and-sandbox']) {
-          // Default to on-failure for automatic execution
-          codexArgs.push('-a', 'on-failure');
+          console.log(
+            chalk.cyan('🛡️ Approval policy: on-failure (default for automation)'),
+          );
         }
 
-        // Add the prompt as the LAST argument
-        codexArgs.push(hiveMindPrompt);
-
-        // Set up environment variables for Codex
-        const codexEnv = {
-          ...process.env,
-          // Preserve path and home directory
-          HOME: os.homedir(),
-          // Ensure Codex can find its config
-          CODEX_CONFIG_DIR: path.join(os.homedir(), '.codex'),
-        };
+        const { args: codexArgs, env: codexEnv } = buildCodexLaunchConfig(
+          workspaceDir,
+          hiveMindPrompt,
+          flags,
+        );
 
         console.log(chalk.cyan('\n📂 Workspace Configuration:'));
         console.log(chalk.gray('  Working Directory:'), workspaceDir);
         console.log(chalk.gray('  Config Directory:'), codexEnv.CODEX_CONFIG_DIR);
+        console.log(chalk.gray('  Model:'), flags.model || 'gpt-5-codex');
         console.log(chalk.gray('  Trust Status:'), projectTrusted ? chalk.green('Trusted') : chalk.yellow('Unknown'));
 
         // Spawn codex with properly configured workspace access
@@ -2722,46 +2743,99 @@ Remember: You are not just coordinating agents - you are orchestrating a collect
  * Generate simplified Hive Mind prompt for Codex CLI
  * Codex needs a more direct, actionable prompt without Claude Code-specific tools
  */
-function generateCodexHiveMindPrompt(swarmId, swarmName, objective, workers, workerGroups, flags) {
+export function generateCodexHiveMindPrompt(swarmId, swarmName, objective, workers, workerGroups, flags) {
   console.log(chalk.cyan(`\n🔍 Generating Codex-compatible prompt for: "${objective}"`));
   const workerTypes = Object.keys(workerGroups);
   const queenType = flags.queenType || 'strategic';
+  const currentTime = new Date().toISOString();
 
-  return `# 🎯 OBJECTIVE: ${objective}
+  const agentTaskScaffolding = workerTypes
+    .map((type) => {
+      const typeWorkers = workerGroups[type] || [];
+      const displayName = `${type.charAt(0).toUpperCase()}${type.slice(1)}`;
+      const taskName = `${displayName} Agent`;
+      const capabilities = typeWorkers
+        .map((worker) => {
+          try {
+            const parsed = typeof worker.capabilities === 'string'
+              ? JSON.parse(worker.capabilities)
+              : worker.capabilities;
+            return parsed?.join?.(', ');
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean)
+        .join(', ');
 
-You are working on: **${objective}**
+      return `Task("${taskName}", "You are the ${displayName} responsible for ${getWorkerTypeInstructions(type).split('\n')[0]}. Coordinate with the hive, obey the memory protocol, and report progress via hooks.", "${type}")
+// Capabilities: ${capabilities || 'generalist'}
+`;
+    })
+    .join('\n');
 
-## Project Context
-- Project: ${swarmName}
-- Working Directory: ${process.cwd()}
+  const workerSummary = workerTypes
+    .map((type) => `- ${type}: ${workerGroups[type].length} agent(s)`)
+    .join('\n');
+
+  return `# 🧠 Codex Hive Mind Coordination Charter
+
+## 🎯 Objective
+- Goal: ${objective}
+- Swarm: ${swarmName}
 - Swarm ID: ${swarmId}
+- Queen Strategy: ${queenType}
+- Initialized: ${currentTime}
+- Workspace: ${process.cwd()}
 
-## Your Role
-You are a ${queenType} coordinator responsible for completing this objective efficiently.
+## 👑 Queen Coordinator Responsibilities
+1. Spawn ALL specialist agents concurrently using Claude Task tool.
+2. Bootstrap MCP coordination (memory, consensus, neural syncing).
+3. Enforce mandatory memory protocol for every worker.
+4. Track progress and blockers via hooks and MCP dashboards.
+5. Synthesize final deliverables with collective intelligence.
 
-## Available Resources
-You have access to:
-- Full workspace with read/write permissions (--full-auto mode enabled)
-- File system operations (read, write, edit, create)
-- Terminal/bash commands
-- All standard development tools in this environment
+## 🗂 Worker Distribution
+${workerSummary}
 
-## Approach
-1. **Analyze the objective**: Understand what needs to be accomplished
-2. **Break it down**: Divide the work into logical steps
-3. **Execute systematically**: Complete each step thoroughly
-4. **Verify results**: Test and validate your work
-5. **Document**: Leave clear comments and documentation
+## 🔧 Step 1 — Spawn Agents (Single Task Tool message)
+${agentTaskScaffolding}
 
-## Guidelines
-- Write clean, maintainable code
-- Follow existing project conventions
-- Test your changes
-- Use best practices for the technologies involved
-- Be thorough but efficient
+## 🛰 Step 2 — MCP Coordination Bootstrap (Single BatchTool block)
+[BatchTool]:
+  mcp__claude-flow__agent_spawn { "swarm_id": "${swarmId}", "agents": ${JSON.stringify(workerTypes)} }
+  mcp__claude-flow__memory_usage { "action": "store", "namespace": "coordination", "key": "hive/${swarmId}/objective", "value": "${objective}" }
+  mcp__claude-flow__swarm_monitor { "mode": "live" }
+  mcp__claude-flow__task_orchestrate { "swarm_id": "${swarmId}", "objective": "${objective}" }
 
-## Get Started
-Begin working on the objective now. You have full access to the workspace and can create/modify files as needed.`;
+## 💾 Step 3 — Memory Protocol (MANDATORY)
+Every agent MUST:
+- Write status immediately on start:
+  mcp__claude-flow__memory_usage { "action": "store", "namespace": "coordination", "key": "swarm/[agent]/status", "value": { "state": "starting", "objective": "${objective}" } }
+- Update progress after each major step:
+  mcp__claude-flow__memory_usage { "action": "store", "namespace": "coordination", "key": "swarm/[agent]/progress", "value": { "progress": 0-100, "details": "..." } }
+- Publish artifacts for peers:
+  mcp__claude-flow__memory_usage { "action": "store", "namespace": "coordination", "key": "swarm/shared/[artifact]", "value": { "type": "spec|code|test", "location": "path" } }
+- Retrieve dependencies:
+  mcp__claude-flow__memory_usage { "action": "retrieve", "namespace": "coordination", "key": "swarm/shared/[dependency]" }
+
+## ✅ Execution Checklist
+1. Populate TodoWrite with parallel work items:
+   TodoWrite { todos: [
+     { "id": "1", "content": "Bootstrap MCP coordination + memory", "status": "in_progress", "priority": "high" },
+     { "id": "2", "content": "Spawn specialist agents via Task tool", "status": "pending", "priority": "high" },
+     { "id": "3", "content": "Share findings using memory_usage", "status": "pending", "priority": "high" },
+     { "id": "4", "content": "Aggregate and verify deliverables", "status": "pending", "priority": "medium" }
+   ] }
+2. Use hooks:
+   - npx claude-flow@alpha hooks pre-task --description "[objective]"
+   - npx claude-flow@alpha hooks post-edit --file "[path]"
+   - npx claude-flow@alpha hooks post-task --task-id "[agent]"
+3. Coordinate through MCP tools listed above.
+4. Document insights and final outputs in shared memory.
+
+## 🚀 Begin
+Execute the checklist now. Launch concurrent agents, enforce the memory protocol, and collaborate through MCP tools to complete "${objective}" with Codex-level precision.`;
 }
 
 /**

@@ -44,11 +44,11 @@ export class CodexProvider extends BaseProvider {
       'gpt-5-codex High': 65536,
     } as Record<LLMModel, number>,
     supportsStreaming: true,
-    supportsFunctionCalling: false, // Codex models don't support function calling
+    supportsFunctionCalling: true,
     supportsSystemMessages: true,
     supportsVision: false,
     supportsAudio: false,
-    supportsTools: false,
+    supportsTools: true,
     supportsFineTuning: false,
     supportsEmbeddings: false,
     supportsLogprobs: false,
@@ -146,7 +146,7 @@ export class CodexProvider extends BaseProvider {
           });
 
       // Build input from messages
-      const prompt = this.formatMessagesToPrompt(request);
+      const prompt = this.formatMessagesToPrompt(request, model);
 
       // Run turn (non-streaming)
       const turn = await thread.run(prompt);
@@ -213,7 +213,7 @@ export class CodexProvider extends BaseProvider {
           });
 
       // Build input from messages
-      const prompt = this.formatMessagesToPrompt(request);
+      const prompt = this.formatMessagesToPrompt(request, model);
 
       // Run streamed turn
       const { events } = await thread.runStreamed(prompt);
@@ -360,20 +360,52 @@ export class CodexProvider extends BaseProvider {
    * Format messages into a single prompt for Codex API
    * Codex Thread.run() expects a string input, not message array
    */
-  private formatMessagesToPrompt(request: LLMRequest): string {
-    // Combine messages into a single prompt
-    return request.messages
-      .map((msg) => {
-        if (msg.role === 'system') {
-          return `System: ${msg.content}`;
-        } else if (msg.role === 'user') {
-          return `User: ${msg.content}`;
-        } else if (msg.role === 'assistant') {
-          return `Assistant: ${msg.content}`;
-        }
-        return msg.content;
+  private formatMessagesToPrompt(request: LLMRequest, model: LLMModel): string {
+    const conversation = request.messages
+      .map((msg, index) => {
+        const label = msg.role === 'system'
+          ? 'System'
+          : msg.role === 'user'
+            ? 'User'
+            : msg.role === 'assistant'
+              ? 'Assistant'
+              : msg.role;
+        return `### Message ${index + 1} (${label})\n${msg.content}`;
       })
       .join('\n\n');
+
+    const requestedTools =
+      (request as any).tools ||
+      request.providerOptions?.tools ||
+      [];
+
+    const sections = [
+      '# Codex Turn Request',
+      `## Provider Meta\n- Provider: Codex\n- Model: ${model}`,
+      '## Conversation\n' + conversation,
+    ];
+
+    if (Array.isArray(requestedTools) && requestedTools.length > 0) {
+      sections.push(
+        '## Tools\n' + JSON.stringify({ tools: requestedTools }, null, 2),
+      );
+    }
+
+    if (request.functions && request.functions.length > 0) {
+      sections.push(
+        '## Functions\n' +
+          JSON.stringify(
+            {
+              functions: request.functions,
+              function_call: request.functionCall || 'auto',
+            },
+            null,
+            2,
+          ),
+      );
+    }
+
+    return sections.join('\n\n');
   }
 
   /**
