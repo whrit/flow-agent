@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { DatabaseManager } from './DatabaseManager.js';
 import { MCPToolWrapper } from '../integration/MCPToolWrapper.js';
 import {
@@ -40,7 +40,7 @@ export class Agent extends EventEmitter {
 
   constructor(config: AgentConfig) {
     super();
-    this.id = config.id || uuidv4();
+    this.id = config.id || randomUUID();
     this.name = config.name;
     this.type = config.type;
     this.swarmId = config.swarmId;
@@ -292,7 +292,7 @@ export class Agent extends EventEmitter {
    */
   async sendMessage(toAgentId: string | null, messageType: string, content: any): Promise<void> {
     const message: Message = {
-      id: uuidv4(),
+      id: randomUUID(),
       fromAgentId: this.id,
       toAgentId,
       swarmId: this.swarmId,

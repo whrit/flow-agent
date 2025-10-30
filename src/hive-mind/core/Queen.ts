@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { Agent } from './Agent.js';
 import { DatabaseManager } from './DatabaseManager.js';
 import { MCPToolWrapper } from '../integration/MCPToolWrapper.js';
@@ -38,7 +38,7 @@ export class Queen extends EventEmitter {
 
   constructor(config: QueenConfig) {
     super();
-    this.id = uuidv4();
+    this.id = randomUUID();
     this.config = config;
     this.agents = new Map();
     this.taskQueue = new Map();
@@ -147,7 +147,7 @@ export class Queen extends EventEmitter {
     const executionPlan = this.createExecutionPlan(task, selectedAgents, strategy);
 
     return {
-      id: uuidv4(),
+      id: randomUUID(),
       taskId: task.id,
       strategy,
       selectedAgents: selectedAgents.map((a) => a.id),
@@ -381,7 +381,7 @@ export class Queen extends EventEmitter {
    */
   private async initiateConsensus(task: Task, decision: QueenDecision): Promise<void> {
     const proposal: ConsensusProposal = {
-      id: uuidv4(),
+      id: randomUUID(),
       swarmId: this.config.swarmId,
       taskId: task.id,
       proposal: {

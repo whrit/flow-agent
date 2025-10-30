@@ -17,6 +17,7 @@ import { createMigrateCommand } from './migrate.js';
 import { enterpriseCommands } from './enterprise.js';
 import { createFlowNexusClaudeMd } from '../simple-commands/init/templates/claude-md.js';
 import { createCodexAgentsAppendix } from '../simple-commands/init/templates/agents-md.js';
+import { initNeuralModule, initGoalModule } from './neural-goal-init.js';
 
 // Import enhanced orchestration commands
 import { startCommand } from './start.js';
@@ -79,9 +80,8 @@ export function setupCommands(cli: CLI): void {
           },
         ],
         action: async (ctx: CommandContext) => {
-          const { initNeuralModule } = await import('../../scripts/init-neural.js');
           await initNeuralModule({
-            force: ctx.flags.force as boolean,
+            force: Boolean(ctx.flags.force),
             targetDir: ctx.flags.target as string,
           });
         },
@@ -113,9 +113,8 @@ export function setupCommands(cli: CLI): void {
           },
         ],
         action: async (ctx: CommandContext) => {
-          const { initGoalModule } = await import('../../scripts/init-goal.js');
           await initGoalModule({
-            force: ctx.flags.force as boolean,
+            force: Boolean(ctx.flags.force),
             targetDir: ctx.flags.target as string,
           });
         },
