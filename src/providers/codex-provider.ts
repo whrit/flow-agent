@@ -26,22 +26,19 @@ export class CodexProvider extends BaseProvider {
   readonly name: LLMProvider = 'codex';
   readonly capabilities: ProviderCapabilities = {
     supportedModels: [
-      'o1-preview',
-      'o1-mini',
-      'gpt-4o',
-      'gpt-4o-mini',
+      'gpt-5-codex Low',
+      'gpt-5-codex Medium',
+      'gpt-5-codex High',
     ],
     maxContextLength: {
-      'o1-preview': 128000,
-      'o1-mini': 128000,
-      'gpt-4o': 128000,
-      'gpt-4o-mini': 128000,
+      'gpt-5-codex Low': 128000,
+      'gpt-5-codex Medium': 128000,
+      'gpt-5-codex High': 128000,
     } as Record<LLMModel, number>,
     maxOutputTokens: {
-      'o1-preview': 32768,
-      'o1-mini': 65536,
-      'gpt-4o': 16384,
-      'gpt-4o-mini': 16384,
+      'gpt-5-codex Low': 16384,
+      'gpt-5-codex Medium': 32768,
+      'gpt-5-codex High': 65536,
     } as Record<LLMModel, number>,
     supportsStreaming: true,
     supportsFunctionCalling: false, // Codex models don't support function calling
@@ -59,24 +56,19 @@ export class CodexProvider extends BaseProvider {
       concurrentRequests: 50,
     },
     pricing: {
-      'o1-preview': {
-        promptCostPer1k: 0.015, // $15 per 1M input tokens
-        completionCostPer1k: 0.06, // $60 per 1M output tokens
+      'gpt-5-codex Low': {
+        promptCostPer1k: 0.0002, // Estimated - adjust based on actual pricing
+        completionCostPer1k: 0.0008,
         currency: 'USD',
       },
-      'o1-mini': {
-        promptCostPer1k: 0.003, // $3 per 1M input tokens
-        completionCostPer1k: 0.012, // $12 per 1M output tokens
+      'gpt-5-codex Medium': {
+        promptCostPer1k: 0.0005,
+        completionCostPer1k: 0.002,
         currency: 'USD',
       },
-      'gpt-4o': {
-        promptCostPer1k: 0.0025, // $2.50 per 1M input tokens
-        completionCostPer1k: 0.01, // $10 per 1M output tokens
-        currency: 'USD',
-      },
-      'gpt-4o-mini': {
-        promptCostPer1k: 0.00015, // $0.15 per 1M input tokens
-        completionCostPer1k: 0.0006, // $0.60 per 1M output tokens
+      'gpt-5-codex High': {
+        promptCostPer1k: 0.001,
+        completionCostPer1k: 0.004,
         currency: 'USD',
       },
     },
@@ -380,13 +372,8 @@ export class CodexProvider extends BaseProvider {
    * Map our model names to Codex model names
    */
   private mapToCodexModel(model: LLMModel): string {
-    const modelMap: Record<string, string> = {
-      'o1-preview': 'o1-preview',
-      'o1-mini': 'o1-mini',
-      'gpt-4o': 'gpt-4o',
-      'gpt-4o-mini': 'gpt-4o-mini',
-    };
-    return modelMap[model] || model;
+    // Codex uses exact model names
+    return model;
   }
 
   /**
@@ -394,12 +381,11 @@ export class CodexProvider extends BaseProvider {
    */
   private getModelDescription(model: LLMModel): string {
     const descriptions: Record<string, string> = {
-      'o1-preview': 'Advanced reasoning model with extended thinking capabilities',
-      'o1-mini': 'Faster reasoning model optimized for coding and STEM tasks',
-      'gpt-4o': 'High-intelligence flagship model for complex tasks',
-      'gpt-4o-mini': 'Affordable and intelligent small model for fast tasks',
+      'gpt-5-codex Low': 'Fast and efficient model for simple coding tasks',
+      'gpt-5-codex Medium': 'Balanced model for most coding and development tasks',
+      'gpt-5-codex High': 'Advanced model for complex reasoning and challenging tasks',
     };
-    return descriptions[model] || 'Codex reasoning model';
+    return descriptions[model] || 'Codex coding model';
   }
 
 
