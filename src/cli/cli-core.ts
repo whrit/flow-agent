@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Agent-Flow CLI - Core implementation using Node.js
+ * Bot-Flow CLI - Core implementation using Node.js
  */
 
 import chalk from 'chalk';
@@ -303,7 +303,7 @@ async function main() {
     process.argv[1] &&
     (process.argv[1].endsWith('cli-core.js') || process.argv[1].endsWith('cli-core.ts'))
   ) {
-    const cli = new CLI('agent-flow', 'Agent-Flow Orchestration Toolkit');
+    const cli = new CLI('bot-flow', 'Bot-Flow Orchestration Toolkit');
 
     // Import and register all commands
     const { setupCommands } = await import('./commands/index.js');

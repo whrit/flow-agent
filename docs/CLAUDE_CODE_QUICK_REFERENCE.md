@@ -153,22 +153,22 @@ claude-flow hive-mind stop <session-id>
 ### Pre/Post Task Hooks
 ```bash
 # Before Claude Code task
-npx claude-flow hooks pre-task --description "Build API"
+npx bot-flow hooks pre-task --description "Build API"
 
 # After Claude Code task
-npx claude-flow hooks post-task --task-id "task-123"
+npx bot-flow hooks post-task --task-id "task-123"
 
 # Post file edit (with memory coordination)
-npx claude-flow hooks post-edit --file "src/api.js" --memory-key "swarm/coder/api"
+npx bot-flow hooks post-edit --file "src/api.js" --memory-key "swarm/coder/api"
 ```
 
 ### Session Hooks
 ```bash
 # Restore session context
-npx claude-flow hooks session-restore --session-id "swarm-123"
+npx bot-flow hooks session-restore --session-id "swarm-123"
 
 # End session with metrics export
-npx claude-flow hooks session-end --export-metrics true
+npx bot-flow hooks session-end --export-metrics true
 ```
 
 ---

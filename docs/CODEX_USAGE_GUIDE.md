@@ -6,13 +6,13 @@ Codex is now fully integrated with Claude Flow! You can use it in two ways:
 
 ### ⚡ **NEW: Direct Spawning with `--codex` Flag (Recommended)**
 ```bash
-npx claude-flow@alpha hive-mind spawn "Build API" --codex
+npx bot-flow@alpha hive-mind spawn "Build API" --codex
 ```
 This ACTUALLY launches Codex CLI (just like `--claude` launches Claude Code) for real execution!
 
 ### 📝 **Provider Configuration with `--provider codex`**
 ```bash
-npx claude-flow@alpha task create general "Analyze code" --provider codex
+npx bot-flow@alpha task create general "Analyze code" --provider codex
 ```
 This sets Codex as the LLM provider for programmatic usage via CodexProvider.
 
@@ -66,9 +66,9 @@ npx . hive-mind spawn "Build API" --provider codex
 cd ~/Projects/my-project
 
 # Use with npx (recommended - always gets latest)
-npx claude-flow@alpha task create general "Analyze this code" --provider codex
-npx claude-flow@alpha swarm init --provider codex
-npx claude-flow@alpha hive-mind spawn "Refactor API" --provider codex
+npx bot-flow@alpha task create general "Analyze this code" --provider codex
+npx bot-flow@alpha swarm init --provider codex
+npx bot-flow@alpha hive-mind spawn "Refactor API" --provider codex
 
 # Or install globally
 npm install -g claude-flow@alpha
@@ -81,7 +81,7 @@ claude-flow task create general "Your task" --provider codex
 
 ```bash
 # Spawn Codex directly with hive-mind coordination
-npx claude-flow@alpha hive-mind spawn "Build REST API" --codex
+npx bot-flow@alpha hive-mind spawn "Build REST API" --codex
 
 # This ACTUALLY launches Codex CLI (just like --claude launches Claude Code)
 # The Codex instance will:
@@ -107,7 +107,7 @@ npx . hive-mind spawn "Optimize database" --codex --queen-type strategic --max-w
 
 ```bash
 # 🎯 RECOMMENDED: Direct Codex spawning for swarm coordination
-npx claude-flow@alpha swarm "Build REST API" --codex
+npx bot-flow@alpha swarm "Build REST API" --codex
 
 # This ACTUALLY launches Codex CLI with swarm coordination prompt
 # Codex will orchestrate multiple agents and execute the objective
@@ -124,16 +124,16 @@ npx . swarm "Build API" --codex    # Uses Codex
 
 ```bash
 # Create a general task
-npx claude-flow@alpha task create general "Analyze security vulnerabilities" \
+npx bot-flow@alpha task create general "Analyze security vulnerabilities" \
   --provider codex \
   --priority 8
 
 # Create a research task
-npx claude-flow@alpha task create research "Research async patterns in Node.js" \
+npx bot-flow@alpha task create research "Research async patterns in Node.js" \
   --provider codex
 
 # Create a code task
-npx claude-flow@alpha task create code "Implement JWT authentication" \
+npx bot-flow@alpha task create code "Implement JWT authentication" \
   --provider codex \
   --priority 10
 ```
@@ -142,19 +142,19 @@ npx claude-flow@alpha task create code "Implement JWT authentication" \
 
 ```bash
 # Initialize a mesh swarm with provider configuration
-npx claude-flow@alpha swarm init \
+npx bot-flow@alpha swarm init \
   --provider codex \
   --topology mesh \
   --max-agents 5
 
 # Initialize hierarchical swarm
-npx claude-flow@alpha swarm init \
+npx bot-flow@alpha swarm init \
   --provider codex \
   --topology hierarchical \
   --max-agents 10
 
 # Spawn specific agent
-npx claude-flow@alpha agent spawn researcher \
+npx bot-flow@alpha agent spawn researcher \
   --provider codex
 ```
 
@@ -162,19 +162,19 @@ npx claude-flow@alpha agent spawn researcher \
 
 ```bash
 # 🎯 RECOMMENDED: Direct Codex spawning (launches actual Codex CLI)
-npx claude-flow@alpha hive-mind spawn "Build REST API with authentication" --codex
+npx bot-flow@alpha hive-mind spawn "Build REST API with authentication" --codex
 
 # Alternative: Use provider flag (sets config but doesn't spawn)
-npx claude-flow@alpha hive-mind spawn "Build REST API with authentication" \
+npx bot-flow@alpha hive-mind spawn "Build REST API with authentication" \
   --provider codex
 
 # Use mixed providers (Claude + Codex)
-npx claude-flow@alpha hive-mind spawn "Design microservices architecture" \
+npx bot-flow@alpha hive-mind spawn "Design microservices architecture" \
   --queen-provider claude \
   --worker-provider codex
 
 # Complex project
-npx claude-flow@alpha hive-mind spawn \
+npx bot-flow@alpha hive-mind spawn \
   "Build e-commerce platform with payment integration" \
   --provider codex \
   --max-agents 8
@@ -184,15 +184,15 @@ npx claude-flow@alpha hive-mind spawn \
 
 ```bash
 # Architecture design
-npx claude-flow@alpha sparc run architect "Design event-driven system" \
+npx bot-flow@alpha sparc run architect "Design event-driven system" \
   --provider codex
 
 # TDD workflow
-npx claude-flow@alpha sparc tdd "User authentication module" \
+npx bot-flow@alpha sparc tdd "User authentication module" \
   --provider codex
 
 # Code review
-npx claude-flow@alpha sparc run reviewer "Review security implementation" \
+npx bot-flow@alpha sparc run reviewer "Review security implementation" \
   --provider codex
 ```
 
@@ -200,16 +200,16 @@ npx claude-flow@alpha sparc run reviewer "Review security implementation" \
 
 ```bash
 # Spawn specialized agents
-npx claude-flow@alpha agent spawn researcher --provider codex
-npx claude-flow@alpha agent spawn coder --provider codex
-npx claude-flow@alpha agent spawn tester --provider codex
-npx claude-flow@alpha agent spawn reviewer --provider codex
+npx bot-flow@alpha agent spawn researcher --provider codex
+npx bot-flow@alpha agent spawn coder --provider codex
+npx bot-flow@alpha agent spawn tester --provider codex
+npx bot-flow@alpha agent spawn reviewer --provider codex
 
 # List active agents
-npx claude-flow@alpha agent list
+npx bot-flow@alpha agent list
 
 # Check agent health
-npx claude-flow@alpha agent health
+npx bot-flow@alpha agent health
 ```
 
 ## 🎨 Advanced Usage Patterns
@@ -220,11 +220,11 @@ Use Claude for high-level thinking, Codex for implementation:
 
 ```bash
 # Architecture with Claude
-npx claude-flow@alpha sparc run architect "Design system" \
+npx bot-flow@alpha sparc run architect "Design system" \
   --provider claude
 
 # Implementation with Codex
-npx claude-flow@alpha task create code "Implement based on architecture" \
+npx bot-flow@alpha task create code "Implement based on architecture" \
   --provider codex
 ```
 
@@ -232,7 +232,7 @@ npx claude-flow@alpha task create code "Implement based on architecture" \
 
 ```bash
 # Launch multiple Codex agents in parallel
-npx claude-flow@alpha hive-mind spawn \
+npx bot-flow@alpha hive-mind spawn \
   "Build microservices: auth, payments, notifications" \
   --provider codex \
   --parallel \
@@ -245,11 +245,11 @@ Use Codex for cost-effective tasks:
 
 ```bash
 # Codex is cheaper for routine tasks
-npx claude-flow@alpha task create general "Refactor utility functions" \
+npx bot-flow@alpha task create general "Refactor utility functions" \
   --provider codex
 
 # Claude for complex reasoning
-npx claude-flow@alpha sparc run architect "Design distributed system" \
+npx bot-flow@alpha sparc run architect "Design distributed system" \
   --provider claude
 ```
 
@@ -288,26 +288,26 @@ console.log('Cost:', response.cost.totalCost);
 
 ```bash
 # List all tasks
-npx claude-flow@alpha task list
+npx bot-flow@alpha task list
 
 # Check specific task
-npx claude-flow@alpha task status <task-id>
+npx bot-flow@alpha task status <task-id>
 
 # Monitor swarm
-npx claude-flow@alpha swarm status
+npx bot-flow@alpha swarm status
 ```
 
 ### View Metrics
 
 ```bash
 # Agent metrics
-npx claude-flow@alpha agent metrics
+npx bot-flow@alpha agent metrics
 
 # System status
-npx claude-flow@alpha status
+npx bot-flow@alpha status
 
 # Memory usage
-npx claude-flow@alpha memory status
+npx bot-flow@alpha memory status
 ```
 
 ## 🔧 Configuration
@@ -316,17 +316,17 @@ npx claude-flow@alpha memory status
 
 ```bash
 # Specify model explicitly
-npx claude-flow@alpha task create code "Implement API" \
+npx bot-flow@alpha task create code "Implement API" \
   --provider codex \
   --model "gpt-5-codex"
 
 # Set max tokens
-npx claude-flow@alpha task create code "Generate documentation" \
+npx bot-flow@alpha task create code "Generate documentation" \
   --provider codex \
   --max-tokens 4000
 
 # Set temperature
-npx claude-flow@alpha task create code "Creative solution" \
+npx bot-flow@alpha task create code "Creative solution" \
   --provider codex \
   --temperature 0.8
 ```
@@ -338,7 +338,7 @@ npx claude-flow@alpha task create code "Creative solution" \
 export CLAUDE_FLOW_PROVIDER=codex
 
 # Then use without --provider flag
-npx claude-flow@alpha task create general "Your task"
+npx bot-flow@alpha task create general "Your task"
 ```
 
 ### Config File
@@ -369,7 +369,7 @@ Create `claude-flow.config.json`:
 
 ```bash
 # BEST APPROACH: Spawn Codex directly with hive-mind
-npx claude-flow@alpha hive-mind spawn \
+npx bot-flow@alpha hive-mind spawn \
   "Build full-stack e-commerce platform with React, Node.js, PostgreSQL" \
   --codex \
   --max-workers 8
@@ -385,12 +385,12 @@ npx claude-flow@alpha hive-mind spawn \
 
 ```bash
 # Direct spawning approach (recommended)
-npx claude-flow@alpha hive-mind spawn \
+npx bot-flow@alpha hive-mind spawn \
   "Refactor legacy authentication system to use JWT" \
   --codex
 
 # Or with task creation
-npx claude-flow@alpha task create code \
+npx bot-flow@alpha task create code \
   "Refactor legacy authentication system to use JWT" \
   --provider codex \
   --priority 9
@@ -399,7 +399,7 @@ npx claude-flow@alpha task create code \
 ### Scenario 2: Research & Analysis
 
 ```bash
-npx claude-flow@alpha task create research \
+npx bot-flow@alpha task create research \
   "Analyze performance bottlenecks in API endpoints" \
   --provider codex
 ```
@@ -407,7 +407,7 @@ npx claude-flow@alpha task create research \
 ### Scenario 3: Full-Stack Development
 
 ```bash
-npx claude-flow@alpha hive-mind spawn \
+npx bot-flow@alpha hive-mind spawn \
   "Build full-stack app: React frontend, Node.js backend, PostgreSQL" \
   --provider codex \
   --max-agents 6
@@ -416,7 +416,7 @@ npx claude-flow@alpha hive-mind spawn \
 ### Scenario 4: Code Review
 
 ```bash
-npx claude-flow@alpha sparc run reviewer \
+npx bot-flow@alpha sparc run reviewer \
   "Review pull request #123 for security issues" \
   --provider codex
 ```
@@ -424,7 +424,7 @@ npx claude-flow@alpha sparc run reviewer \
 ### Scenario 5: Test Generation
 
 ```bash
-npx claude-flow@alpha task create code \
+npx bot-flow@alpha task create code \
   "Generate comprehensive test suite for user module" \
   --provider codex
 ```
@@ -447,7 +447,7 @@ npx claude-flow@alpha task create code \
 ### 4. **Parallel Execution**
 ```bash
 # Use --parallel for independent tasks
-npx claude-flow@alpha hive-mind spawn "Build 3 microservices" \
+npx bot-flow@alpha hive-mind spawn "Build 3 microservices" \
   --provider codex \
   --parallel
 ```
@@ -455,7 +455,7 @@ npx claude-flow@alpha hive-mind spawn "Build 3 microservices" \
 ### 5. **Memory & Context**
 ```bash
 # Store results in memory for later use
-npx claude-flow@alpha task create code "Implement feature X" \
+npx bot-flow@alpha task create code "Implement feature X" \
   --provider codex \
   --memory-key "feature-x-implementation"
 ```
@@ -531,7 +531,7 @@ Your Codex integration is complete and ready to use from anywhere:
 npx . task create general "Your task" --provider codex
 
 # From anywhere else
-npx claude-flow@alpha task create general "Your task" --provider codex
+npx bot-flow@alpha task create general "Your task" --provider codex
 ```
 
 **Happy coding with Codex! 🎊**

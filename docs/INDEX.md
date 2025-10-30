@@ -11,34 +11,34 @@ The ultimate AI agent orchestration platform with **54+ specialized agents**, **
 ### 1. Installation (30 seconds)
 ```bash
 # Install and initialize
-npx claude-flow@alpha init --force
+npx bot-flow@alpha init --force
 
 # Verify installation
-npx claude-flow@alpha --version
+npx bot-flow@alpha --version
 ```
 
 ### 2. First Swarm (1 minute)
 ```bash
 # Create your first AI swarm
-npx claude-flow@alpha swarm "build a REST API for user management"
+npx bot-flow@alpha swarm "build a REST API for user management"
 
 # Use SPARC development methodology
-npx claude-flow@alpha sparc tdd "user authentication system"
+npx bot-flow@alpha sparc tdd "user authentication system"
 
 # Spawn specialized agent teams
-npx claude-flow@alpha hive-mind spawn "full-stack web app"
+npx bot-flow@alpha hive-mind spawn "full-stack web app"
 ```
 
 ### 3. Advanced Features
 ```bash
 # Batch processing with multiple modes
-npx claude-flow@alpha sparc batch research,architecture,code "microservices platform"
+npx bot-flow@alpha sparc batch research,architecture,code "microservices platform"
 
 # Complete development pipeline
-npx claude-flow@alpha sparc pipeline "e-commerce platform with payments"
+npx bot-flow@alpha sparc pipeline "e-commerce platform with payments"
 
 # GitHub integration
-npx claude-flow@alpha github pr-manager "review and merge pending PRs"
+npx bot-flow@alpha github pr-manager "review and merge pending PRs"
 ```
 
 ---
@@ -97,31 +97,31 @@ Complete automation toolkit covering file operations, system management, GitHub 
 ### 🚀 Full-Stack Development
 ```bash
 # Complete web application with 8-agent swarm
-npx claude-flow@alpha swarm --agents 8 "build full-stack e-commerce platform"
+npx bot-flow@alpha swarm --agents 8 "build full-stack e-commerce platform"
 ```
 
 ### 🧪 Test-Driven Development  
 ```bash
 # SPARC TDD workflow
-npx claude-flow@alpha sparc tdd "payment processing system"
+npx bot-flow@alpha sparc tdd "payment processing system"
 ```
 
 ### 🔄 Code Review & Quality
 ```bash
 # Multi-agent code review
-npx claude-flow@alpha github code-review-swarm --pr 123
+npx bot-flow@alpha github code-review-swarm --pr 123
 ```
 
 ### 📊 Performance Analysis
 ```bash
 # Performance optimization swarm  
-npx claude-flow@alpha swarm "optimize API performance" --agents perf-analyzer,coder,tester
+npx bot-flow@alpha swarm "optimize API performance" --agents perf-analyzer,coder,tester
 ```
 
 ### 🤖 AI/ML Development
 ```bash
 # Machine learning pipeline
-npx claude-flow@alpha swarm "build ML model training pipeline" --agents ml-developer,backend-dev,tester
+npx bot-flow@alpha swarm "build ML model training pipeline" --agents ml-developer,backend-dev,tester
 ```
 
 ---
@@ -131,44 +131,44 @@ npx claude-flow@alpha swarm "build ML model training pipeline" --agents ml-devel
 ### Core Commands
 ```bash
 # List all available modes and agents
-npx claude-flow@alpha sparc modes
-npx claude-flow@alpha agents list
+npx bot-flow@alpha sparc modes
+npx bot-flow@alpha agents list
 
 # Initialize MCP integration
-npx claude-flow@alpha mcp start
+npx bot-flow@alpha mcp start
 
 # Monitor swarm status
-npx claude-flow@alpha swarm status
+npx bot-flow@alpha swarm status
 
 # Export session data
-npx claude-flow@alpha hooks session-end --export-metrics true
+npx bot-flow@alpha hooks session-end --export-metrics true
 ```
 
 ### Development Workflow
 ```bash
 # Pre-task setup
-npx claude-flow@alpha hooks pre-task --description "task description"
+npx bot-flow@alpha hooks pre-task --description "task description"
 
 # Post-edit notifications  
-npx claude-flow@alpha hooks post-edit --file "path/to/file"
+npx bot-flow@alpha hooks post-edit --file "path/to/file"
 
 # Performance analysis
-npx claude-flow@alpha hooks post-task --analyze-performance true
+npx bot-flow@alpha hooks post-task --analyze-performance true
 ```
 
 ### GitHub Integration
 ```bash
 # Initialize GitHub integration
-npx claude-flow@alpha github init
+npx bot-flow@alpha github init
 
 # Manage pull requests
-npx claude-flow@alpha github pr-manager
+npx bot-flow@alpha github pr-manager
 
 # Track issues
-npx claude-flow@alpha github issue-tracker
+npx bot-flow@alpha github issue-tracker
 
 # Release management
-npx claude-flow@alpha github release-manager
+npx bot-flow@alpha github release-manager
 ```
 
 ---
@@ -181,34 +181,34 @@ npx claude-flow@alpha github release-manager
 ```bash
 # Clear npm cache and reinstall
 npm cache clean --force
-npx claude-flow@alpha init --force --reset
+npx bot-flow@alpha init --force --reset
 ```
 
 #### ❌ Agent Connection Issues  
 ```bash
 # Check MCP server status
-npx claude-flow@alpha mcp status
+npx bot-flow@alpha mcp status
 
 # Restart MCP server
-npx claude-flow@alpha mcp restart
+npx bot-flow@alpha mcp restart
 ```
 
 #### ❌ Memory Issues
 ```bash
 # Clear agent memory
-npx claude-flow@alpha memory clear
+npx bot-flow@alpha memory clear
 
 # Reset session state
-npx claude-flow@alpha hooks session-restore --reset
+npx bot-flow@alpha hooks session-restore --reset
 ```
 
 #### ❌ Performance Issues
 ```bash
 # Enable performance monitoring
-npx claude-flow@alpha hooks post-task --analyze-performance true
+npx bot-flow@alpha hooks post-task --analyze-performance true
 
 # Reduce agent count for resource-constrained environments
-npx claude-flow@alpha --agents 3 swarm "task description"
+npx bot-flow@alpha --agents 3 swarm "task description"
 ```
 
 ### Getting Help
@@ -296,37 +296,37 @@ npx claude-flow@alpha --agents 3 swarm "task description"
 #### 🧠 **Agent Coordination Patterns**
 ```bash
 # Hierarchical coordination for complex projects
-npx claude-flow@alpha swarm --topology hierarchical "enterprise application"
+npx bot-flow@alpha swarm --topology hierarchical "enterprise application"
 
 # Mesh coordination for peer collaboration  
-npx claude-flow@alpha swarm --topology mesh "code review and optimization"
+npx bot-flow@alpha swarm --topology mesh "code review and optimization"
 
 # Adaptive coordination for dynamic requirements
-npx claude-flow@alpha swarm --topology adaptive "evolving microservices architecture"
+npx bot-flow@alpha swarm --topology adaptive "evolving microservices architecture"
 ```
 
 #### 🔄 **Memory & State Management**
 ```bash
 # Persistent memory across sessions
-npx claude-flow@alpha hooks session-restore --session-id "project-alpha"
+npx bot-flow@alpha hooks session-restore --session-id "project-alpha"
 
 # Cross-agent memory sharing
-npx claude-flow@alpha hooks post-edit --memory-key "swarm/shared/architecture"
+npx bot-flow@alpha hooks post-edit --memory-key "swarm/shared/architecture"
 
 # Memory cleanup and optimization
-npx claude-flow@alpha memory optimize --threshold 0.8
+npx bot-flow@alpha memory optimize --threshold 0.8
 ```
 
 #### ⚡ **Performance Optimization**
 ```bash
 # Enable concurrent execution (CRITICAL)
-npx claude-flow@alpha swarm --parallel --max-concurrent 5
+npx bot-flow@alpha swarm --parallel --max-concurrent 5
 
 # Performance monitoring and analysis  
-npx claude-flow@alpha hooks post-task --analyze-performance true
+npx bot-flow@alpha hooks post-task --analyze-performance true
 
 # Resource usage optimization
-npx claude-flow@alpha --agents 3 --memory-limit 4GB swarm "task"
+npx bot-flow@alpha --agents 3 --memory-limit 4GB swarm "task"
 ```
 
 ### 🎯 **Workflow Integration**
@@ -334,25 +334,25 @@ npx claude-flow@alpha --agents 3 --memory-limit 4GB swarm "task"
 #### Git Integration
 ```bash
 # Automated commit with agent coordination
-npx claude-flow@alpha hooks pre-task --git-integration
+npx bot-flow@alpha hooks pre-task --git-integration
 
 # Pull request management with swarm review
-npx claude-flow@alpha github pr-manager --auto-review
+npx bot-flow@alpha github pr-manager --auto-review
 
 # Release coordination across agents
-npx claude-flow@alpha github release-manager --version 2.1.0
+npx bot-flow@alpha github release-manager --version 2.1.0
 ```
 
 #### CI/CD Integration  
 ```bash
 # Pre-commit hooks with agent validation
-npx claude-flow@alpha hooks pre-commit --validate
+npx bot-flow@alpha hooks pre-commit --validate
 
 # Post-deployment testing swarm
-npx claude-flow@alpha swarm "validate production deployment" --agents tester,production-validator
+npx bot-flow@alpha swarm "validate production deployment" --agents tester,production-validator
 
 # Performance regression testing
-npx claude-flow@alpha swarm "performance regression analysis" --agents performance-benchmarker,perf-analyzer
+npx bot-flow@alpha swarm "performance regression analysis" --agents performance-benchmarker,perf-analyzer
 ```
 
 ---
@@ -362,25 +362,25 @@ npx claude-flow@alpha swarm "performance regression analysis" --agents performan
 ### Enterprise Scale Deployment
 ```bash
 # Production cluster initialization
-npx claude-flow@alpha init --production --cluster-size 10
+npx bot-flow@alpha init --production --cluster-size 10
 
 # Load balancing configuration  
-npx claude-flow@alpha configure --load-balancer --replicas 5
+npx bot-flow@alpha configure --load-balancer --replicas 5
 
 # High availability setup
-npx claude-flow@alpha deploy --ha --backup-strategy distributed
+npx bot-flow@alpha deploy --ha --backup-strategy distributed
 ```
 
 ### Monitoring & Observability
 ```bash
 # Real-time metrics dashboard
-npx claude-flow@alpha monitor --dashboard --port 3000
+npx bot-flow@alpha monitor --dashboard --port 3000
 
 # Health check automation
-npx claude-flow@alpha health-check --interval 30s --alerts
+npx bot-flow@alpha health-check --interval 30s --alerts
 
 # Performance analytics
-npx claude-flow@alpha analytics --export-metrics --format prometheus
+npx bot-flow@alpha analytics --export-metrics --format prometheus
 ```
 
 ---
@@ -461,37 +461,37 @@ ws.on('agent:complete', (data) => {
 ```bash
 # ALWAYS batch operations in single messages
 # ✅ CORRECT: Everything in ONE command
-npx claude-flow@alpha swarm --agents coder,tester,reviewer --parallel "full-stack app"
+npx bot-flow@alpha swarm --agents coder,tester,reviewer --parallel "full-stack app"
 
 # ❌ WRONG: Sequential commands (6x slower)
-# npx claude-flow@alpha agent spawn coder
-# npx claude-flow@alpha agent spawn tester  
-# npx claude-flow@alpha agent spawn reviewer
+# npx bot-flow@alpha agent spawn coder
+# npx bot-flow@alpha agent spawn tester  
+# npx bot-flow@alpha agent spawn reviewer
 ```
 
 ### 🧠 **Memory Optimization**
 ```bash
 # Efficient memory usage patterns
-npx claude-flow@alpha hooks post-edit --memory-key "swarm/shared/patterns" --compress
+npx bot-flow@alpha hooks post-edit --memory-key "swarm/shared/patterns" --compress
 
 # Cross-session persistence
-npx claude-flow@alpha hooks session-restore --optimize-memory
+npx bot-flow@alpha hooks session-restore --optimize-memory
 
 # Memory cleanup automation
-npx claude-flow@alpha memory gc --threshold 0.9
+npx bot-flow@alpha memory gc --threshold 0.9
 ```
 
 ### 🎯 **Agent Selection Strategy**
 ```bash
 # Match agents to task complexity
 # Simple tasks (1-3 agents)
-npx claude-flow@alpha --agents 3 swarm "bug fix in authentication"
+npx bot-flow@alpha --agents 3 swarm "bug fix in authentication"
 
 # Medium tasks (4-7 agents)  
-npx claude-flow@alpha --agents 6 swarm "new feature with tests and docs"
+npx bot-flow@alpha --agents 6 swarm "new feature with tests and docs"
 
 # Complex tasks (8-12 agents)
-npx claude-flow@alpha --agents 10 swarm "full enterprise application"
+npx bot-flow@alpha --agents 10 swarm "full enterprise application"
 ```
 
 ---
@@ -550,7 +550,7 @@ npx claude-flow@alpha --agents 10 swarm "full enterprise application"
 
 ### **Get Started in 30 Seconds**
 ```bash
-npx claude-flow@alpha init --force
+npx bot-flow@alpha init --force
 ```
 
 ---

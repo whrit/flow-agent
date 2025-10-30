@@ -16,7 +16,7 @@ Three new modification hooks have been added to Claude Flow that leverage Claude
 
 **Example:**
 ```bash
-echo '{"tool_input":{"command":"rm test.txt"}}' | npx claude-flow@alpha hooks modify-bash
+echo '{"tool_input":{"command":"rm test.txt"}}' | npx bot-flow@alpha hooks modify-bash
 # Output: {"tool_input":{"command":"rm -i test.txt"}, "modification_notes":"[Safety: Added -i flag]"}
 ```
 
@@ -33,7 +33,7 @@ echo '{"tool_input":{"command":"rm test.txt"}}' | npx claude-flow@alpha hooks mo
 
 **Example:**
 ```bash
-echo '{"tool_input":{"file_path":"test.js"}}' | npx claude-flow@alpha hooks modify-file
+echo '{"tool_input":{"file_path":"test.js"}}' | npx bot-flow@alpha hooks modify-file
 # Output: {"tool_input":{"file_path":"src/test.js"}, "modification_notes":"[Organization: Moved to /src/]"}
 ```
 
@@ -46,7 +46,7 @@ echo '{"tool_input":{"file_path":"test.js"}}' | npx claude-flow@alpha hooks modi
 
 **Example:**
 ```bash
-echo '{"tool_input":{"command":"git commit -m \"fix auth bug\""}}' | npx claude-flow@alpha hooks modify-git-commit
+echo '{"tool_input":{"command":"git commit -m \"fix auth bug\""}}' | npx bot-flow@alpha hooks modify-git-commit
 # Output: Formats as "[fix] fix auth bug" with co-author
 ```
 
@@ -63,14 +63,14 @@ Both hook configuration files have been updated:
         "matcher": "Bash",
         "hooks": [{
           "type": "command",
-          "command": "cat | npx claude-flow@alpha hooks modify-bash"
+          "command": "cat | npx bot-flow@alpha hooks modify-bash"
         }]
       },
       {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [{
           "type": "command",
-          "command": "cat | npx claude-flow@alpha hooks modify-file"
+          "command": "cat | npx bot-flow@alpha hooks modify-file"
         }]
       }
     ]
@@ -115,16 +115,16 @@ The hooks are automatically invoked by Claude Code v2.0.10+ when using the PreTo
 
 To use manually:
 ```bash
-npx claude-flow@alpha hooks modify-bash  # For bash commands
-npx claude-flow@alpha hooks modify-file  # For file operations
-npx claude-flow@alpha hooks modify-git-commit  # For git commits
+npx bot-flow@alpha hooks modify-bash  # For bash commands
+npx bot-flow@alpha hooks modify-file  # For file operations
+npx bot-flow@alpha hooks modify-git-commit  # For git commits
 ```
 
 ## 📖 Help
 
 View all hooks:
 ```bash
-npx claude-flow@alpha hooks --help
+npx bot-flow@alpha hooks --help
 ```
 
 ## 🎉 Benefits

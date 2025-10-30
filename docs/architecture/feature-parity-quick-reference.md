@@ -274,16 +274,16 @@ Phase 5 (Advanced):
 
 ```bash
 # Initialize with Codex provider
-npx claude-flow@alpha start --provider codex --model gpt-5-codex
+npx bot-flow@alpha start --provider codex --model gpt-5-codex
 
 # Spawn agent using Codex
-npx claude-flow@alpha agent spawn researcher --provider codex
+npx bot-flow@alpha agent spawn researcher --provider codex
 
 # Orchestrate task with Codex
-npx claude-flow@alpha task orchestrate "analyze codebase" --provider codex
+npx bot-flow@alpha task orchestrate "analyze codebase" --provider codex
 
 # Mixed-provider swarm
-npx claude-flow@alpha swarm init mesh --max-agents 4
+npx bot-flow@alpha swarm init mesh --max-agents 4
 # Agent 1: Claude Code
 # Agent 2: Codex
 # Agent 3: OpenAI

@@ -229,7 +229,7 @@ function handleCommand(command) {
 #### 3. Hook System Integration
 ```bash
 # Pre-command hook that simulates Ctrl+B for certain commands
-npx claude-flow hooks pre-command \
+npx bot-flow hooks pre-command \
   --auto-background "npm run dev" \
   --auto-background "docker-compose up"
 ```
@@ -762,7 +762,7 @@ When using Claude-Flow's hive-mind system:
 
 ```bash
 # Spawn specialized background monitor agent
-npx claude-flow hive-mind spawn "background-monitor" \
+npx bot-flow hive-mind spawn "background-monitor" \
   --role "Monitor and manage all background processes" \
   --instructions "
     1. Track all background tasks
@@ -773,7 +773,7 @@ npx claude-flow hive-mind spawn "background-monitor" \
   "
 
 # Main development agent with background awareness
-npx claude-flow hive-mind spawn "full-stack-dev" \
+npx bot-flow hive-mind spawn "full-stack-dev" \
   --role "Develop features while services run in background" \
   --instructions "
     Start all development servers in background:
@@ -901,14 +901,14 @@ Default → Foreground
 
 #### Pre-Command Hook
 ```bash
-npx claude-flow hooks pre-command \
+npx bot-flow hooks pre-command \
   --analyze-for-background \
   --auto-background-threshold 30
 ```
 
 #### Background Monitor Hook
 ```bash
-npx claude-flow hooks background-monitor \
+npx bot-flow hooks background-monitor \
   --check-interval 10 \
   --alert-on-failure
 ```
@@ -1089,7 +1089,7 @@ For complete details, see [Session Persistence Guide](./session-persistence.md).
 Coordinate multiple background tasks:
 ```bash
 # Start development environment
-npx claude-flow orchestrate dev-env \
+npx bot-flow orchestrate dev-env \
   --background "npm run dev" \
   --background "npm run api" \
   --background "docker-compose up db" \
@@ -1099,7 +1099,7 @@ npx claude-flow orchestrate dev-env \
 ### Intelligent Monitoring
 ```bash
 # Smart monitoring with alerts
-npx claude-flow monitor \
+npx bot-flow monitor \
   --background-tasks \
   --alert-on "error|failed|exception" \
   --restart-on-failure

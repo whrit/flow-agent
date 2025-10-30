@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Agent-Flow dispatcher
- * Delegates to the shared runtime used by the legacy claude-flow binary.
+ * Compatibility dispatcher for the short-lived Agent-Flow name.
+ * Delegates to the current Bot-Flow runtime so old scripts keep working.
  */
 
-import './claude-flow.js';
+import './bot-flow.js';

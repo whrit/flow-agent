@@ -11,7 +11,7 @@ codex
 
 ### 2. Run Hive Mind with Codex
 ```bash
-npx claude-flow hive-mind start "Your objective here" \
+npx bot-flow hive-mind start "Your objective here" \
   --codex \
   --workers coder,tester,reviewer \
   --full-auto
@@ -22,7 +22,7 @@ npx claude-flow hive-mind start "Your objective here" \
 ### Development Mode (Recommended)
 ```bash
 # Auto-execute with workspace write access
-npx claude-flow hive-mind start "Build feature X" \
+npx bot-flow hive-mind start "Build feature X" \
   --codex \
   --workers coder,tester \
   --full-auto
@@ -31,7 +31,7 @@ npx claude-flow hive-mind start "Build feature X" \
 ### Maximum Automation (CI/CD)
 ```bash
 # No prompts, full access (use only in sandboxed environments)
-npx claude-flow hive-mind start "Deploy to staging" \
+npx bot-flow hive-mind start "Deploy to staging" \
   --codex \
   --workers deployer,tester \
   --dangerously-bypass-approvals-and-sandbox
@@ -40,7 +40,7 @@ npx claude-flow hive-mind start "Deploy to staging" \
 ### Safe Mode (Manual Approval)
 ```bash
 # Codex asks before each action
-npx claude-flow hive-mind start "Refactor critical code" \
+npx bot-flow hive-mind start "Refactor critical code" \
   --codex \
   --workers coder,reviewer
 ```
@@ -93,7 +93,7 @@ codex
 ### "Permission denied" on file operations
 ```bash
 # Add --full-auto flag
-npx claude-flow hive-mind start "task" --codex --full-auto
+npx bot-flow hive-mind start "task" --codex --full-auto
 ```
 
 ### "MCP servers not accessible"
@@ -115,19 +115,19 @@ url = "server-url"
 
 ### 🟢 Safe (Default)
 ```bash
-npx claude-flow hive-mind start "task" --codex
+npx bot-flow hive-mind start "task" --codex
 # Manual approval for each action
 ```
 
 ### 🟡 Balanced (Recommended)
 ```bash
-npx claude-flow hive-mind start "task" --codex --full-auto
+npx bot-flow hive-mind start "task" --codex --full-auto
 # Auto-execute, ask on failure
 ```
 
 ### 🔴 Dangerous (CI/CD Only)
 ```bash
-npx claude-flow hive-mind start "task" --codex \
+npx bot-flow hive-mind start "task" --codex \
   --dangerously-bypass-approvals-and-sandbox
 # No restrictions - use only in isolated environments
 ```
@@ -160,13 +160,13 @@ cat ~/.codex/config.toml
 
 ### View Active Sessions
 ```bash
-npx claude-flow hive-mind status
-npx claude-flow hive-mind list
+npx bot-flow hive-mind status
+npx bot-flow hive-mind list
 ```
 
 ### Resume Session
 ```bash
-npx claude-flow hive-mind resume <session-id>
+npx bot-flow hive-mind resume <session-id>
 ```
 
 ### View Session Logs
@@ -178,7 +178,7 @@ cat .hive-mind/sessions/hive-mind-codex-prompt-*.txt
 
 ### Example 1: Full-Stack Development
 ```bash
-npx claude-flow hive-mind start \
+npx bot-flow hive-mind start \
   "Build a REST API with Express and React frontend" \
   --codex \
   --workers backend-dev,coder,tester \
@@ -187,7 +187,7 @@ npx claude-flow hive-mind start \
 
 ### Example 2: Code Review
 ```bash
-npx claude-flow hive-mind start \
+npx bot-flow hive-mind start \
   "Review PR #123 for security and performance" \
   --codex \
   --workers reviewer,perf-analyzer,security-analyst
@@ -195,7 +195,7 @@ npx claude-flow hive-mind start \
 
 ### Example 3: Refactoring
 ```bash
-npx claude-flow hive-mind start \
+npx bot-flow hive-mind start \
   "Refactor auth module to use JWT" \
   --codex \
   --workers coder,tester,reviewer \
@@ -204,7 +204,7 @@ npx claude-flow hive-mind start \
 
 ### Example 4: Testing
 ```bash
-npx claude-flow hive-mind start \
+npx bot-flow hive-mind start \
   "Add comprehensive test coverage to user service" \
   --codex \
   --workers tester,coder \
@@ -256,7 +256,7 @@ which codex
 cat ~/.codex/config.toml | grep "$(pwd)"
 
 # 3. Test run (dry-run)
-npx claude-flow hive-mind start "test" --codex --dry-run
+npx bot-flow hive-mind start "test" --codex --dry-run
 
 # All should succeed ✅
 ```

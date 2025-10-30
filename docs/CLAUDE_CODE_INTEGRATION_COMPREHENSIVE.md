@@ -403,7 +403,7 @@ claude-flow automation mle-star \
 
 #### Pre-Task Hook
 ```bash
-npx claude-flow hooks pre-task --description "Build API"
+npx bot-flow hooks pre-task --description "Build API"
 ```
 
 **Purpose**: Execute before Claude Code task
@@ -414,7 +414,7 @@ npx claude-flow hooks pre-task --description "Build API"
 
 #### Post-Task Hook
 ```bash
-npx claude-flow hooks post-task --task-id "task-123"
+npx bot-flow hooks post-task --task-id "task-123"
 ```
 
 **Purpose**: Execute after Claude Code task
@@ -425,8 +425,8 @@ npx claude-flow hooks post-task --task-id "task-123"
 
 #### Session Hooks
 ```bash
-npx claude-flow hooks session-restore --session-id "swarm-123"
-npx claude-flow hooks session-end --export-metrics true
+npx bot-flow hooks session-restore --session-id "swarm-123"
+npx bot-flow hooks session-end --export-metrics true
 ```
 
 **Purpose**: Manage Claude Code sessions

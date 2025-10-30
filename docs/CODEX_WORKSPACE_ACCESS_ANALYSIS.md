@@ -267,7 +267,7 @@ Codex has MCP support via config:
 
 ```javascript
 // Add MCP configuration
-codexArgs.push('-c', 'mcp_servers.claude-flow.command="npx claude-flow@alpha mcp start"');
+codexArgs.push('-c', 'mcp_servers.claude-flow.command="npx bot-flow@alpha mcp start"');
 ```
 
 Or via config.toml:

@@ -2,13 +2,15 @@
   "name": "bot-flow",
   "version": "1.0.0-alpha.0",
   "description": "Bot-Flow orchestration toolkit evolved from Claude-Flow",
-  "mcpName": "io.github.agent-flow/bot-flow",
+  "mcpName": "io.github.bot-flow/bot-flow",
   "main": "cli.mjs",
   "bin": {
-    "agent-flow": "bin/bot-flow.js"
+    "bot-flow": "bin/bot-flow.js",
+    "agent-flow": "bin/agent-flow.js",
+    "claude-flow": "bin/claude-flow.js"
   },
   "scripts": {
-    "preinstall": "node -e \"if(process.platform === 'win32' && process.env.npm_config_user_agent && process.env.npm_config_user_agent.includes('npm')) { console.warn('⚠️  Warning: On Windows, it is recommended to use pnpm to install this package to avoid potential native dependency build issues.'); console.warn('💡 Try: pnpm install or pnpx agent-flow@alpha'); }\"",
+    "preinstall": "node -e \"if(process.platform === 'win32' && process.env.npm_config_user_agent && process.env.npm_config_user_agent.includes('npm')) { console.warn('⚠️  Warning: On Windows, it is recommended to use pnpm to install this package to avoid potential native dependency build issues.'); console.warn('💡 Try: pnpm install or pnpx bot-flow@alpha'); }\"",
     "dev": "tsx src/cli/main.ts",
     "init:neural": "node scripts/init-neural.js",
     "init:goal": "node scripts/init-goal.js",
@@ -18,8 +20,8 @@
     "build:esm": "swc src -d dist --config-file .swcrc",
     "build:cjs": "swc src -d dist-cjs --config-file .swcrc",
     "build:ts": "npm run build:esm && npm run build:cjs",
-    "build:binary": "pkg dist/src/cli/main.js --targets node22-linux-x64,node22-macos-x64,node22-win-x64 --output bin/agent-flow",
-    "build:simple": "npm run build:ts && pkg dist/cli/simple-cli.js --output bin/agent-flow-simple",
+    "build:binary": "pkg dist/src/cli/main.js --targets node22-linux-x64,node22-macos-x64,node22-win-x64 --output bin/bot-flow",
+    "build:simple": "npm run build:ts && pkg dist/cli/simple-cli.js --output bin/bot-flow-simple",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "dev:build": "tsc --watch",
@@ -85,18 +87,19 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/whrit/agent-flow.git"
+    "url": "git+https://github.com/whrit/bot-flow.git"
   },
   "bugs": {
-    "url": "https://github.com/whrit/agent-flow/issues"
+    "url": "https://github.com/whrit/bot-flow/issues"
   },
-  "homepage": "https://github.com/whrit/agent-flow#readme",
+  "homepage": "https://github.com/whrit/bot-flow#readme",
   "engines": {
     "node": ">=22.0.0",
     "pnpm": ">=10.18.0"
   },
   "files": [
     "cli.js",
+    "bin/bot-flow.js",
     "bin/agent-flow.js",
     "bin/claude-flow.js",
     "bin/claude-flow",

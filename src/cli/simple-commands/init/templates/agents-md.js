@@ -1,11 +1,11 @@
 /**
- * Templates for Agent-Flow documentation artefacts.
+ * Templates for Bot-Flow documentation artefacts.
  */
 
 export function createCodexAgentsAppendix() {
   return `## Codex Provider Integration Notes
 
-Agent-Flow can launch Codex-based coordination flows in the same way Claude-Flow seeded \`CLAUDE.md\`. When you initialise a workspace with Codex support, keep the following guidance in mind:
+Bot-Flow can launch Codex-based coordination flows in the same way Claude-Flow seeded \`CLAUDE.md\`. When you initialise a workspace with Codex support, keep the following guidance in mind:
 
 - **Provider Flags**: Use \`--codex\` (or set \`provider: codex\` in workflow configs) to route hive-mind, swarm, and automation commands through the Codex runtime.
 - **Thread Context**: Codex threads inherit working directory, sandbox policy, and approval mode. Review the "Thread Options" section of your workflow before handing over to Codex-driven agents.

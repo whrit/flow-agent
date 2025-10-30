@@ -1,7 +1,7 @@
 # Claude Flow Remote Setup Guide
 
 ## Problem
-When using `npx claude-flow@alpha` remotely, you may encounter:
+When using `npx bot-flow@alpha` remotely, you may encounter:
 - `ENOTEMPTY` npm cache errors
 - Version mismatch issues  
 - **Missing `./claude-flow@alpha` wrapper after init** ⭐ **FIXED!**
@@ -50,7 +50,7 @@ claude-flow hooks notify --message "Setup complete" --level "success"
 claude-flow status
 
 # ⭐ NEW: Test wrapper creation
-npx claude-flow@alpha init --force
+npx bot-flow@alpha init --force
 ls -la ./claude-flow*
 # Should show: ./claude-flow@alpha (executable)
 ./claude-flow@alpha --version

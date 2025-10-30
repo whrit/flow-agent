@@ -111,7 +111,7 @@
 - Basic completion and streaming
 - Error handling with retry
 - Provider registration
-- **Milestone:** `npx claude-flow start --provider codex` works
+- **Milestone:** `npx bot-flow start --provider codex` works
 
 **Phase 2: Event Translation (Week 3)**
 - Event translator implementation

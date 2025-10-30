@@ -77,10 +77,10 @@ node test-codex.js
 
 ```bash
 # Initialize a swarm with Codex provider
-npx claude-flow@alpha swarm init --provider codex --model gpt-4o-mini
+npx bot-flow@alpha swarm init --provider codex --model gpt-4o-mini
 
 # Run a task
-npx claude-flow@alpha task orchestrate "Analyze my codebase" --provider codex
+npx bot-flow@alpha task orchestrate "Analyze my codebase" --provider codex
 ```
 
 ### Option 3: Programmatic Usage in Your App
