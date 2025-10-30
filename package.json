@@ -2,7 +2,7 @@
   "name": "agentflow",
   "version": "1.0.0-alpha.0",
   "description": "Agent-Flow orchestration toolkit evolved from Claude-Flow",
-  "mcpName": "io.github.agent-flow/agent-flow",
+  "mcpName": "io.github.agent-flow/agentflow",
   "main": "cli.mjs",
   "bin": {
     "agent-flow": "bin/agent-flow.js"
