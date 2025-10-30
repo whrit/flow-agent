@@ -2,7 +2,21 @@
 
 ## 🎯 Overview
 
-Now that Codex is integrated, you can use it exactly like Claude Code with the `--provider codex` flag. Works from anywhere!
+Codex is now fully integrated with Claude Flow! You can use it in two ways:
+
+### ⚡ **NEW: Direct Spawning with `--codex` Flag (Recommended)**
+```bash
+npx claude-flow@alpha hive-mind spawn "Build API" --codex
+```
+This ACTUALLY launches Codex CLI (just like `--claude` launches Claude Code) for real execution!
+
+### 📝 **Provider Configuration with `--provider codex`**
+```bash
+npx claude-flow@alpha task create general "Analyze code" --provider codex
+```
+This sets Codex as the LLM provider for programmatic usage via CodexProvider.
+
+**Both work, but `--codex` flag is recommended for interactive hive-mind work!**
 
 ## 📦 Installation & Setup
 
@@ -63,6 +77,32 @@ claude-flow task create general "Your task" --provider codex
 
 ## 💻 Command Examples
 
+### 🚀 NEW: Direct Codex Spawning with --codex Flag
+
+```bash
+# Spawn Codex directly with hive-mind coordination
+npx claude-flow@alpha hive-mind spawn "Build REST API" --codex
+
+# This ACTUALLY launches Codex CLI (just like --claude launches Claude Code)
+# The Codex instance will:
+# - Receive the hive-mind coordination prompt
+# - Execute the objective with full swarm intelligence
+# - Use MCP tools for collective coordination
+# - Work exactly like Claude Code but with Codex model
+
+# Quick swarm with Codex
+npx . hive-mind spawn "Research AI patterns" --codex
+
+# With custom configuration
+npx . hive-mind spawn "Optimize database" --codex --queen-type strategic --max-workers 6
+```
+
+**How it works:**
+1. Generates hive-mind coordination prompt
+2. Checks if `codex` command is available (`/opt/homebrew/bin/codex`)
+3. Spawns actual Codex process: `codex "Your prompt here"`
+4. Codex receives full instructions and executes with swarm coordination
+
 ### Task Management with Codex
 
 ```bash
@@ -101,10 +141,13 @@ npx claude-flow@alpha agent spawn researcher \
   --provider codex
 ```
 
-### Hive Mind (Multi-Agent Swarms)
+### Hive Mind (Multi-Agent Swarms) ⚡ DIRECT SPAWNING
 
 ```bash
-# Build an entire system with Codex workers
+# 🎯 RECOMMENDED: Direct Codex spawning (launches actual Codex CLI)
+npx claude-flow@alpha hive-mind spawn "Build REST API with authentication" --codex
+
+# Alternative: Use provider flag (sets config but doesn't spawn)
 npx claude-flow@alpha hive-mind spawn "Build REST API with authentication" \
   --provider codex
 
@@ -305,9 +348,31 @@ Create `claude-flow.config.json`:
 
 ## 🎯 Use Cases by Scenario
 
-### Scenario 1: Code Refactoring
+### Scenario 1: Full-Stack Development with Direct Codex Spawning
 
 ```bash
+# BEST APPROACH: Spawn Codex directly with hive-mind
+npx claude-flow@alpha hive-mind spawn \
+  "Build full-stack e-commerce platform with React, Node.js, PostgreSQL" \
+  --codex \
+  --max-workers 8
+
+# Codex will:
+# - Launch with full hive-mind coordination
+# - Spawn specialized worker agents via Claude Code's Task tool
+# - Use MCP tools for coordination
+# - Build the entire system
+```
+
+### Scenario 2: Code Refactoring
+
+```bash
+# Direct spawning approach (recommended)
+npx claude-flow@alpha hive-mind spawn \
+  "Refactor legacy authentication system to use JWT" \
+  --codex
+
+# Or with task creation
 npx claude-flow@alpha task create code \
   "Refactor legacy authentication system to use JWT" \
   --provider codex \

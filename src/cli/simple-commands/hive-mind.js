@@ -78,6 +78,9 @@ ${chalk.bold('EXAMPLES:')}
   ${chalk.gray('# Spawn with Claude Code coordination')}
   claude-flow hive-mind spawn "Build REST API" --claude
 
+  ${chalk.gray('# Spawn with Codex coordination')}
+  claude-flow hive-mind spawn "Build REST API" --codex
+
   ${chalk.gray('# Auto-spawn coordinated Claude Code instances')}
   claude-flow hive-mind spawn "Research AI trends" --auto-spawn --verbose
 
@@ -106,10 +109,11 @@ ${chalk.bold('OPTIONS:')}
   --encryption           Enable encrypted communication
   --monitor              Real-time monitoring dashboard
   --verbose              Detailed logging
-  --claude               Generate Claude Code spawn commands with coordination
+  --claude               Spawn Claude Code with hive-mind coordination
+  --codex                Spawn Codex with hive-mind coordination
   --spawn                Alias for --claude
-  --auto-spawn           Automatically spawn Claude Code instances
-  --execute              Execute Claude Code spawn commands immediately
+  --auto-spawn           Automatically spawn instances
+  --execute              Execute spawn commands immediately
 
 ${chalk.bold('For more information:')}
 ${chalk.blue('https://github.com/ruvnet/claude-flow/tree/main/docs/hive-mind')}
@@ -904,17 +908,21 @@ async function spawnSwarm(args, flags) {
     process.on('SIGINT', sigintHandler);
     process.on('SIGTERM', sigintHandler);
 
-    // Offer to spawn Claude Code instances with coordination instructions
+    // Offer to spawn Claude Code or Codex instances with coordination instructions
     // Spawn Claude if --claude or --spawn flag is set
     if (flags.claude || flags.spawn) {
       await spawnClaudeCodeInstances(swarmId, hiveMind.config.name, objective, workers, flags);
+    } else if (flags.codex) {
+      // Spawn Codex if --codex flag is set
+      await spawnCodexInstances(swarmId, hiveMind.config.name, objective, workers, flags);
     } else {
       console.log(
         '\n' +
           chalk.blue('💡 Pro Tip:') +
-          ' Add --claude to spawn coordinated Claude Code instances',
+          ' Add --claude or --codex to spawn coordinated instances',
       );
       console.log(chalk.gray('   claude-flow hive-mind spawn "objective" --claude'));
+      console.log(chalk.gray('   claude-flow hive-mind spawn "objective" --codex'));
     }
 
     // Return swarm info for wizard use
@@ -2226,6 +2234,185 @@ async function spawnClaudeCodeInstances(swarmId, swarmName, objective, workers, 
     console.log('• Share memories: mcp__ruv-swarm__memory_usage');
   } catch (error) {
     spinner.fail('Failed to prepare Claude Code coordination');
+    console.error(chalk.red('Error:'), error.message);
+  }
+}
+
+/**
+ * Spawn Codex instances with hive-mind coordination
+ */
+async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags) {
+  console.log('\n' + chalk.bold('🚀 Launching Codex with Hive Mind Coordination'));
+  console.log(chalk.gray('─'.repeat(60)));
+
+  const spinner = ora('Preparing Hive Mind coordination prompt...').start();
+
+  try {
+    // Generate comprehensive Hive Mind prompt
+    const workerGroups = groupWorkersByType(workers);
+    let hiveMindPrompt = generateHiveMindPrompt(
+      swarmId,
+      swarmName,
+      objective,
+      workers,
+      workerGroups,
+      flags,
+    );
+
+    spinner.succeed('Hive Mind coordination prompt ready!');
+
+    // Display coordination summary
+    console.log('\n' + chalk.bold('🧠 Hive Mind Configuration'));
+    console.log(chalk.gray('─'.repeat(60)));
+    console.log(chalk.cyan('Swarm ID:'), swarmId);
+    console.log(chalk.cyan('Objective:'), objective);
+    console.log(chalk.cyan('Queen Type:'), flags.queenType || 'strategic');
+    console.log(chalk.cyan('Worker Count:'), workers.length);
+    console.log(chalk.cyan('Worker Types:'), Object.keys(workerGroups).join(', '));
+    console.log(chalk.cyan('Consensus Algorithm:'), flags.consensus || 'majority');
+    console.log(chalk.cyan('MCP Tools:'), 'Full Claude-Flow integration enabled');
+    console.log(chalk.cyan('Provider:'), 'Codex (gpt-5-codex)');
+
+    try {
+      // Ensure sessions directory exists
+      const sessionsDir = path.join('.hive-mind', 'sessions');
+      await mkdirAsync(sessionsDir, { recursive: true });
+
+      const promptFile = path.join(sessionsDir, `hive-mind-codex-prompt-${swarmId}.txt`);
+      await writeFile(promptFile, hiveMindPrompt, 'utf8');
+      console.log(chalk.green(`\n✓ Hive Mind prompt saved to: ${promptFile}`));
+
+      // Check if codex command exists
+      const { spawn: childSpawn, execSync } = await import('child_process');
+      let codexAvailable = false;
+
+      try {
+        execSync('which codex', { stdio: 'ignore' });
+        codexAvailable = true;
+      } catch {
+        console.log(chalk.yellow('\n⚠️  Codex CLI not found in PATH'));
+        console.log(chalk.gray('Install it with: brew install codex'));
+        console.log(chalk.gray('Or follow: https://docs.openai.com/codex'));
+        console.log(chalk.gray('\nFalling back to displaying instructions...'));
+      }
+
+      if (codexAvailable && !flags.dryRun) {
+        // Build arguments for Codex
+        const codexArgs = [hiveMindPrompt];
+
+        // Spawn codex with the prompt
+        const codexProcess = childSpawn('codex', codexArgs, {
+          stdio: 'inherit',
+          shell: false,
+        });
+
+        // Track child process PID in session
+        const sessionManager = new HiveMindSessionManager();
+        const sessionId = await getActiveSessionId(swarmId);
+        if (sessionId && codexProcess.pid) {
+          sessionManager.addChildPid(sessionId, codexProcess.pid);
+        }
+
+        // Set up SIGINT handler for automatic session pausing
+        let isExiting = false;
+        const sigintHandler = async () => {
+          if (isExiting) return;
+          isExiting = true;
+
+          console.log('\n\n' + chalk.yellow('⏸️  Pausing session and terminating Codex...'));
+
+          try {
+            // Terminate Codex process
+            if (codexProcess && !codexProcess.killed) {
+              codexProcess.kill('SIGTERM');
+            }
+
+            // Save checkpoint and pause session
+            if (sessionId) {
+              const checkpointData = {
+                timestamp: new Date().toISOString(),
+                swarmId,
+                objective,
+                status: 'paused_by_user',
+                reason: 'User pressed Ctrl+C during Codex execution',
+                codexPid: codexProcess.pid,
+              };
+
+              await sessionManager.saveCheckpoint(sessionId, 'auto-pause-codex', checkpointData);
+              await sessionManager.pauseSession(sessionId);
+
+              console.log(chalk.green('✓') + ' Session paused successfully');
+              console.log(chalk.cyan('\nTo resume this session, run:'));
+              console.log(chalk.bold(`  claude-flow hive-mind resume ${sessionId}`));
+            }
+
+            sessionManager.close();
+            process.exit(0);
+          } catch (error) {
+            console.error(chalk.red('Error pausing session:'), error.message);
+            sessionManager.close();
+            process.exit(1);
+          }
+        };
+
+        // Register SIGINT handler
+        process.on('SIGINT', sigintHandler);
+        process.on('SIGTERM', sigintHandler);
+
+        // Handle process exit
+        codexProcess.on('exit', (code) => {
+          // Remove child PID from session
+          if (sessionId && codexProcess.pid) {
+            sessionManager.removeChildPid(sessionId, codexProcess.pid);
+            sessionManager.close();
+          }
+
+          if (code === 0) {
+            console.log(chalk.green('\n✓ Codex completed successfully'));
+          } else if (code !== null) {
+            console.log(chalk.red(`\n✗ Codex exited with code ${code}`));
+          }
+        });
+
+        console.log(chalk.green('\n✓ Codex launched with Hive Mind coordination'));
+        console.log(chalk.blue('  The Queen coordinator will orchestrate all worker agents'));
+        console.log(chalk.blue('  Use MCP tools for collective intelligence and task distribution'));
+        console.log(chalk.gray(`  Prompt file saved at: ${promptFile}`));
+      } else if (flags.dryRun) {
+        console.log(chalk.blue('\nDry run - would execute Codex with prompt:'));
+        console.log(chalk.gray('Prompt length:'), hiveMindPrompt.length, 'characters');
+        console.log(chalk.gray('\nFirst 500 characters of prompt:'));
+        console.log(chalk.yellow(hiveMindPrompt.substring(0, 500) + '...'));
+        console.log(chalk.gray(`\nFull prompt saved to: ${promptFile}`));
+      } else {
+        // Codex not available - show instructions
+        console.log(chalk.yellow('\n📋 Manual Execution Instructions:'));
+        console.log(chalk.gray('─'.repeat(50)));
+        console.log(chalk.gray('1. Install Codex CLI:'));
+        console.log(chalk.green('   brew install codex'));
+        console.log(chalk.gray('\n2. Run with the saved prompt:'));
+        console.log(chalk.green(`   codex "${hiveMindPrompt}"`));
+        console.log(chalk.gray('\n3. Or load from file:'));
+        console.log(chalk.green(`   codex "$(cat ${promptFile})"`));
+      }
+    } catch (error) {
+      console.error(chalk.red('\nFailed to launch Codex:'), error.message);
+
+      // Save prompt as fallback
+      const promptFile = `hive-mind-codex-prompt-${swarmId}-fallback.txt`;
+      await writeFile(promptFile, hiveMindPrompt, 'utf8');
+      console.log(chalk.green(`\n✓ Prompt saved to: ${promptFile}`));
+      console.log(chalk.yellow('\nYou can run Codex manually with the saved prompt'));
+    }
+
+    console.log('\n' + chalk.bold('💡 Pro Tips:'));
+    console.log(chalk.gray('─'.repeat(30)));
+    console.log('• Use --auto-spawn to launch instances automatically');
+    console.log('• Add --verbose for detailed coordination context');
+    console.log('• Monitor with: claude-flow hive-mind status');
+    console.log('• Share memories: mcp__ruv-swarm__memory_usage');
+  } catch (error) {
+    spinner.fail('Failed to prepare Codex coordination');
     console.error(chalk.red('Error:'), error.message);
   }
 }
