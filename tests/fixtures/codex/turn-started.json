@@ -1,11 +1,13 @@
 {
-  "type": "turn:started",
+  "event": "turn.started",
   "data": {
-    "turn_id": "turn-test-001",
-    "thread_id": "thread-test-12345",
-    "user_message": "Create a simple hello world function",
-    "correlation_id": "corr-turn-001",
-    "timestamp": 1735516801000
-  },
-  "timestamp": 1735516801000
+    "turn_id": "turn_123",
+    "thread_id": "thread_abc123",
+    "user_prompt": "Analyze the codebase and provide recommendations",
+    "timestamp": "2025-01-15T10:31:00Z",
+    "context": {
+      "previous_turns": 2,
+      "task_type": "research"
+    }
+  }
 }

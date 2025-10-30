@@ -3,7 +3,7 @@
  * Integrates @openai/codex-sdk for advanced reasoning models (o1-preview, o1-mini, gpt-4o)
  */
 
-import { Codex } from '@openai/codex-sdk';
+import { Codex, Thread, Turn, Usage, ThreadEvent } from '@openai/codex-sdk';
 import { BaseProvider } from './base-provider.js';
 import {
   LLMProvider,
@@ -19,33 +19,8 @@ import {
   AuthenticationError,
 } from './types.js';
 
-interface CodexThreadResponse {
-  id: string;
-  content: string;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-  finish_reason: 'stop' | 'length' | 'content_filter';
-}
-
-interface CodexStreamEvent {
-  type: 'thinking' | 'content_delta' | 'done' | 'error';
-  delta?: {
-    thinking?: string;
-    content?: string;
-  };
-  usage?: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-  error?: {
-    message: string;
-    code?: string;
-  };
-}
+// Note: Real Codex SDK types are imported from '@openai/codex-sdk'
+// The SDK uses: Thread, Turn, ThreadEvent, Usage, etc.
 
 export class CodexProvider extends BaseProvider {
   readonly name: LLMProvider = 'codex';
@@ -112,23 +87,29 @@ export class CodexProvider extends BaseProvider {
   private threadId?: string; // Cache thread ID for resumption
 
   protected async doInitialize(): Promise<void> {
-    if (!this.config.apiKey) {
-      throw new AuthenticationError('Codex API key is required', 'codex');
-    }
-
-    this.headers = {
-      'Authorization': `Bearer ${this.config.apiKey}`,
-      'Content-Type': 'application/json',
-    };
+    // Note: Codex CLI no longer requires an API key
+    // Authentication is handled by the Codex binary itself
 
     // Initialize Codex SDK
     try {
-      this.codexClient = new Codex({
-        apiKey: this.config.apiKey,
-        baseURL: this.config.apiUrl,
-      });
+      const codexOptions: any = {};
 
-      this.logger.info('Codex SDK initialized successfully');
+      // Optional: Custom base URL (for OpenAI API compatibility)
+      if (this.config.apiUrl) {
+        codexOptions.baseUrl = this.config.apiUrl;
+      }
+
+      // Optional: Custom codex binary path
+      if (this.config.providerOptions?.codexPathOverride) {
+        codexOptions.codexPathOverride = this.config.providerOptions.codexPathOverride;
+      }
+
+      this.codexClient = new Codex(codexOptions);
+
+      this.logger.info('Codex SDK initialized successfully', {
+        hasCustomBaseUrl: !!this.config.apiUrl,
+        hasCustomBinaryPath: !!this.config.providerOptions?.codexPathOverride,
+      });
     } catch (error) {
       throw new LLMProviderError(
         'Failed to initialize Codex SDK',
@@ -155,44 +136,45 @@ export class CodexProvider extends BaseProvider {
     const model = request.model || this.config.model;
 
     try {
-      let response: CodexThreadResponse;
+      // Get or create thread
+      const thread = this.threadId
+        ? this.codexClient.resumeThread(this.threadId, {
+            model: this.mapToCodexModel(model),
+          })
+        : this.codexClient.startThread({
+            model: this.mapToCodexModel(model),
+          });
 
-      // Use thread resumption if we have a cached thread ID
-      if (this.threadId) {
-        response = await this.codexClient.thread.resume({
-          threadId: this.threadId,
-          messages: this.formatMessages(request),
-          model: this.mapToCodexModel(model),
-          temperature: request.temperature ?? this.config.temperature,
-          maxTokens: request.maxTokens ?? this.config.maxTokens,
-        });
-      } else {
-        // Create new thread
-        response = await this.codexClient.thread.run({
-          messages: this.formatMessages(request),
-          model: this.mapToCodexModel(model),
-          temperature: request.temperature ?? this.config.temperature,
-          maxTokens: request.maxTokens ?? this.config.maxTokens,
-        });
+      // Build input from messages
+      const prompt = this.formatMessagesToPrompt(request);
 
-        // Cache thread ID for future requests
-        this.threadId = this.codexClient.thread.id || response.id;
+      // Run turn (non-streaming)
+      const turn = await thread.run(prompt);
+
+      // Cache thread ID
+      if (thread.id) {
+        this.threadId = thread.id;
       }
 
-      // Calculate cost
+      // Extract final response
+      const agentMessage = turn.items.find(item => item.type === 'agent_message');
+      const content = agentMessage?.type === 'agent_message' ? agentMessage.text : turn.finalResponse;
+
+      // Calculate cost from usage
+      const usage = turn.usage || { input_tokens: 0, cached_input_tokens: 0, output_tokens: 0 };
       const pricing = this.capabilities.pricing![model];
-      const promptCost = (response.usage.prompt_tokens / 1000) * pricing.promptCostPer1k;
-      const completionCost = (response.usage.completion_tokens / 1000) * pricing.completionCostPer1k;
+      const promptCost = (usage.input_tokens / 1000) * pricing.promptCostPer1k;
+      const completionCost = (usage.output_tokens / 1000) * pricing.completionCostPer1k;
 
       return {
-        id: response.id,
+        id: `codex-${Date.now()}`,
         model,
         provider: 'codex',
-        content: response.content,
+        content,
         usage: {
-          promptTokens: response.usage.prompt_tokens,
-          completionTokens: response.usage.completion_tokens,
-          totalTokens: response.usage.total_tokens,
+          promptTokens: usage.input_tokens,
+          completionTokens: usage.output_tokens,
+          totalTokens: usage.input_tokens + usage.output_tokens,
         },
         cost: {
           promptCost,
@@ -200,7 +182,7 @@ export class CodexProvider extends BaseProvider {
           totalCost: promptCost + completionCost,
           currency: 'USD',
         },
-        finishReason: response.finish_reason,
+        finishReason: 'stop',
       };
     } catch (error) {
       throw this.handleCodexError(error);
@@ -221,29 +203,93 @@ export class CodexProvider extends BaseProvider {
     const model = request.model || this.config.model;
 
     try {
-      const stream = this.codexClient.thread.runStreamed({
-        messages: this.formatMessages(request),
-        model: this.mapToCodexModel(model),
-        temperature: request.temperature ?? this.config.temperature,
-        maxTokens: request.maxTokens ?? this.config.maxTokens,
-      });
+      // Get or create thread
+      const thread = this.threadId
+        ? this.codexClient.resumeThread(this.threadId, {
+            model: this.mapToCodexModel(model),
+          })
+        : this.codexClient.startThread({
+            model: this.mapToCodexModel(model),
+          });
 
-      let totalUsage: CodexStreamEvent['usage'] | undefined;
+      // Build input from messages
+      const prompt = this.formatMessagesToPrompt(request);
 
-      for await (const event of stream) {
-        const translatedEvent = this.translateCodexEvent(event as CodexStreamEvent, model);
+      // Run streamed turn
+      const { events } = await thread.runStreamed(prompt);
 
-        if (translatedEvent) {
-          if (translatedEvent.usage) {
-            totalUsage = translatedEvent.usage;
+      let accumulatedContent = '';
+
+      for await (const event of events) {
+        if (event.type === 'thread.started') {
+          // Cache thread ID
+          this.threadId = event.thread_id;
+        } else if (event.type === 'item.started' || event.type === 'item.updated') {
+          // Handle agent message items
+          if (event.item.type === 'agent_message') {
+            const newContent = event.item.text;
+            if (newContent !== accumulatedContent) {
+              const delta = newContent.substring(accumulatedContent.length);
+              accumulatedContent = newContent;
+              yield {
+                type: 'content',
+                delta: { content: delta },
+              };
+            }
+          } else if (event.item.type === 'reasoning') {
+            // Log reasoning but don't yield it
+            this.logger.debug('Codex reasoning:', event.item.text);
           }
-          yield translatedEvent;
+        } else if (event.type === 'turn.completed') {
+          const usage = event.usage;
+          const pricing = this.capabilities.pricing![model];
+          const promptCost = (usage.input_tokens / 1000) * pricing.promptCostPer1k;
+          const completionCost = (usage.output_tokens / 1000) * pricing.completionCostPer1k;
+
+          yield {
+            type: 'done',
+            usage: {
+              promptTokens: usage.input_tokens,
+              completionTokens: usage.output_tokens,
+              totalTokens: usage.input_tokens + usage.output_tokens,
+            },
+            cost: {
+              promptCost,
+              completionCost,
+              totalCost: promptCost + completionCost,
+              currency: 'USD',
+            },
+          };
+        } else if (event.type === 'turn.failed') {
+          const error = new LLMProviderError(
+            event.error.message,
+            'TURN_FAILED',
+            'codex',
+            undefined,
+            true
+          );
+          yield {
+            type: 'error',
+            error,
+          };
+        } else if (event.type === 'error') {
+          const error = new LLMProviderError(
+            event.message,
+            'STREAM_ERROR',
+            'codex',
+            undefined,
+            true
+          );
+          yield {
+            type: 'error',
+            error,
+          };
         }
       }
 
       // Cache thread ID if available
-      if (this.codexClient.thread.id) {
-        this.threadId = this.codexClient.thread.id;
+      if (thread.id) {
+        this.threadId = thread.id;
       }
     } catch (error) {
       throw this.handleCodexError(error);
@@ -287,17 +333,18 @@ export class CodexProvider extends BaseProvider {
 
     try {
       // Simple health check - try to run a minimal request
-      const response = await this.codexClient.thread.run({
-        messages: [{ role: 'user', content: 'ping' }],
+      const thread = this.codexClient.startThread({
         model: 'gpt-4o-mini', // Use cheapest model for health check
-        maxTokens: 5,
       });
+
+      const turn = await thread.run('ping');
 
       return {
         healthy: true,
         timestamp: new Date(),
         details: {
-          threadId: response.id,
+          threadId: thread.id,
+          responseLength: turn.finalResponse.length,
         },
       };
     } catch (error) {
@@ -310,13 +357,23 @@ export class CodexProvider extends BaseProvider {
   }
 
   /**
-   * Format messages for Codex API
+   * Format messages into a single prompt for Codex API
+   * Codex Thread.run() expects a string input, not message array
    */
-  private formatMessages(request: LLMRequest): Array<{ role: string; content: string }> {
-    return request.messages.map((msg) => ({
-      role: msg.role === 'function' ? 'assistant' : msg.role,
-      content: msg.content,
-    }));
+  private formatMessagesToPrompt(request: LLMRequest): string {
+    // Combine messages into a single prompt
+    return request.messages
+      .map((msg) => {
+        if (msg.role === 'system') {
+          return `System: ${msg.content}`;
+        } else if (msg.role === 'user') {
+          return `User: ${msg.content}`;
+        } else if (msg.role === 'assistant') {
+          return `Assistant: ${msg.content}`;
+        }
+        return msg.content;
+      })
+      .join('\n\n');
   }
 
   /**
@@ -345,69 +402,6 @@ export class CodexProvider extends BaseProvider {
     return descriptions[model] || 'Codex reasoning model';
   }
 
-  /**
-   * Translate Codex stream events to LLMStreamEvent format
-   */
-  private translateCodexEvent(
-    event: CodexStreamEvent,
-    model: LLMModel
-  ): LLMStreamEvent | null {
-    switch (event.type) {
-      case 'content_delta':
-        if (event.delta?.content) {
-          return {
-            type: 'content',
-            delta: { content: event.delta.content },
-          };
-        }
-        return null;
-
-      case 'thinking':
-        // Thinking events are internal to Codex, we can log them but not yield
-        this.logger.debug('Codex thinking:', event.delta?.thinking);
-        return null;
-
-      case 'done':
-        if (event.usage) {
-          const pricing = this.capabilities.pricing![model];
-          const promptCost = (event.usage.prompt_tokens / 1000) * pricing.promptCostPer1k;
-          const completionCost = (event.usage.completion_tokens / 1000) * pricing.completionCostPer1k;
-
-          return {
-            type: 'done',
-            usage: {
-              promptTokens: event.usage.prompt_tokens,
-              completionTokens: event.usage.completion_tokens,
-              totalTokens: event.usage.total_tokens,
-            },
-            cost: {
-              promptCost,
-              completionCost,
-              totalCost: promptCost + completionCost,
-              currency: 'USD',
-            },
-          };
-        }
-        return { type: 'done' };
-
-      case 'error':
-        const error = new LLMProviderError(
-          event.error?.message || 'Codex stream error',
-          event.error?.code || 'STREAM_ERROR',
-          'codex',
-          undefined,
-          true
-        );
-        return {
-          type: 'error',
-          error,
-        };
-
-      default:
-        this.logger.warn('Unknown Codex event type:', event);
-        return null;
-    }
-  }
 
   /**
    * Handle Codex-specific errors

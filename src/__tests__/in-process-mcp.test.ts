@@ -11,7 +11,6 @@ import { ClaudeFlowToolRegistry, createToolRegistry } from '../mcp/tool-registry
 import {
   SDKIntegration,
   initializeSDKIntegration,
-  measurePerformance,
 } from '../mcp/sdk-integration.js';
 import type { MCPTool } from '../utils/types.js';
 

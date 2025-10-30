@@ -28,8 +28,35 @@
 - **📊 GitHub Integration**: 6 specialized modes for repository management
 - **🌐 Flow Nexus Cloud Platform**: E2B sandboxes, AI swarms, challenges, and marketplace integration
 - **🎯 PreToolUse Modification Hooks**: NEW - Claude Code v2.0.10+ intelligent input modification (safety, organization, optimization)
+- **🤖 Multi-LLM Provider Support**: Anthropic Claude, OpenAI GPT, OpenAI Codex (o1), Google Gemini, Cohere, Ollama
 
 > 🔥 **Revolutionary AI Coordination**: Build faster, smarter, and more efficiently with AI-powered development orchestration
+
+### 🤖 Multi-LLM Provider Support
+
+Claude Flow supports multiple LLM providers out of the box:
+
+- **Anthropic** (Claude 3 Opus, Sonnet, Haiku)
+- **OpenAI** (GPT-4, GPT-3.5)
+- **Codex** (o1-preview, o1-mini, GPT-4o) ⭐ NEW!
+- **Google** (Gemini Pro, PaLM 2)
+- **Cohere** (Command, Generate)
+- **Ollama** (Local models)
+
+```typescript
+// Use Codex for advanced reasoning
+const manager = new ProviderManager(logger, config, {
+  defaultProvider: 'codex',
+  providers: {
+    codex: {
+      provider: 'codex',
+      model: 'o1-mini', // Fast and cost-effective
+    }
+  }
+});
+```
+
+See [Codex Integration Guide](docs/CODEX_MIGRATION_GUIDE.md) for details.
 
 ## 🎯 **NEW: PreToolUse Modification Hooks Plugin** (v2.5.0-alpha.140)
 

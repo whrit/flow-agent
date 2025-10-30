@@ -1,14 +1,16 @@
 {
-  "type": "item:completed",
+  "event": "item.completed",
   "data": {
-    "turn_id": "turn-test-001",
-    "item_id": "item-file-001",
+    "item_id": "item_file_001",
+    "turn_id": "turn_123",
     "item_type": "file_change",
-    "file_path": "/tmp/hello.js",
-    "change_type": "create",
-    "content": "const hello = () => 'Hello, World!';\n\nconsole.log(hello());",
-    "correlation_id": "corr-turn-001",
-    "timestamp": 1735516803500
-  },
-  "timestamp": 1735516803500
+    "timestamp": "2025-01-15T10:33:30Z",
+    "content": {
+      "file_path": "/src/utils/helpers.ts",
+      "operation": "modify",
+      "patch": "@@ -15,7 +15,7 @@\n-  return str.toUpperCase();\n+  return str.toLowerCase();",
+      "lines_added": 1,
+      "lines_removed": 1
+    }
+  }
 }

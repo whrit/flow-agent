@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { MockCodex, MockThread } from '../mocks/codex-sdk-mock';
+import { MockThread } from '../mocks/codex-sdk-mock';
 
 /**
  * Wait for a specific event to be emitted

@@ -1,8 +1,10 @@
 /**
  * Codex Provider Tests
  * Comprehensive TDD test suite for @openai/codex-sdk integration
+ * Uses real Codex binary via codexPathOverride
  */
 
+import { describe, it, expect, beforeEach, beforeAll } from '@jest/globals';
 import { CodexProvider } from '../../providers/codex-provider.js';
 import { ILogger } from '../../core/logger.js';
 import {
@@ -10,83 +12,61 @@ import {
   LLMResponse,
   LLMStreamEvent,
   LLMProviderConfig,
-  AuthenticationError,
   RateLimitError,
   ProviderUnavailableError,
 } from '../../providers/types.js';
+import {
+  createTestLogger,
+  createTestConfig,
+  isCodexBinaryAvailable,
+  skipIfNoCodexBinary,
+} from '../helpers/codex-test-config.js';
 
-// Mock @openai/codex-sdk
-jest.mock('@openai/codex-sdk', () => ({
-  Codex: jest.fn().mockImplementation(() => ({
-    thread: {
-      run: jest.fn(),
-      runStreamed: jest.fn(),
-      resume: jest.fn(),
-      id: 'mock-thread-id',
-    },
-  })),
-}));
-
-describe('CodexProvider', () => {
+// Skip tests if Codex binary is not available
+(isCodexBinaryAvailable() ? describe : describe.skip)('CodexProvider', () => {
   let provider: CodexProvider;
   let mockLogger: ILogger;
   let config: LLMProviderConfig;
 
-  beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn(),
-    } as any;
+  beforeAll(() => {
+    skipIfNoCodexBinary();
+  });
 
-    config = {
-      provider: 'codex',
-      apiKey: 'test-api-key',
-      model: 'o1-preview',
+  beforeEach(() => {
+    mockLogger = createTestLogger();
+    config = createTestConfig({
+      model: 'gpt-4o-mini', // Use cheapest model for tests
       temperature: 0.7,
-      maxTokens: 1000,
-    };
+      maxTokens: 100,
+    });
 
     provider = new CodexProvider({ logger: mockLogger, config });
   });
 
   afterEach(() => {
-    provider.destroy();
-    jest.clearAllMocks();
+    if (provider && typeof provider.destroy === 'function') {
+      provider.destroy();
+    }
   });
 
   describe('Initialization', () => {
     it('should initialize successfully with valid config', async () => {
       await expect(provider.initialize()).resolves.not.toThrow();
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        expect.stringContaining('Initializing codex provider'),
-        expect.any(Object)
-      );
-    });
-
-    it('should throw AuthenticationError when API key is missing', async () => {
-      const invalidConfig = { ...config, apiKey: undefined };
-      const invalidProvider = new CodexProvider({ logger: mockLogger, config: invalidConfig });
-
-      await expect(invalidProvider.initialize()).rejects.toThrow(AuthenticationError);
-    });
+    }, 10000);
 
     it('should validate supported models', () => {
       expect(provider.validateModel('o1-preview')).toBe(true);
       expect(provider.validateModel('o1-mini')).toBe(true);
       expect(provider.validateModel('gpt-4o')).toBe(true);
+      expect(provider.validateModel('gpt-4o-mini')).toBe(true);
       expect(provider.validateModel('invalid-model' as any)).toBe(false);
     });
 
-    it('should set up proper headers with API key', async () => {
-      await provider.initialize();
-      // Access private property for testing
-      const headers = (provider as any).headers;
-      expect(headers).toMatchObject({
-        'Authorization': 'Bearer test-api-key',
-        'Content-Type': 'application/json',
-      });
+    it('should use codexPathOverride from config', () => {
+      const providerOptions = (provider as any).config.providerOptions;
+      expect(providerOptions).toBeDefined();
+      expect(providerOptions.codexPathOverride).toBeDefined();
+      expect(providerOptions.codexPathOverride).toContain('codex-aarch64-apple-darwin');
     });
   });
 

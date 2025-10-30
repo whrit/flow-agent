@@ -1,12 +1,17 @@
 {
-  "type": "item:completed",
+  "event": "item.completed",
   "data": {
-    "turn_id": "turn-test-001",
-    "item_id": "item-reasoning-001",
+    "item_id": "item_reason_001",
+    "turn_id": "turn_123",
     "item_type": "reasoning",
-    "content": "I need to create a simple function that returns 'Hello, World!'. I'll use modern JavaScript syntax with ES6 arrow functions for conciseness.",
-    "correlation_id": "corr-turn-001",
-    "timestamp": 1735516802500
-  },
-  "timestamp": 1735516802500
+    "timestamp": "2025-01-15T10:32:30Z",
+    "content": {
+      "reasoning_steps": [
+        "First, I'll analyze the project structure",
+        "Then identify potential bottlenecks",
+        "Finally, provide actionable recommendations"
+      ],
+      "confidence": 0.92
+    }
+  }
 }

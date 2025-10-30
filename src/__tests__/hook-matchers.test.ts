@@ -17,7 +17,6 @@ import {
 import type {
   HookRegistration,
   AgenticHookContext,
-  HookFilter,
 } from '../services/agentic-flow-hooks/types.js';
 
 // ===== Test Helpers =====
@@ -181,7 +180,7 @@ describe('HookMatcher', () => {
         { field: 'sessionId', operator: 'eq', value: 'test-session' },
       ]);
 
-      const context = createMockContext({ sessionId: 'test-session' });
+      createMockContext({ sessionId: 'test-session' });
       const hook = createMockHook({
         filter: { conditions: contextMatcher.conditions },
       });
@@ -190,7 +189,7 @@ describe('HookMatcher', () => {
     });
 
     it('should match nested context values', () => {
-      const contextMatcher = createContextMatcher([
+      createContextMatcher([
         { field: 'metadata.agentType', operator: 'eq', value: 'researcher' },
       ]);
 
@@ -202,7 +201,7 @@ describe('HookMatcher', () => {
     });
 
     it('should support comparison operators', () => {
-      const contextMatcher = createContextMatcher([
+      createContextMatcher([
         { field: 'timestamp', operator: 'gt', value: Date.now() - 10000 },
       ]);
 

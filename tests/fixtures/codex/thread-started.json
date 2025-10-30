@@ -1,13 +1,13 @@
 {
-  "type": "thread:started",
+  "event": "thread.started",
   "data": {
-    "thread_id": "thread-test-12345",
-    "correlation_id": "corr-thread-start-001",
-    "timestamp": 1735516800000,
+    "thread_id": "thread_abc123",
+    "agent_name": "researcher-agent",
+    "workspace_path": "/Users/test/workspace",
+    "timestamp": "2025-01-15T10:30:00Z",
     "metadata": {
       "model": "claude-3-5-sonnet-20241022",
       "provider": "codex"
     }
-  },
-  "timestamp": 1735516800000
+  }
 }

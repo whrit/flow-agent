@@ -1,12 +1,17 @@
 {
-  "type": "turn:failed",
+  "event": "turn.failed",
   "data": {
-    "turn_id": "turn-test-002",
-    "thread_id": "thread-test-12345",
-    "correlation_id": "corr-turn-002",
-    "error": "Rate limit exceeded",
-    "error_code": "RATE_LIMIT_EXCEEDED",
-    "timestamp": 1735516810000
-  },
-  "timestamp": 1735516810000
+    "turn_id": "turn_456",
+    "thread_id": "thread_abc123",
+    "timestamp": "2025-01-15T10:36:00Z",
+    "error": {
+      "code": "EXECUTION_ERROR",
+      "message": "Command execution failed with exit code 1",
+      "details": {
+        "command": "npm test",
+        "exit_code": 1,
+        "stderr": "Test suite failed"
+      }
+    }
+  }
 }

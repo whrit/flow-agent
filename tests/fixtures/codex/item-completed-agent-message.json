@@ -1,12 +1,14 @@
 {
-  "type": "item:completed",
+  "event": "item.completed",
   "data": {
-    "turn_id": "turn-test-001",
-    "item_id": "item-msg-001",
+    "item_id": "item_msg_001",
+    "turn_id": "turn_123",
     "item_type": "agent_message",
-    "content": "I'll help you create a hello world function. Let me write that for you.",
-    "correlation_id": "corr-turn-001",
-    "timestamp": 1735516803000
-  },
-  "timestamp": 1735516803000
+    "timestamp": "2025-01-15T10:32:00Z",
+    "content": {
+      "text": "I've analyzed the codebase and found several areas for improvement...",
+      "tokens_used": 1250,
+      "model": "claude-3-5-sonnet-20241022"
+    }
+  }
 }

@@ -8,7 +8,7 @@
     "content": {
       "command": "npm test",
       "exit_code": 0,
-      "stdout": "All tests passed (42 tests)",
+      "stdout": "All tests passed\n✓ 42 tests completed",
       "stderr": "",
       "execution_time_ms": 2345
     }

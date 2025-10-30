@@ -89,25 +89,23 @@ class PerformanceBenchmark {
 
 describe('Performance Benchmarks', () => {
   let benchmark: PerformanceBenchmark;
-  let adapter: ClaudeFlowSDKAdapter;
-  let executor: TaskExecutorSDK;
-  let client: ClaudeClientV25;
 
   beforeAll(() => {
     benchmark = new PerformanceBenchmark();
 
-    adapter = new ClaudeFlowSDKAdapter({
+    // SDK instances available for future performance tests
+    new ClaudeFlowSDKAdapter({
       apiKey: 'test-api-key',
       swarmMode: true,
       persistenceEnabled: true,
     });
 
-    executor = new TaskExecutorSDK({
+    new TaskExecutorSDK({
       apiKey: 'test-api-key',
       swarmMode: true,
     });
 
-    client = new ClaudeClientV25(
+    new ClaudeClientV25(
       {
         apiKey: 'test-api-key',
         enableSwarmMode: true,
@@ -404,7 +402,7 @@ describe('Performance Benchmarks', () => {
 
   describe('Phase 6: In-Process MCP Performance', () => {
     it('should benchmark in-process tool call (target: <0.1ms)', async () => {
-      const inProcessTool = async (args: any) => {
+      const inProcessTool = async (args: unknown) => {
         return { result: 'success', args };
       };
 
@@ -475,7 +473,7 @@ describe('Performance Benchmarks', () => {
     });
 
     it('should benchmark memory operation latency (target: <1ms)', async () => {
-      const memoryStore = new Map<string, any>();
+      const memoryStore = new Map<string, unknown>();
 
       const result = await benchmark.benchmark(
         'Memory Store Operation',

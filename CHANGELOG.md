@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0-alpha.141] - 2025-10-30
+
+### Added - Codex CLI Integration 🚀
+
+- **New Provider**: `codex` provider for OpenAI Codex CLI integration
+  - Supports o1-preview, o1-mini, gpt-4o, gpt-4o-mini models
+  - Advanced reasoning with streaming support
+  - No API key required (uses Codex binary)
+  - Thread persistence for conversation continuity
+
+- **Event Translation**: Automatic translation of Codex events to claude-flow
+  - 8 Codex event types → 12+ internal events
+  - Full correlation ID tracking
+  - Preserves all metadata
+
+- **Comprehensive Testing**: 90%+ coverage
+  - 30+ unit tests
+  - Integration tests with mocked SDK
+  - E2E tests (optional, requires Codex binary)
+  - Performance benchmarks (<1ms event translation)
+
+### Changed
+
+- Extended `LLMProvider` type to include `'codex'`
+- Added 4 new Codex models to `LLMModel` type
+- Provider manager now supports Codex provider selection
+
+### Developer Notes
+
+- See `docs/codex-getting-started.md` for setup instructions
+- See `docs/codex-event-mapping-specification.md` for event details
+- See `docs/CODEX_TESTING.md` for testing guide
+
 ## [2.0.0-alpha.118] - 2025-09-24
 
 > **🧹 CLEANUP RELEASE**: Removed sublinear-time-solver MCP dependency for cleaner initialization and focused core functionality.
