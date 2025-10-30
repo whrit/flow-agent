@@ -282,6 +282,7 @@ async function runWorkflowCommand(subArgs, flags) {
     // Create executor with options
     const executor = new WorkflowExecutor({
       enableClaude: options.claude || false,
+      enableCodex: options.codex || false,
       nonInteractive: options['non-interactive'] || options.nonInteractive || false,
       outputFormat: options['output-format'] || (options['non-interactive'] || options.nonInteractive ? 'stream-json' : 'text'),
       maxConcurrency: parseInt(options['max-concurrency']) || 3,
@@ -374,7 +375,8 @@ async function mleStarCommand(subArgs, flags) {
         true); // Default to true for MLE-STAR to avoid multiple interactive sessions
     
     const executor = new WorkflowExecutor({
-      enableClaude: options.claude !== false, // Default to true for MLE-STAR
+      enableClaude: options.claude !== false && !options.codex, // Default to true for MLE-STAR unless codex specified
+      enableCodex: options.codex || false,
       nonInteractive: isNonInteractive,
       outputFormat: options['output-format'] || (isNonInteractive ? 'stream-json' : 'text'),
       maxConcurrency: parseInt(options['max-agents']) || 6,
@@ -409,7 +411,7 @@ async function mleStarCommand(subArgs, flags) {
       console.log(`  Stream Chaining: ${executor.options.enableChaining && executor.options.outputFormat === 'stream-json' ? 'Enabled' : 'Disabled'}`);
       console.log();
       
-      if (isNonInteractive && options.claude !== false) {
+      if (isNonInteractive && (options.claude !== false || options.codex)) {
         console.log(`💡 Running in non-interactive mode: Each agent will execute independently`);
         if (executor.options.enableChaining && executor.options.outputFormat === 'stream-json') {
           console.log(`🔗 Stream chaining enabled: Agent outputs will be piped to dependent agents`);
@@ -419,9 +421,9 @@ async function mleStarCommand(subArgs, flags) {
       }
     }
     
-    if (!options.claude && !options['no-claude-warning']) {
-      printWarning('MLE-STAR works best with Claude integration. Add --claude flag for full automation.');
-      console.log('Without Claude, this will simulate the workflow execution.');
+    if (!options.claude && !options.codex && !options['no-claude-warning']) {
+      printWarning('MLE-STAR works best with Claude or Codex integration. Add --claude or --codex flag for full automation.');
+      console.log('Without Claude/Codex, this will simulate the workflow execution.');
       console.log();
     }
     
@@ -510,6 +512,7 @@ WORKFLOW-SELECT OPTIONS:
 
 RUN-WORKFLOW OPTIONS:
   --claude                  Enable Claude CLI integration for actual execution
+  --codex                   Enable Codex CLI integration for actual execution
   --non-interactive         Run in non-interactive mode (no prompts)
   --output-format <format>  Output format (text, json)
   --variables <json>        Override workflow variables (JSON format)
@@ -519,6 +522,7 @@ RUN-WORKFLOW OPTIONS:
 
 MLE-STAR OPTIONS:
   --claude                  Enable Claude CLI integration (recommended)
+  --codex                   Enable Codex CLI integration
   --dataset <path>          Path to dataset file (default: ./data/dataset.csv)
   --target <column>         Target column name (default: target)
   --output <dir>            Model output directory (default: ./models/)
@@ -573,8 +577,14 @@ EXAMPLES:
   # Execute custom workflow with Claude integration
   claude-flow automation run-workflow my-workflow.json --claude --non-interactive
 
+  # Execute custom workflow with Codex integration
+  claude-flow automation run-workflow my-workflow.json --codex --non-interactive
+
   # Run MLE-STAR ML engineering workflow (flagship command) - non-interactive by default
   claude-flow automation mle-star --dataset data/train.csv --target price --claude
+
+  # Run MLE-STAR with Codex
+  claude-flow automation mle-star --dataset data/train.csv --target price --codex
 
   # MLE-STAR with custom configuration
   claude-flow automation mle-star --dataset sales.csv --target revenue --output models/sales/ --name "sales-prediction" --search-iterations 5

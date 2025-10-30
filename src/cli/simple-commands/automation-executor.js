@@ -23,6 +23,7 @@ export class WorkflowExecutor {
   constructor(options = {}) {
     this.options = {
       enableClaude: false,
+      enableCodex: false,
       nonInteractive: false,
       outputFormat: 'text',
       maxConcurrency: 3,
@@ -30,6 +31,9 @@ export class WorkflowExecutor {
       logLevel: 'info',
       ...options
     };
+
+    // Determine which provider to use
+    this.provider = options.enableCodex ? 'codex' : (options.enableClaude ? 'claude' : null);
     
     // Increase timeout for ML workflows
     if (options.workflowType === 'ml' || options.workflowName?.toLowerCase().includes('mle')) {
@@ -68,9 +72,11 @@ export class WorkflowExecutor {
         console.log(`🚀 Starting workflow execution: ${this.executionId}`);
         console.log(`📋 Workflow: ${workflowData.name}`);
         console.log(`🎯 Strategy: MLE-STAR Machine Learning Engineering`);
-        
+
         if (this.options.enableClaude) {
           console.log(`🤖 Claude CLI Integration: Enabled`);
+        } else if (this.options.enableCodex) {
+          console.log(`🤖 Codex CLI Integration: Enabled`);
         }
         
         if (this.options.nonInteractive) {
@@ -101,9 +107,9 @@ export class WorkflowExecutor {
       // Apply variable substitutions
       const processedWorkflow = this.applyVariables(workflowData, variables);
       
-      // Initialize agents if Claude integration is enabled
-      if (this.options.enableClaude) {
-        await this.initializeClaudeAgents(processedWorkflow.agents);
+      // Initialize agents if Claude or Codex integration is enabled
+      if (this.options.enableClaude || this.options.enableCodex) {
+        await this.initializeAgents(processedWorkflow.agents);
       }
       
       // Execute workflow phases
@@ -130,24 +136,24 @@ export class WorkflowExecutor {
         console.log(`❌ Errors: ${this.errors.length}`);
       }
       
-      // Cleanup Claude instances
-      if (this.options.enableClaude) {
-        await this.cleanupClaudeInstances();
+      // Cleanup CLI instances
+      if (this.options.enableClaude || this.options.enableCodex) {
+        await this.cleanupCLIInstances();
       }
       
       return result;
       
     } catch (error) {
       printError(`Workflow execution failed: ${error.message}`);
-      await this.cleanupClaudeInstances();
+      await this.cleanupCLIInstances();
       throw error;
     }
   }
 
   /**
-   * Initialize Claude CLI instances for agents
+   * Initialize CLI instances for agents (Claude or Codex)
    */
-  async initializeClaudeAgents(agents) {
+  async initializeAgents(agents) {
     if (!agents || agents.length === 0) {
       return;
     }
@@ -219,7 +225,20 @@ export class WorkflowExecutor {
   }
 
   /**
-   * Spawn a Claude CLI instance for an agent
+   * Check if Codex CLI is available
+   */
+  async isCodexAvailable() {
+    try {
+      const { execSync } = await import('child_process');
+      execSync('which codex', { stdio: 'ignore' });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Spawn a CLI instance for an agent (Claude or Codex)
    * @param {Object} agent - The agent configuration
    * @param {string} prompt - The prompt for the agent
    * @param {Object} options - Additional options
@@ -227,61 +246,89 @@ export class WorkflowExecutor {
    * @param {boolean} options.enableChaining - Whether to enable stream-json chaining
    */
   async spawnClaudeInstance(agent, prompt, options = {}) {
-    const claudeArgs = [];
-    
-    // Add flags based on mode
-    if (this.options.nonInteractive) {
-      // Non-interactive mode: use --print with stream-json output
-      claudeArgs.push('--print');
-      if (this.options.outputFormat === 'stream-json') {
-        claudeArgs.push('--output-format', 'stream-json');
-        claudeArgs.push('--verbose'); // Required for stream-json
-        
-        // Add input format if we're chaining from a previous agent
-        if (options.inputStream) {
-          claudeArgs.push('--input-format', 'stream-json');
+    const cliArgs = [];
+    const binary = this.provider || 'claude';
+    const workspaceDir = process.cwd();
+
+    // Codex-specific arguments
+    if (binary === 'codex') {
+      // Working directory
+      cliArgs.push('-C', workspaceDir);
+
+      // Permissions - use full-auto for automation
+      cliArgs.push('--full-auto');
+
+      // Model specification
+      cliArgs.push('-m', 'gpt-5-codex');
+
+      // Approval policy
+      cliArgs.push('-a', 'on-failure');
+
+      // Add the prompt as the final argument
+      cliArgs.push(prompt);
+    } else {
+      // Claude-specific arguments
+      // Add flags based on mode
+      if (this.options.nonInteractive) {
+        // Non-interactive mode: use --print with stream-json output
+        cliArgs.push('--print');
+        if (this.options.outputFormat === 'stream-json') {
+          cliArgs.push('--output-format', 'stream-json');
+          cliArgs.push('--verbose'); // Required for stream-json
+
+          // Add input format if we're chaining from a previous agent
+          if (options.inputStream) {
+            cliArgs.push('--input-format', 'stream-json');
+          }
         }
       }
+
+      // Always skip permissions for automated workflows (both interactive and non-interactive)
+      cliArgs.push('--dangerously-skip-permissions');
+
+      // Always add the prompt as the final argument
+      cliArgs.push(prompt);
     }
-    
-    // Always skip permissions for automated workflows (both interactive and non-interactive)
-    claudeArgs.push('--dangerously-skip-permissions');
-    
-    // Always add the prompt as the final argument
-    claudeArgs.push(prompt);
     
     // Only show command details in verbose mode
     if (this.options.logLevel === 'debug') {
       const displayPrompt = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt;
-      const flagsDisplay = this.options.nonInteractive ? 
-        (this.options.outputFormat === 'stream-json' ? 
-          (options.inputStream ? '--print --input-format stream-json --output-format stream-json --verbose --dangerously-skip-permissions' : '--print --output-format stream-json --verbose --dangerously-skip-permissions') : 
-          '--print --dangerously-skip-permissions') : 
-        '--dangerously-skip-permissions';
-      console.log(`    🤖 Spawning Claude for ${agent.name}: claude ${flagsDisplay} "${displayPrompt}"`);
+      const providerName = binary === 'codex' ? 'Codex' : 'Claude';
+      console.log(`    🤖 Spawning ${providerName} for ${agent.name}: ${binary} [${cliArgs.length} args]`);
     } else if (this.options.logLevel !== 'quiet') {
-      console.log(`    🚀 Starting ${agent.name}`);
+      const providerName = binary === 'codex' ? 'Codex' : 'Claude';
+      console.log(`    🚀 Starting ${agent.name} with ${providerName}`);
     }
-    
+
     // Determine stdio configuration based on mode and chaining
-    const stdioConfig = this.options.nonInteractive ? 
+    // Note: Codex doesn't support stream-json chaining like Claude
+    const stdioConfig = (this.options.nonInteractive && binary === 'claude') ?
       [options.inputStream ? 'pipe' : 'inherit', 'pipe', 'pipe'] : // Non-interactive: pipe for chaining
-      ['inherit', 'inherit', 'inherit']; // Interactive: inherit all for normal Claude interaction
-    
-    // Spawn Claude process
-    const claudeProcess = spawn('claude', claudeArgs, {
+      ['inherit', 'inherit', 'inherit']; // Interactive or Codex: inherit all
+
+    // Set up environment for Codex
+    const env = binary === 'codex' ? {
+      ...process.env,
+      HOME: (await import('os')).homedir(),
+      CODEX_CONFIG_DIR: (await import('path')).join((await import('os')).homedir(), '.codex'),
+    } : process.env;
+
+    // Spawn CLI process
+    const cliProcess = spawn(binary, cliArgs, {
       stdio: stdioConfig,
       shell: false,
+      cwd: binary === 'codex' ? workspaceDir : undefined,
+      env: env,
     });
     
-    // If we have an input stream, pipe it to Claude's stdin
-    if (options.inputStream && claudeProcess.stdin) {
+    // If we have an input stream, pipe it to CLI's stdin (Claude only)
+    if (options.inputStream && cliProcess.stdin && binary === 'claude') {
       console.log(`    🔗 Chaining: Piping output from previous agent to ${agent.name}`);
-      options.inputStream.pipe(claudeProcess.stdin);
+      options.inputStream.pipe(cliProcess.stdin);
     }
-    
-    // Handle stdout with stream processor for better formatting (only in non-interactive mode)
-    if (this.options.nonInteractive && this.options.outputFormat === 'stream-json' && claudeProcess.stdout) {
+
+    // Handle stdout with stream processor for better formatting (only in non-interactive mode for Claude)
+    if (this.options.nonInteractive && this.options.outputFormat === 'stream-json' && cliProcess.stdout && binary === 'claude') {
       // Import and use stream processor
       const { createStreamProcessor } = await import('./stream-processor.js');
       const streamProcessor = createStreamProcessor(
@@ -297,39 +344,41 @@ export class WorkflowExecutor {
       );
       
       // Pipe stdout through processor
-      claudeProcess.stdout.pipe(streamProcessor);
-      
+      cliProcess.stdout.pipe(streamProcessor);
+
       // Handle stderr for non-interactive mode
-      claudeProcess.stderr.on('data', (data) => {
+      cliProcess.stderr.on('data', (data) => {
         const message = data.toString().trim();
         if (message) {
           console.error(`    ❌ [${agent.name}] Error: ${message}`);
         }
       });
-    } else if (this.options.nonInteractive && this.options.outputFormat !== 'stream-json') {
+    } else if (this.options.nonInteractive && this.options.outputFormat !== 'stream-json' && binary === 'claude') {
       // For non-interactive non-stream-json output, show stdout directly
-      claudeProcess.stdout.on('data', (data) => {
+      cliProcess.stdout.on('data', (data) => {
         console.log(data.toString().trimEnd());
       });
-      
-      claudeProcess.stderr.on('data', (data) => {
+
+      cliProcess.stderr.on('data', (data) => {
         console.error(data.toString().trimEnd());
       });
     }
-    // Note: In interactive mode, stdio is inherited so Claude handles its own I/O
-    
+    // Note: In interactive mode or with Codex, stdio is inherited so CLI handles its own I/O
+
     // Handle process events
-    claudeProcess.on('error', (error) => {
-      console.error(`❌ Claude instance error for ${agent.name}:`, error.message);
+    const providerLabel = binary === 'codex' ? 'Codex' : 'Claude';
+    cliProcess.on('error', (error) => {
+      console.error(`❌ ${providerLabel} instance error for ${agent.name}:`, error.message);
       this.errors.push({
-        type: 'claude_instance_error',
+        type: 'cli_instance_error',
+        provider: binary,
         agent: agent.id,
         error: error.message,
         timestamp: new Date()
       });
     });
-    
-    claudeProcess.on('exit', (code) => {
+
+    cliProcess.on('exit', (code) => {
       const instance = this.claudeInstances.get(agent.id);
       if (instance) {
         instance.status = code === 0 ? 'completed' : 'failed';
@@ -337,8 +386,8 @@ export class WorkflowExecutor {
         instance.endTime = Date.now();
       }
     });
-    
-    return claudeProcess;
+
+    return cliProcess;
   }
 
   /**
@@ -1465,12 +1514,13 @@ COORDINATION KEY POINTS:
   }
 
   /**
-   * Cleanup Claude instances
+   * Cleanup CLI instances (Claude or Codex)
    */
-  async cleanupClaudeInstances() {
+  async cleanupCLIInstances() {
     if (this.claudeInstances.size === 0) return;
-    
-    console.log('🧹 Cleaning up Claude instances...');
+
+    const providerName = this.provider === 'codex' ? 'Codex' : 'Claude';
+    console.log(`🧹 Cleaning up ${providerName} instances...`);
     
     for (const [agentId, instance] of this.claudeInstances.entries()) {
       try {

@@ -7,6 +7,7 @@ import { spawn } from 'child_process';
 import { existsSync, mkdirSync } from 'fs';
 import { writeFile, readFile } from 'fs/promises';
 import path from 'path';
+import os from 'os';
 import readline from 'readline';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
@@ -2248,9 +2249,9 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
   const spinner = ora('Preparing Hive Mind coordination prompt...').start();
 
   try {
-    // Generate comprehensive Hive Mind prompt
+    // Generate Codex-specific simplified prompt
     const workerGroups = groupWorkersByType(workers);
-    let hiveMindPrompt = generateHiveMindPrompt(
+    let hiveMindPrompt = generateCodexHiveMindPrompt(
       swarmId,
       swarmName,
       objective,
@@ -2259,7 +2260,7 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
       flags,
     );
 
-    spinner.succeed('Hive Mind coordination prompt ready!');
+    spinner.succeed('Codex-compatible prompt ready!');
 
     // Display coordination summary
     console.log('\n' + chalk.bold('🧠 Hive Mind Configuration'));
@@ -2314,7 +2315,7 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
         const workspaceDir = process.cwd();
 
         // Check if current directory is configured in Codex config
-        const codexConfigPath = path.join(require('os').homedir(), '.codex', 'config.toml');
+        const codexConfigPath = path.join(os.homedir(), '.codex', 'config.toml');
         let projectTrusted = false;
 
         try {
@@ -2373,9 +2374,9 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
         const codexEnv = {
           ...process.env,
           // Preserve path and home directory
-          HOME: require('os').homedir(),
+          HOME: os.homedir(),
           // Ensure Codex can find its config
-          CODEX_CONFIG_DIR: path.join(require('os').homedir(), '.codex'),
+          CODEX_CONFIG_DIR: path.join(os.homedir(), '.codex'),
         };
 
         console.log(chalk.cyan('\n📂 Workspace Configuration:'));
@@ -2715,6 +2716,52 @@ Remember:
 Initialize the swarm now with the configuration above. Use your collective intelligence to solve the objective efficiently. The Queen must coordinate, workers must collaborate, and the hive must think as one.
 
 Remember: You are not just coordinating agents - you are orchestrating a collective intelligence that is greater than the sum of its parts.`;
+}
+
+/**
+ * Generate simplified Hive Mind prompt for Codex CLI
+ * Codex needs a more direct, actionable prompt without Claude Code-specific tools
+ */
+function generateCodexHiveMindPrompt(swarmId, swarmName, objective, workers, workerGroups, flags) {
+  console.log(chalk.cyan(`\n🔍 Generating Codex-compatible prompt for: "${objective}"`));
+  const workerTypes = Object.keys(workerGroups);
+  const queenType = flags.queenType || 'strategic';
+
+  return `# 🎯 OBJECTIVE: ${objective}
+
+You are working on: **${objective}**
+
+## Project Context
+- Project: ${swarmName}
+- Working Directory: ${process.cwd()}
+- Swarm ID: ${swarmId}
+
+## Your Role
+You are a ${queenType} coordinator responsible for completing this objective efficiently.
+
+## Available Resources
+You have access to:
+- Full workspace with read/write permissions (--full-auto mode enabled)
+- File system operations (read, write, edit, create)
+- Terminal/bash commands
+- All standard development tools in this environment
+
+## Approach
+1. **Analyze the objective**: Understand what needs to be accomplished
+2. **Break it down**: Divide the work into logical steps
+3. **Execute systematically**: Complete each step thoroughly
+4. **Verify results**: Test and validate your work
+5. **Document**: Leave clear comments and documentation
+
+## Guidelines
+- Write clean, maintainable code
+- Follow existing project conventions
+- Test your changes
+- Use best practices for the technologies involved
+- Be thorough but efficient
+
+## Get Started
+Begin working on the objective now. You have full access to the workspace and can create/modify files as needed.`;
 }
 
 /**
