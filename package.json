@@ -14,7 +14,7 @@
     "dev": "tsx src/cli/main.ts",
     "init:neural": "node scripts/init-neural.js",
     "init:goal": "node scripts/init-goal.js",
-    "build": "npm run clean && npm run update-version && npm run build:esm && npm run build:cjs && npm run build:binary",
+    "build": "npm run clean && npm run update-version && npm run build:ts && npm run build:binary",
     "update-version": "node scripts/update-bin-version.js",
     "clean": "rm -rf dist dist-cjs",
     "build:esm": "swc src -d dist --config-file .swcrc",
