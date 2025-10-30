@@ -1,0 +1,17 @@
+{
+  "type": "turn:completed",
+  "data": {
+    "turn_id": "turn-test-001",
+    "thread_id": "thread-test-12345",
+    "correlation_id": "corr-turn-001",
+    "final_message": "I've created the hello world function in hello.js",
+    "timestamp": 1735516805000,
+    "usage": {
+      "input_tokens": 120,
+      "output_tokens": 45,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0
+    }
+  },
+  "timestamp": 1735516805000
+}

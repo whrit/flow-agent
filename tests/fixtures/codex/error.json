@@ -1,0 +1,14 @@
+{
+  "event": "error",
+  "data": {
+    "error_id": "err_001",
+    "thread_id": "thread_abc123",
+    "timestamp": "2025-01-15T10:38:00Z",
+    "error": {
+      "type": "INTERNAL_ERROR",
+      "message": "Unexpected runtime error",
+      "stack": "Error: Unexpected runtime error\n    at processEvent (/app/src/events.ts:42:11)",
+      "recoverable": false
+    }
+  }
+}

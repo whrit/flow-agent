@@ -1,0 +1,16 @@
+{
+  "type": "error",
+  "data": {
+    "turn_id": "turn-test-002",
+    "error_message": "API request failed: Rate limit exceeded. Please try again later.",
+    "error_code": "RATE_LIMIT_EXCEEDED",
+    "correlation_id": "corr-turn-002",
+    "timestamp": 1735516810000,
+    "details": {
+      "retry_after": 60,
+      "limit": 100,
+      "used": 100
+    }
+  },
+  "timestamp": 1735516810000
+}

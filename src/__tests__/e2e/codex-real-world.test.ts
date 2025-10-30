@@ -1,0 +1,257 @@
+/**
+ * E2E Tests for Codex Provider
+ * Tests with real Codex API (requires CODEX_API_KEY)
+ *
+ * Run with: CODEX_API_KEY=your-key npm run test:e2e
+ */
+
+import { CodexProvider } from '../../providers/codex-provider';
+
+const CODEX_API_KEY = process.env.CODEX_API_KEY;
+const SKIP_E2E = !CODEX_API_KEY;
+
+describe('Codex E2E Tests', () => {
+  let provider: CodexProvider;
+
+  beforeAll(() => {
+    if (SKIP_E2E) {
+      console.log('⚠️  Skipping E2E tests: CODEX_API_KEY not set');
+      return;
+    }
+
+    provider = new CodexProvider({
+      apiKey: CODEX_API_KEY!,
+      model: 'claude-3-5-sonnet-20241022',
+    });
+  });
+
+  describe('Real API Interactions', () => {
+    it.skipIf(SKIP_E2E)('should create a real thread', async () => {
+      const thread = await provider.createThread();
+
+      expect(thread).toBeDefined();
+      expect(thread.id).toBeTruthy();
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 30000);
+
+    it.skipIf(SKIP_E2E)('should execute a simple command', async () => {
+      const thread = await provider.createThread();
+      const results: any[] = [];
+
+      thread.on('event', (event) => {
+        results.push(event);
+      });
+
+      await thread.sendMessage('echo "Hello, E2E!"');
+
+      // Wait for completion
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      const commandEvents = results.filter(
+        (e) => e.type === 'item:completed' && e.data.item_type === 'command_execution'
+      );
+
+      expect(commandEvents.length).toBeGreaterThan(0);
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 30000);
+
+    it.skipIf(SKIP_E2E)('should create and read a file', async () => {
+      const thread = await provider.createThread();
+      const results: any[] = [];
+
+      thread.on('event', (event) => {
+        results.push(event);
+      });
+
+      await thread.sendMessage('Create a file called test-e2e.txt with content "E2E Test"');
+
+      // Wait for completion
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      const fileEvents = results.filter(
+        (e) => e.type === 'item:completed' && e.data.item_type === 'file_change'
+      );
+
+      expect(fileEvents.length).toBeGreaterThan(0);
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 30000);
+
+    it.skipIf(SKIP_E2E)('should handle MCP tool calls', async () => {
+      const thread = await provider.createThread();
+      const results: any[] = [];
+
+      thread.on('event', (event) => {
+        results.push(event);
+      });
+
+      await thread.sendMessage('Use the read_file MCP tool to read package.json');
+
+      // Wait for completion
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      const mcpEvents = results.filter(
+        (e) => e.type === 'item:completed' && e.data.item_type === 'mcp_tool_call'
+      );
+
+      expect(mcpEvents.length).toBeGreaterThan(0);
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 30000);
+
+    it.skipIf(SKIP_E2E)('should handle errors gracefully', async () => {
+      const thread = await provider.createThread();
+      const errors: any[] = [];
+
+      thread.on('event', (event) => {
+        if (event.type === 'error' || event.type === 'turn:failed') {
+          errors.push(event);
+        }
+      });
+
+      await thread.sendMessage('Run an invalid command: thisdoesnotexist');
+
+      // Wait for completion
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      // Should have error or command with non-zero exit code
+      const commandEvents = thread.events.filter(
+        (e: any) =>
+          e.type === 'item:completed' &&
+          e.data.item_type === 'command_execution' &&
+          e.data.exit_code !== 0
+      );
+
+      expect(errors.length > 0 || commandEvents.length > 0).toBe(true);
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 30000);
+  });
+
+  describe('Performance Tests', () => {
+    it.skipIf(SKIP_E2E)('should handle rapid message sending', async () => {
+      const thread = await provider.createThread();
+      const messages = [
+        'echo "message 1"',
+        'echo "message 2"',
+        'echo "message 3"',
+        'echo "message 4"',
+        'echo "message 5"',
+      ];
+
+      const startTime = Date.now();
+
+      for (const msg of messages) {
+        await thread.sendMessage(msg);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      const duration = Date.now() - startTime;
+
+      expect(duration).toBeLessThan(30000); // Should complete in reasonable time
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 60000);
+
+    it.skipIf(SKIP_E2E)('should measure token usage accurately', async () => {
+      const thread = await provider.createThread();
+      let totalInputTokens = 0;
+      let totalOutputTokens = 0;
+
+      thread.on('event', (event) => {
+        if (event.type === 'turn:completed' && event.data.usage) {
+          totalInputTokens += event.data.usage.input_tokens || 0;
+          totalOutputTokens += event.data.usage.output_tokens || 0;
+        }
+      });
+
+      await thread.sendMessage('Write a simple hello world function');
+
+      // Wait for completion
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      expect(totalInputTokens).toBeGreaterThan(0);
+      expect(totalOutputTokens).toBeGreaterThan(0);
+
+      // Calculate cost
+      const cost = provider.estimateCost({
+        inputTokens: totalInputTokens,
+        outputTokens: totalOutputTokens,
+        model: 'claude-3-5-sonnet-20241022',
+      });
+
+      expect(cost).toBeGreaterThan(0);
+
+      console.log(`💰 Cost: $${cost.toFixed(6)}`);
+      console.log(`📊 Tokens: ${totalInputTokens} in, ${totalOutputTokens} out`);
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 30000);
+  });
+
+  describe('Real-world Scenarios', () => {
+    it.skipIf(SKIP_E2E)('should complete a multi-step task', async () => {
+      const thread = await provider.createThread();
+      const fileChanges: any[] = [];
+      const commands: any[] = [];
+
+      thread.on('event', (event) => {
+        if (event.type === 'item:completed') {
+          if (event.data.item_type === 'file_change') {
+            fileChanges.push(event);
+          } else if (event.data.item_type === 'command_execution') {
+            commands.push(event);
+          }
+        }
+      });
+
+      await thread.sendMessage(
+        'Create a file hello-e2e.js with a hello world function, then run it with node'
+      );
+
+      // Wait for completion
+      await new Promise((resolve) => setTimeout(resolve, 15000));
+
+      expect(fileChanges.length).toBeGreaterThan(0);
+      expect(commands.length).toBeGreaterThan(0);
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 45000);
+
+    it.skipIf(SKIP_E2E)('should handle complex reasoning', async () => {
+      const thread = await provider.createThread();
+      const reasoningItems: any[] = [];
+
+      thread.on('event', (event) => {
+        if (
+          event.type === 'item:completed' &&
+          event.data.item_type === 'reasoning'
+        ) {
+          reasoningItems.push(event);
+        }
+      });
+
+      await thread.sendMessage(
+        'Analyze the structure of this project and recommend improvements'
+      );
+
+      // Wait for completion
+      await new Promise((resolve) => setTimeout(resolve, 20000));
+
+      expect(reasoningItems.length).toBeGreaterThan(0);
+
+      // Cleanup
+      await provider.deleteThread(thread.id);
+    }, 45000);
+  });
+});

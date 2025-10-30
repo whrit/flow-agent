@@ -1,0 +1,11 @@
+{
+  "type": "turn:started",
+  "data": {
+    "turn_id": "turn-test-001",
+    "thread_id": "thread-test-12345",
+    "user_message": "Create a simple hello world function",
+    "correlation_id": "corr-turn-001",
+    "timestamp": 1735516801000
+  },
+  "timestamp": 1735516801000
+}

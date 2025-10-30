@@ -1,0 +1,31 @@
+{
+  "type": "item:completed",
+  "data": {
+    "turn_id": "turn-test-005",
+    "item_id": "item-todo-001",
+    "item_type": "todo_list",
+    "todos": [
+      {
+        "id": "todo-1",
+        "content": "Create hello.js file",
+        "status": "completed",
+        "priority": "high"
+      },
+      {
+        "id": "todo-2",
+        "content": "Test the function",
+        "status": "in_progress",
+        "priority": "medium"
+      },
+      {
+        "id": "todo-3",
+        "content": "Add error handling",
+        "status": "pending",
+        "priority": "low"
+      }
+    ],
+    "correlation_id": "corr-turn-005",
+    "timestamp": 1735516830000
+  },
+  "timestamp": 1735516830000
+}

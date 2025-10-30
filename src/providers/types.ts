@@ -7,13 +7,14 @@ import { EventEmitter } from 'events';
 
 // ===== PROVIDER TYPES =====
 
-export type LLMProvider = 
+export type LLMProvider =
   | 'openai'
   | 'anthropic'
   | 'google'
   | 'cohere'
   | 'ollama'
   | 'llama-cpp'
+  | 'codex'
   | 'custom';
 
 export type LLMModel =
@@ -41,6 +42,11 @@ export type LLMModel =
   | 'command-nightly'
   | 'generate-xlarge'
   | 'generate-medium'
+  // Codex Models (OpenAI)
+  | 'o1-preview'
+  | 'o1-mini'
+  | 'gpt-4o'
+  | 'gpt-4o-mini'
   // Local Models
   | 'llama-2-7b'
   | 'llama-2-13b'

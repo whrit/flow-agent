@@ -1,0 +1,21 @@
+{
+  "event": "item.completed",
+  "data": {
+    "item_id": "item_mcp_005",
+    "turn_id": "turn_123",
+    "item_type": "mcp_tool_call",
+    "timestamp": "2025-01-15T10:35:00Z",
+    "content": {
+      "tool_name": "mcp__claude-flow__swarm_init",
+      "parameters": {
+        "topology": "mesh",
+        "maxAgents": 5
+      },
+      "result": {
+        "swarmId": "swarm_xyz123",
+        "status": "initialized"
+      },
+      "execution_time_ms": 150
+    }
+  }
+}

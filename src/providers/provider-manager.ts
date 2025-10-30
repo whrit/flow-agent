@@ -35,6 +35,7 @@ import { OpenAIProvider } from './openai-provider.js';
 import { GoogleProvider } from './google-provider.js';
 import { CohereProvider } from './cohere-provider.js';
 import { OllamaProvider } from './ollama-provider.js';
+import { CodexProvider } from './codex-provider.js';
 
 export interface ProviderManagerConfig {
   providers: Record<LLMProvider, LLMProviderConfig>;
@@ -129,6 +130,9 @@ export class ProviderManager extends EventEmitter {
           break;
         case 'ollama':
           provider = new OllamaProvider(providerOptions);
+          break;
+        case 'codex':
+          provider = new CodexProvider(providerOptions);
           break;
         default:
           this.logger.warn(`Unknown provider: ${name}`);

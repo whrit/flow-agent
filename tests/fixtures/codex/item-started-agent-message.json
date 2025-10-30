@@ -1,0 +1,11 @@
+{
+  "type": "item:started",
+  "data": {
+    "turn_id": "turn-test-001",
+    "item_id": "item-msg-001",
+    "item_type": "agent_message",
+    "correlation_id": "corr-turn-001",
+    "timestamp": 1735516802000
+  },
+  "timestamp": 1735516802000
+}

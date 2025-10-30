@@ -1,0 +1,16 @@
+{
+  "event": "item.completed",
+  "data": {
+    "item_id": "item_cmd_003",
+    "turn_id": "turn_123",
+    "item_type": "command_execution",
+    "timestamp": "2025-01-15T10:33:00Z",
+    "content": {
+      "command": "npm test",
+      "exit_code": 0,
+      "stdout": "All tests passed (42 tests)",
+      "stderr": "",
+      "execution_time_ms": 2345
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "item:completed",
+  "data": {
+    "turn_id": "turn-test-001",
+    "item_id": "item-msg-001",
+    "item_type": "agent_message",
+    "content": "I'll help you create a hello world function. Let me write that for you.",
+    "correlation_id": "corr-turn-001",
+    "timestamp": 1735516803000
+  },
+  "timestamp": 1735516803000
+}

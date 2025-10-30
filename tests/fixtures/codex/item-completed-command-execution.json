@@ -1,0 +1,14 @@
+{
+  "type": "item:completed",
+  "data": {
+    "turn_id": "turn-test-001",
+    "item_id": "item-cmd-001",
+    "item_type": "command_execution",
+    "command": "node hello.js",
+    "output": "Hello, World!",
+    "exit_code": 0,
+    "correlation_id": "corr-turn-001",
+    "timestamp": 1735516804000
+  },
+  "timestamp": 1735516804000
+}

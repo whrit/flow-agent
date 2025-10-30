@@ -1,0 +1,13 @@
+{
+  "type": "thread:started",
+  "data": {
+    "thread_id": "thread-test-12345",
+    "correlation_id": "corr-thread-start-001",
+    "timestamp": 1735516800000,
+    "metadata": {
+      "model": "claude-3-5-sonnet-20241022",
+      "provider": "codex"
+    }
+  },
+  "timestamp": 1735516800000
+}

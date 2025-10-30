@@ -1,0 +1,12 @@
+{
+  "type": "item:completed",
+  "data": {
+    "turn_id": "turn-test-001",
+    "item_id": "item-reasoning-001",
+    "item_type": "reasoning",
+    "content": "I need to create a simple function that returns 'Hello, World!'. I'll use modern JavaScript syntax with ES6 arrow functions for conciseness.",
+    "correlation_id": "corr-turn-001",
+    "timestamp": 1735516802500
+  },
+  "timestamp": 1735516802500
+}

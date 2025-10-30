@@ -1,0 +1,19 @@
+{
+  "type": "item:completed",
+  "data": {
+    "turn_id": "turn-test-004",
+    "item_id": "item-search-001",
+    "item_type": "web_search",
+    "query": "JavaScript hello world best practices",
+    "results": [
+      {
+        "title": "JavaScript Hello World Tutorial",
+        "url": "https://example.com/js-hello-world",
+        "snippet": "Learn the best way to write Hello World in JavaScript..."
+      }
+    ],
+    "correlation_id": "corr-turn-004",
+    "timestamp": 1735516825000
+  },
+  "timestamp": 1735516825000
+}

@@ -1,0 +1,12 @@
+{
+  "type": "turn:failed",
+  "data": {
+    "turn_id": "turn-test-002",
+    "thread_id": "thread-test-12345",
+    "correlation_id": "corr-turn-002",
+    "error": "Rate limit exceeded",
+    "error_code": "RATE_LIMIT_EXCEEDED",
+    "timestamp": 1735516810000
+  },
+  "timestamp": 1735516810000
+}
