@@ -4,6 +4,10 @@
 
 The `--codex` flag now **ACTUALLY spawns Codex instances** (just like `--claude` spawns Claude Code)!
 
+**Supported Commands:**
+- ✅ `hive-mind spawn "objective" --codex` - Hive mind with queen/worker coordination
+- ✅ `swarm "objective" --codex` - Simple swarm coordination
+
 ## 🚀 Usage
 
 ### Before (Provider Configuration Only)
@@ -78,10 +82,26 @@ OPTIONS:
 
 ## 🎨 Examples
 
+### Hive-Mind (Queen + Workers)
+```bash
+# Spawn Codex for hive-mind coordination
+npx . hive-mind spawn "Refactor authentication" --codex
+```
+
+### Swarm (Simple Multi-Agent)
+```bash
+# Spawn Codex for swarm coordination
+npx . swarm "Build REST API" --codex
+
+# With custom agent count
+npx . swarm "Optimize database" --codex --max-agents 8
+```
+
 ### Basic Usage
 ```bash
-# Spawn Codex for simple task
-npx . hive-mind spawn "Refactor authentication" --codex
+# Both commands work similarly
+npx . hive-mind spawn "Complex task" --codex  # Advanced coordination
+npx . swarm "Simple task" --codex             # Simple coordination
 ```
 
 ### With Configuration
@@ -96,11 +116,13 @@ npx . hive-mind spawn "Build microservices architecture" \
 
 ### Compare with Claude
 ```bash
-# Use Claude Code
+# Hive-mind: Claude vs Codex
 npx . hive-mind spawn "Build API" --claude
-
-# Use Codex instead
 npx . hive-mind spawn "Build API" --codex
+
+# Swarm: Claude vs Codex
+npx . swarm "Build API" --claude
+npx . swarm "Build API" --codex
 ```
 
 ## 🔍 Verification
@@ -145,9 +167,18 @@ cat .hive-mind/sessions/hive-mind-codex-prompt-*.txt
 ## 📝 Files Modified
 
 1. **src/cli/simple-commands/hive-mind.js**:
-   - Added `spawnCodexInstances()` function (lines 2236-2410)
+   - Added `spawnCodexInstances()` function (lines 2244-2512)
    - Added `--codex` flag check (line 911-913)
    - Updated help text (lines 81-82, 112-113)
+   - Full workspace access with `-C`, `--full-auto`, model specification
+   - Memory protocol injection and trust validation
+
+2. **src/cli/simple-commands/swarm.js** ⭐ NEW:
+   - Added Codex spawning logic (lines 896-1052)
+   - Added `--codex` flag check
+   - Updated help text (lines 168, 226, 1714)
+   - Same workspace access features as hive-mind
+   - Full ES module compatibility (uses `import` not `require`)
 
 2. **docs/CODEX_USAGE_GUIDE.md**:
    - Added direct spawning section

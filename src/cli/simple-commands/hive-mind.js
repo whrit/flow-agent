@@ -2297,13 +2297,98 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
       }
 
       if (codexAvailable && !flags.dryRun) {
-        // Build arguments for Codex
-        const codexArgs = [hiveMindPrompt];
+        // Inject memory coordination protocol into CLAUDE.md
+        try {
+          const { injectMemoryProtocol, enhanceHiveMindPrompt } = await import('./inject-memory-protocol.js');
+          await injectMemoryProtocol();
 
-        // Spawn codex with the prompt
+          // Enhance the prompt with memory coordination instructions
+          hiveMindPrompt = enhanceHiveMindPrompt(hiveMindPrompt, workers);
+          console.log(chalk.green('📝 Memory coordination protocol injected into CLAUDE.md'));
+        } catch (err) {
+          // If injection module not available, continue with original prompt
+          console.log(chalk.yellow('⚠️  Memory protocol injection not available, using standard prompt'));
+        }
+
+        // Get current working directory for workspace access
+        const workspaceDir = process.cwd();
+
+        // Check if current directory is configured in Codex config
+        const codexConfigPath = path.join(require('os').homedir(), '.codex', 'config.toml');
+        let projectTrusted = false;
+
+        try {
+          if (existsSync(codexConfigPath)) {
+            const codexConfig = await readFile(codexConfigPath, 'utf8');
+            projectTrusted = codexConfig.includes(`[projects."${workspaceDir}"]`);
+
+            if (projectTrusted) {
+              console.log(chalk.green(`✓ Project is trusted in Codex config`));
+            } else {
+              console.log(chalk.yellow(`⚠️  Warning: Project not marked as trusted in Codex config`));
+              console.log(chalk.gray(`   Codex may prompt for trust verification on first run`));
+              console.log(chalk.gray(`   To trust: Run 'codex' in this directory and accept the trust prompt`));
+            }
+          }
+        } catch (err) {
+          console.log(chalk.gray('Could not verify project trust status'));
+        }
+
+        // Build arguments for Codex with workspace access
+        const codexArgs = [];
+
+        // Add working directory flag to ensure workspace access
+        codexArgs.push('-C', workspaceDir);
+
+        // Add sandbox permissions for file access
+        if (flags['dangerously-bypass-approvals-and-sandbox']) {
+          codexArgs.push('--dangerously-bypass-approvals-and-sandbox');
+          console.log(
+            chalk.yellow(
+              '🔓 Using --dangerously-bypass-approvals-and-sandbox for seamless hive-mind execution',
+            ),
+          );
+        } else if (flags['full-auto'] !== false) {
+          // Default to full-auto for workspace write access
+          codexArgs.push('--full-auto');
+          console.log(
+            chalk.cyan(
+              '🤖 Using --full-auto mode (workspace-write with approval on failure)',
+            ),
+          );
+        }
+
+        // Add approval policy
+        if (flags['ask-for-approval']) {
+          codexArgs.push('-a', flags['ask-for-approval']);
+        } else if (!flags['dangerously-bypass-approvals-and-sandbox']) {
+          // Default to on-failure for automatic execution
+          codexArgs.push('-a', 'on-failure');
+        }
+
+        // Add the prompt as the LAST argument
+        codexArgs.push(hiveMindPrompt);
+
+        // Set up environment variables for Codex
+        const codexEnv = {
+          ...process.env,
+          // Preserve path and home directory
+          HOME: require('os').homedir(),
+          // Ensure Codex can find its config
+          CODEX_CONFIG_DIR: path.join(require('os').homedir(), '.codex'),
+        };
+
+        console.log(chalk.cyan('\n📂 Workspace Configuration:'));
+        console.log(chalk.gray('  Working Directory:'), workspaceDir);
+        console.log(chalk.gray('  Config Directory:'), codexEnv.CODEX_CONFIG_DIR);
+        console.log(chalk.gray('  Trust Status:'), projectTrusted ? chalk.green('Trusted') : chalk.yellow('Unknown'));
+
+        // Spawn codex with properly configured workspace access
         const codexProcess = childSpawn('codex', codexArgs, {
           stdio: 'inherit',
           shell: false,
+          cwd: workspaceDir,
+          env: codexEnv,
         });
 
         // Track child process PID in session
@@ -2386,14 +2471,21 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
         console.log(chalk.gray(`\nFull prompt saved to: ${promptFile}`));
       } else {
         // Codex not available - show instructions
+        const workspaceDir = process.cwd();
+
         console.log(chalk.yellow('\n📋 Manual Execution Instructions:'));
         console.log(chalk.gray('─'.repeat(50)));
         console.log(chalk.gray('1. Install Codex CLI:'));
         console.log(chalk.green('   brew install codex'));
-        console.log(chalk.gray('\n2. Run with the saved prompt:'));
-        console.log(chalk.green(`   codex "${hiveMindPrompt}"`));
-        console.log(chalk.gray('\n3. Or load from file:'));
-        console.log(chalk.green(`   codex "$(cat ${promptFile})"`));
+        console.log(chalk.gray('\n2. Trust this project (first time only):'));
+        console.log(chalk.green(`   cd ${workspaceDir} && codex`));
+        console.log(chalk.gray('   (Accept trust prompt when asked)'));
+        console.log(chalk.gray('\n3. Run with workspace access and the saved prompt:'));
+        console.log(chalk.green(`   codex -C "${workspaceDir}" --full-auto "$(cat ${promptFile})"`));
+        console.log(chalk.gray('\n4. Or with maximum permissions (DANGEROUS):'));
+        console.log(chalk.green(`   codex -C "${workspaceDir}" --dangerously-bypass-approvals-and-sandbox "$(cat ${promptFile})"`));
+        console.log(chalk.gray('\n5. Alternative: Pipe from file:'));
+        console.log(chalk.green(`   cat ${promptFile} | codex -C "${workspaceDir}" --full-auto`));
       }
     } catch (error) {
       console.error(chalk.red('\nFailed to launch Codex:'), error.message);
@@ -2410,6 +2502,8 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
     console.log('• Use --auto-spawn to launch instances automatically');
     console.log('• Add --verbose for detailed coordination context');
     console.log('• Monitor with: claude-flow hive-mind status');
+    console.log('• Trust projects: Run codex in directory first');
+    console.log('• Use --full-auto for automatic workspace access');
     console.log('• Share memories: mcp__ruv-swarm__memory_usage');
   } catch (error) {
     spinner.fail('Failed to prepare Codex coordination');

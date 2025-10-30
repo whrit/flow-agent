@@ -5,9 +5,10 @@
 import { args, mkdirAsync, writeTextFile, exit, cwd } from '../node-compat.js';
 import { spawn, execSync } from 'child_process';
 import { existsSync, chmodSync, statSync, readFileSync } from 'fs';
-import { open } from 'fs/promises';
+import { open, readFile } from 'fs/promises';
 import process from 'process';
 import path from 'path';
+import os from 'os';
 
 /**
  * Detects if the environment is headless (non-interactive)
@@ -165,6 +166,7 @@ EXAMPLES:
   claude-flow swarm "Optimize React app performance" --strategy optimization
   claude-flow swarm "Create microservice" --executor  # Use built-in executor
   claude-flow swarm "Build API" --claude  # Open Claude Code CLI
+  claude-flow swarm "Build API" --codex   # Open Codex CLI
   claude-flow swarm "Build API endpoints" --output-format json  # Get JSON output
   claude-flow swarm "Research AI trends" --output-format json --output-file results.json
 
@@ -222,6 +224,7 @@ OPTIONS:
   --dry-run                  Show configuration without executing
   --executor                 Use built-in executor instead of Claude Code
   --claude                   Open Claude Code CLI
+  --codex                    Open Codex CLI with swarm coordination
   --output-format <format>   Output format: json, text (default: text)
   --output-file <path>       Save output to file instead of stdout
   --no-interactive           Run in non-interactive mode (auto-enabled with --output-format json)
@@ -893,6 +896,164 @@ The swarm should be self-documenting - use memory_store to save all important in
         return;
       }
 
+      // If --codex flag is used, launch Codex CLI with swarm coordination
+      if (flags && flags.codex) {
+        // Inject memory coordination protocol into CLAUDE.md
+        try {
+          const { injectMemoryProtocol, enhanceSwarmPrompt } = await import('./inject-memory-protocol.js');
+          await injectMemoryProtocol();
+
+          // Enhance the prompt with memory coordination instructions
+          swarmPrompt = enhanceSwarmPrompt(swarmPrompt, maxAgents);
+          console.log('📝 Memory coordination protocol injected into CLAUDE.md');
+        } catch (err) {
+          // If injection module not available, continue with original prompt
+          console.log('⚠️  Memory protocol injection not available, using standard prompt');
+        }
+
+        console.log('🐝 Launching Claude Flow Swarm System with Codex...');
+        console.log(`📋 Objective: ${objective}`);
+        console.log(`🎯 Strategy: ${strategy}`);
+        console.log(`🏗️  Mode: ${mode}`);
+        console.log(`🤖 Max Agents: ${maxAgents}\n`);
+
+        console.log('🚀 Launching Codex with Swarm Coordination');
+        console.log('─'.repeat(60));
+
+        // Check if codex command exists
+        try {
+          execSync('which codex', { stdio: 'ignore' });
+        } catch {
+          console.log('❌ Codex CLI not found in PATH');
+          console.log('Install it with: brew install codex');
+          console.log('Or follow: https://docs.openai.com/codex\n');
+          console.log('Falling back to showing what would be executed...');
+          console.log('\nWould execute Codex with swarm objective:');
+          console.log(`📋 Objective: ${objective}`);
+          return;
+        }
+
+        // Get current working directory for workspace access
+        const workspaceDir = process.cwd();
+
+        // Check if current directory is configured in Codex config
+        const codexConfigPath = path.join(os.homedir(), '.codex', 'config.toml');
+        let projectTrusted = false;
+
+        try {
+          if (existsSync(codexConfigPath)) {
+            const codexConfig = await readFile(codexConfigPath, 'utf8');
+            projectTrusted = codexConfig.includes(`[projects."${workspaceDir}"]`);
+
+            if (projectTrusted) {
+              console.log('✓ Project is trusted in Codex config');
+            } else {
+              console.log('⚠️  Warning: Project not marked as trusted in Codex config');
+              console.log('   Codex may prompt for trust verification on first run');
+            }
+          }
+        } catch (err) {
+          // Silently continue if config check fails
+        }
+
+        // Build arguments for Codex with workspace access
+        const codexArgs = [];
+
+        // Add working directory flag to ensure workspace access
+        codexArgs.push('-C', workspaceDir);
+
+        // Add sandbox permissions for file access
+        if (flags['dangerously-bypass-approvals-and-sandbox']) {
+          codexArgs.push('--dangerously-bypass-approvals-and-sandbox');
+          console.log('🔓 Using --dangerously-bypass-approvals-and-sandbox for seamless execution');
+        } else if (flags['full-auto'] !== false) {
+          // Default to full-auto for workspace write access
+          codexArgs.push('--full-auto');
+          console.log('🤖 Using --full-auto mode (workspace-write with approval on failure)');
+        }
+
+        // Add approval policy
+        if (flags['ask-for-approval']) {
+          codexArgs.push('-a', flags['ask-for-approval']);
+        } else if (!flags['dangerously-bypass-approvals-and-sandbox']) {
+          // Default to on-failure for automatic execution
+          codexArgs.push('-a', 'on-failure');
+        }
+
+        // Add model specification
+        codexArgs.push('-m', 'gpt-5-codex');
+
+        // Add the prompt as the LAST argument
+        codexArgs.push(swarmPrompt);
+
+        // Set up environment variables for Codex
+        const codexEnv = {
+          ...process.env,
+          HOME: os.homedir(),
+          CODEX_CONFIG_DIR: path.join(os.homedir(), '.codex'),
+        };
+
+        console.log('\n📂 Workspace Configuration:');
+        console.log('  Working Directory:', workspaceDir);
+        console.log('  Config Directory:', codexEnv.CODEX_CONFIG_DIR);
+        console.log('  Trust Status:', projectTrusted ? '✓ Trusted' : '⚠️  Unknown');
+
+        // Spawn codex with properly configured workspace access
+        const codexProcess = spawn('codex', codexArgs, {
+          stdio: 'inherit',
+          shell: false,
+          cwd: workspaceDir,
+          env: codexEnv,
+        });
+
+        console.log('\n✓ Codex launched with swarm coordination prompt!');
+        console.log('  The swarm coordinator will orchestrate all agent tasks');
+        console.log('  Use MCP tools for coordination and memory sharing');
+
+        console.log('\n💡 Pro Tips:');
+        console.log('─'.repeat(30));
+        console.log('• Use TodoWrite to track parallel tasks');
+        console.log('• Store results with mcp__claude-flow__memory_usage');
+        console.log('• Monitor progress with mcp__claude-flow__swarm_monitor');
+        console.log('• Check task status with mcp__claude-flow__task_status');
+
+        // Set up clean termination
+        const cleanup = () => {
+          console.log('\n🛑 Shutting down swarm gracefully...');
+          if (codexProcess && !codexProcess.killed) {
+            codexProcess.kill('SIGTERM');
+          }
+          process.exit(0);
+        };
+
+        process.on('SIGINT', cleanup);
+        process.on('SIGTERM', cleanup);
+
+        // Wait for codex to exit
+        codexProcess.on('exit', (code) => {
+          if (code === 0) {
+            console.log('\n✓ Swarm execution completed successfully');
+          } else if (code !== null) {
+            console.log(`\n✗ Swarm execution exited with code ${code}`);
+          }
+          process.exit(code || 0);
+        });
+
+        // Handle spawn errors (e.g., codex not found)
+        codexProcess.on('error', (err) => {
+          if (err.code === 'ENOENT') {
+            console.error('\n❌ Codex CLI not found. Please install Codex:');
+            console.error('   brew install codex');
+            console.error('   or visit: https://docs.openai.com/codex');
+          } else {
+            console.error('\n❌ Failed to launch Codex:', err.message);
+          }
+          process.exit(1);
+        });
+
+        return;
+      }
+
       // Check if we're in non-interactive/headless mode FIRST (like alpha.83)
       const isNonInteractive = flags['no-interactive'] || 
                                flags['non-interactive'] || 
@@ -1552,6 +1713,7 @@ OPTIONS:
   --dry-run                  Show configuration without executing
   --executor                 Use built-in executor instead of Claude Code
   --claude                   Open Claude Code CLI
+  --codex                    Open Codex CLI with swarm coordination
   --output-format <format>   Output format: json, text (default: text)
   --output-file <path>       Save output to file instead of stdout
   --no-interactive           Run in non-interactive mode (auto-enabled with --output-format json)

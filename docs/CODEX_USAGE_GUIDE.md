@@ -103,6 +103,23 @@ npx . hive-mind spawn "Optimize database" --codex --queen-type strategic --max-w
 3. Spawns actual Codex process: `codex "Your prompt here"`
 4. Codex receives full instructions and executes with swarm coordination
 
+### Swarm Coordination with Codex ⚡ NEW
+
+```bash
+# 🎯 RECOMMENDED: Direct Codex spawning for swarm coordination
+npx claude-flow@alpha swarm "Build REST API" --codex
+
+# This ACTUALLY launches Codex CLI with swarm coordination prompt
+# Codex will orchestrate multiple agents and execute the objective
+
+# With custom configuration
+npx . swarm "Optimize database queries" --codex --max-agents 8
+
+# Compare with Claude
+npx . swarm "Build API" --claude   # Uses Claude Code
+npx . swarm "Build API" --codex    # Uses Codex
+```
+
 ### Task Management with Codex
 
 ```bash
@@ -121,10 +138,10 @@ npx claude-flow@alpha task create code "Implement JWT authentication" \
   --priority 10
 ```
 
-### Swarm Coordination with Codex
+### Traditional Swarm Coordination (via Provider)
 
 ```bash
-# Initialize a mesh swarm
+# Initialize a mesh swarm with provider configuration
 npx claude-flow@alpha swarm init \
   --provider codex \
   --topology mesh \
