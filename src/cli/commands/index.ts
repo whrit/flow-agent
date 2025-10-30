@@ -16,6 +16,7 @@ import { sparcAction } from './sparc.js';
 import { createMigrateCommand } from './migrate.js';
 import { enterpriseCommands } from './enterprise.js';
 import { createFlowNexusClaudeMd } from '../simple-commands/init/templates/claude-md.js';
+import { createCodexAgentsAppendix } from '../simple-commands/init/templates/agents-md.js';
 
 // Import enhanced orchestration commands
 import { startCommand } from './start.js';
@@ -144,6 +145,11 @@ export function setupCommands(cli: CLI): void {
         description: 'Initialize with Flow Nexus commands, agents, and CLAUDE.md only',
         type: 'boolean',
       },
+      {
+        name: 'codex',
+        description: 'Add Codex-focused guidance to AGENTS.md during initialization',
+        type: 'boolean',
+      },
     ],
     action: async (ctx: CommandContext) => {
       try {
@@ -152,6 +158,7 @@ export function setupCommands(cli: CLI): void {
         const force = (ctx.flags.force as boolean) || (ctx.flags.f as boolean);
         const minimal = (ctx.flags.minimal as boolean) || (ctx.flags.m as boolean);
         const flowNexus = ctx.flags['flow-nexus'] as boolean;
+        const codex = ctx.flags.codex as boolean;
 
         // Handle Flow Nexus minimal init
         if (flowNexus) {
@@ -199,7 +206,7 @@ export function setupCommands(cli: CLI): void {
 
         // Create CLAUDE.md
         const claudeMd = minimal ? createMinimalClaudeMd() : createFullClaudeMd();
-        const { writeFile } = await import('fs/promises');
+        const { writeFile, readFile } = await import('fs/promises');
         await writeFile('CLAUDE.md', claudeMd);
         console.log('  ✓ Created CLAUDE.md');
 
@@ -212,6 +219,34 @@ export function setupCommands(cli: CLI): void {
         const coordinationMd = minimal ? createMinimalCoordinationMd() : createFullCoordinationMd();
         await writeFile('coordination.md', coordinationMd);
         console.log('  ✓ Created coordination.md');
+
+        if (codex) {
+          const agentsPath = 'AGENTS.md';
+          let existingAgents = '';
+          let agentsExists = true;
+
+          try {
+            existingAgents = await readFile(agentsPath, 'utf8');
+          } catch {
+            agentsExists = false;
+          }
+
+          const codexSection = createCodexAgentsAppendix();
+          const sectionHeading = '## Codex Provider Integration Notes';
+          const codexSectionRegex = /(?:^|\n)## Codex Provider Integration Notes[\s\S]*$/;
+          const hasSection = existingAgents.includes(sectionHeading);
+
+          if (hasSection && !force) {
+            console.log('  • AGENTS.md already includes Codex integration notes (use --force to refresh).');
+          } else {
+            const cleaned = agentsExists ? existingAgents.replace(codexSectionRegex, '').trimEnd() : '';
+            const header = cleaned ? '' : '# Agent-Flow Agents\n\n';
+            const prefix = cleaned ? `${cleaned}\n\n` : '';
+            const updated = `${header}${prefix}${codexSection}\n`;
+            await writeFile(agentsPath, updated, 'utf8');
+            console.log('  ✓ Updated AGENTS.md with Codex integration notes');
+          }
+        }
 
         // Create directory structure
         const directories = [
@@ -262,7 +297,7 @@ export function setupCommands(cli: CLI): void {
         success('Claude Code integration files initialized successfully!');
         console.log('\nNext steps:');
         console.log('1. Review and customize the generated files for your project');
-        console.log("2. Run 'npx claude-flow start' to begin the orchestration system");
+        console.log("2. Run 'npx agent-flow start' to begin the orchestration system");
         console.log("3. Use 'claude --dangerously-skip-permissions' for unattended operation");
         console.log('\nNote: Persistence database initialized at memory/claude-flow-data.json');
       } catch (err) {
@@ -1169,10 +1204,10 @@ You are running within the Claude-Flow orchestration system, which provides powe
 ### Available Features
 
 1. **Memory Bank** (Always Available)
-   - Store data: \`npx claude-flow memory store <key> <value>\` - Save important data, findings, or progress
-   - Retrieve data: \`npx claude-flow memory query <key>\` - Access previously stored information
-   - Check status: \`npx claude-flow status\` - View current system/task status
-   - List agents: \`npx claude-flow agent list\` - See active agents
+   - Store data: \`npx agent-flow memory store <key> <value>\` - Save important data, findings, or progress
+   - Retrieve data: \`npx agent-flow memory query <key>\` - Access previously stored information
+   - Check status: \`npx agent-flow status\` - View current system/task status
+   - List agents: \`npx agent-flow agent list\` - See active agents
    - Memory persists across Claude instances in the same namespace
 
 2. **Tool Access**
@@ -1180,9 +1215,9 @@ You are running within the Claude-Flow orchestration system, which provides powe
 
             if (ctx.flags.parallel) {
               enhancedTask += `
-   - **Parallel Execution Enabled**: Use \`npx claude-flow agent spawn <type> --name <name>\` to spawn sub-agents
-   - Create tasks: \`npx claude-flow task create <type> "<description>"\`
-   - Assign tasks: \`npx claude-flow task assign <task-id> <agent-id>\`
+   - **Parallel Execution Enabled**: Use \`npx agent-flow agent spawn <type> --name <name>\` to spawn sub-agents
+   - Create tasks: \`npx agent-flow task create <type> "<description>"\`
+   - Assign tasks: \`npx agent-flow task assign <task-id> <agent-id>\`
    - Break down complex tasks and delegate to specialized agents`;
             }
 
@@ -1196,24 +1231,24 @@ You are running within the Claude-Flow orchestration system, which provides powe
 ### Workflow Guidelines
 
 1. **Before Starting**:
-   - Check memory: \`npx claude-flow memory query previous_work\`
-   - Check system status: \`npx claude-flow status\`
-   - List active agents: \`npx claude-flow agent list\`
-   - List active tasks: \`npx claude-flow task list\`
+   - Check memory: \`npx agent-flow memory query previous_work\`
+   - Check system status: \`npx agent-flow status\`
+   - List active agents: \`npx agent-flow agent list\`
+   - List active tasks: \`npx agent-flow task list\`
 
 2. **During Execution**:
-   - Store findings: \`npx claude-flow memory store findings "your data here"\`
-   - Save checkpoints: \`npx claude-flow memory store progress_${task.replace(/\s+/g, '_')} "current status"\`
-   ${ctx.flags.parallel ? '- Spawn agents: `npx claude-flow agent spawn researcher --name "research-agent"`' : ''}
-   ${ctx.flags.parallel ? '- Create tasks: `npx claude-flow task create implementation "implement feature X"`' : ''}
+   - Store findings: \`npx agent-flow memory store findings "your data here"\`
+   - Save checkpoints: \`npx agent-flow memory store progress_${task.replace(/\s+/g, '_')} "current status"\`
+   ${ctx.flags.parallel ? '- Spawn agents: `npx agent-flow agent spawn researcher --name "research-agent"`' : ''}
+   ${ctx.flags.parallel ? '- Create tasks: `npx agent-flow task create implementation "implement feature X"`' : ''}
 
 3. **Best Practices**:
-   - Use the Bash tool to run \`npx claude-flow\` commands
+   - Use the Bash tool to run \`npx agent-flow\` commands
    - Store data as JSON strings for complex structures
    - Query memory before starting to check for existing work
    - Use descriptive keys for memory storage
    ${ctx.flags.parallel ? '- Coordinate with other agents through shared memory' : ''}
-   ${ctx.flags.research ? '- Store research findings: `npx claude-flow memory store research_findings "data"`' : ''}
+   ${ctx.flags.research ? '- Store research findings: `npx agent-flow memory store research_findings "data"`' : ''}
 
 ## Configuration
 - Instance ID: ${instanceId}
@@ -1227,17 +1262,17 @@ To interact with Claude-Flow, use the Bash tool:
 
 \`\`\`bash
 # Check for previous work
-Bash("npx claude-flow memory query previous_work")
+Bash("npx agent-flow memory query previous_work")
 
 # Store your findings
-Bash("npx claude-flow memory store analysis_results 'Found 3 critical issues...'")
+Bash("npx agent-flow memory store analysis_results 'Found 3 critical issues...'")
 
 # Check system status
-Bash("npx claude-flow status")
+Bash("npx agent-flow status")
 
 # Create and assign tasks (when --parallel is enabled)
-Bash("npx claude-flow task create research 'Research authentication methods'")
-Bash("npx claude-flow agent spawn researcher --name auth-researcher")
+Bash("npx agent-flow task create research 'Research authentication methods'")
+Bash("npx agent-flow agent spawn researcher --name auth-researcher")
 \`\`\`
 
 Now, please proceed with the task: ${task}`;
@@ -1270,7 +1305,7 @@ Now, please proceed with the task: ${task}`;
               console.log(`Coverage: ${ctx.flags.coverage || 80}%`);
               console.log(`Commit: ${ctx.flags.commit || 'phase'}`);
               console.log(`\nEnhanced Features:`);
-              console.log(`  - Memory Bank enabled via: npx claude-flow memory commands`);
+              console.log(`  - Memory Bank enabled via: npx agent-flow memory commands`);
               console.log(`  - Coordination ${ctx.flags.parallel ? 'enabled' : 'disabled'}`);
               console.log(`  - Access Claude-Flow features through Bash tool`);
               return;
@@ -2589,8 +2624,8 @@ function createFullClaudeMd(): string {
 - \`npm run test\`: Run the full test suite
 - \`npm run lint\`: Run ESLint and format checks
 - \`npm run typecheck\`: Run TypeScript type checking
-- \`npx claude-flow start\`: Start the orchestration system
-- \`npx claude-flow --help\`: Show all available commands
+- \`npx agent-flow start\`: Start the orchestration system
+- \`npx agent-flow --help\`: Show all available commands
 
 ## Code Style Preferences
 - Use ES modules (import/export) syntax, not CommonJS (require)
@@ -2625,8 +2660,8 @@ This is a Claude-Flow AI agent orchestration system with the following component
 
 ## Debugging
 - Check logs in \`./claude-flow.log\`
-- Use \`npx claude-flow status\` to check system health
-- Monitor with \`npx claude-flow monitor\` for real-time updates
+- Use \`npx agent-flow status\` to check system health
+- Monitor with \`npx agent-flow monitor\` for real-time updates
 - Verbose output available with \`--verbose\` flag on most commands
 `;
 }
@@ -2638,7 +2673,7 @@ function createMinimalMemoryBankMd(): string {
 ## Quick Reference
 - Project uses SQLite for memory persistence
 - Memory is organized by namespaces
-- Query with \`npx claude-flow memory query <search>\`
+- Query with \`npx agent-flow memory query <search>\`
 
 ## Storage Location
 - Database: \`./memory/claude-flow-data.json\`
@@ -2665,10 +2700,10 @@ The Claude-Flow memory system provides persistent storage and intelligent retrie
 - **Replication**: Optional distributed storage support
 
 ## Commands
-- \`npx claude-flow memory query <search>\`: Search stored information
-- \`npx claude-flow memory stats\`: Show memory usage statistics
-- \`npx claude-flow memory export <file>\`: Export memory to file
-- \`npx claude-flow memory import <file>\`: Import memory from file
+- \`npx agent-flow memory query <search>\`: Search stored information
+- \`npx agent-flow memory stats\`: Show memory usage statistics
+- \`npx agent-flow memory export <file>\`: Export memory to file
+- \`npx agent-flow memory import <file>\`: Import memory from file
 
 ## Configuration
 Memory settings are configured in \`claude-flow.config.json\`:
@@ -2714,9 +2749,9 @@ function createMinimalCoordinationMd(): string {
   return `# Agent Coordination
 
 ## Quick Commands
-- \`npx claude-flow agent spawn <type>\`: Create new agent
-- \`npx claude-flow agent list\`: Show active agents
-- \`npx claude-flow task create <type> <description>\`: Create task
+- \`npx agent-flow agent spawn <type>\`: Create new agent
+- \`npx agent-flow agent list\`: Show active agents
+- \`npx agent-flow task create <type> <description>\`: Create task
 
 ## Agent Types
 - researcher, coder, analyst, coordinator, general
@@ -2746,27 +2781,27 @@ The Claude-Flow coordination system manages multiple AI agents working together 
 ## Coordination Commands
 \`\`\`bash
 # Agent Management
-npx claude-flow agent spawn <type> --name <name> --priority <1-10>
-npx claude-flow agent list
-npx claude-flow agent info <agent-id>
-npx claude-flow agent terminate <agent-id>
+npx agent-flow agent spawn <type> --name <name> --priority <1-10>
+npx agent-flow agent list
+npx agent-flow agent info <agent-id>
+npx agent-flow agent terminate <agent-id>
 
 # Task Management  
-npx claude-flow task create <type> <description> --priority <1-10> --deps <task-ids>
-npx claude-flow task list --verbose
-npx claude-flow task status <task-id>
-npx claude-flow task cancel <task-id>
+npx agent-flow task create <type> <description> --priority <1-10> --deps <task-ids>
+npx agent-flow task list --verbose
+npx agent-flow task status <task-id>
+npx agent-flow task cancel <task-id>
 
 # System Monitoring
-npx claude-flow status --verbose
-npx claude-flow monitor --interval 5000
+npx agent-flow status --verbose
+npx agent-flow monitor --interval 5000
 \`\`\`
 
 ## Workflow Execution
 Workflows are defined in JSON format and can orchestrate complex multi-agent operations:
 \`\`\`bash
-npx claude-flow workflow examples/research-workflow.json
-npx claude-flow workflow examples/development-config.json --async
+npx agent-flow workflow examples/research-workflow.json
+npx agent-flow workflow examples/development-config.json --async
 \`\`\`
 
 ## Advanced Features
@@ -2809,8 +2844,8 @@ Coordination settings in \`claude-flow.config.json\`:
 - Regular cleanup of completed tasks and inactive agents
 
 ## Troubleshooting
-- Check agent health with \`npx claude-flow status\`
-- View detailed logs with \`npx claude-flow monitor\`
+- Check agent health with \`npx agent-flow status\`
+- View detailed logs with \`npx agent-flow monitor\`
 - Restart stuck agents with terminate/spawn cycle
 - Use \`--verbose\` flags for detailed diagnostic information
 `;
@@ -2888,4 +2923,3 @@ memory/sessions/
 ${new Date().toISOString()}
 `;
 }
-
