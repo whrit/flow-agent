@@ -81,19 +81,19 @@
     "tools",
     "alpha"
   ],
-  "author": "rUv",
+  "author": "whrit",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ruvnet/claude-code-flow.git"
+    "url": "git+https://github.com/whrit/agent-flow.git"
   },
   "bugs": {
-    "url": "https://github.com/ruvnet/claude-code-flow/issues"
+    "url": "https://github.com/whrit/agent-flow/issues"
   },
-  "homepage": "https://github.com/ruvnet/claude-code-flow#readme",
+  "homepage": "https://github.com/whrit/agent-flow#readme",
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=22.0.0",
+    "pnpm": ">=10.18.0"
   },
   "files": [
     "cli.js",
