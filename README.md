@@ -1,6 +1,6 @@
 # Bot-Flow
 
-Bot-Flow is the successor to the Claude-Flow orchestration platform. It keeps the formidable multi-agent foundation built by the Claude-Flow team and evolves it into a provider-neutral toolkit that emphasises predictable operations, testability, and enterprise deployment story. Day-to-day workflows remain compatible with the existing CLI and MCP integrations while branding, documentation, and roadmap now reflect the Bot-Flow identity.
+Bot-Flow is a personal successor to the Claude-Flow orchestration platform. It keeps the formidable multi-agent foundation built by the Claude-Flow team and evolves it into a provider-neutral toolkit that emphasises predictable operations, testability, and enterprise deployment story. Day-to-day workflows remain compatible with the existing CLI and MCP integrations while branding, documentation, and roadmap now reflect the Bot-Flow identity.
 
 > Bot-Flow would not exist without the pioneering work of the [Claude-Flow project](https://github.com/ruvnet/claude-flow). This repository retains their implementation history and pays explicit acknowledgement to the original maintainers for designing the architecture we continue to iterate on.
 
