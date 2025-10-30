@@ -212,12 +212,16 @@ if (estimate.estimatedCost.total < 0.10) {
 ### Available Models
 
 ```javascript
-// Supported models (pricing varies)
+// ChatGPT Account (recommended):
 const models = [
-  'gpt-4o-mini',    // $0.15/$0.60 per 1M tokens (cheapest)
-  'gpt-4o',         // $2.50/$10 per 1M tokens
-  'o1-mini',        // $3/$12 per 1M tokens (reasoning)
-  'o1-preview',     // $15/$60 per 1M tokens (advanced reasoning)
+  'gpt-5-codex',    // Base model (works with ChatGPT auth)
+];
+
+// OpenAI API Key Account:
+const models = [
+  'gpt-5-codex Low',     // Fast, efficient
+  'gpt-5-codex Medium',  // Balanced
+  'gpt-5-codex High',    // Advanced reasoning
 ];
 ```
 
@@ -226,7 +230,7 @@ const models = [
 ```javascript
 const config = {
   provider: 'codex',
-  model: 'gpt-4o-mini',           // Default model
+  model: 'gpt-5-codex',           // Default model (ChatGPT auth)
   temperature: 0.7,                // 0.0 - 2.0 (creativity)
   maxTokens: 1000,                 // Response length limit
   timeout: 30000,                  // 30s timeout
@@ -250,13 +254,15 @@ const config = {
 ./codex-aarch64-apple-darwin config show
 ```
 
-**ChatGPT accounts do NOT support:**
-- `gpt-4o-mini` ❌
-- `gpt-4o` ❌
-- `o1-preview` ❌
-- `o1-mini` ❌
+**ChatGPT accounts support:**
+- `gpt-5-codex` ✅ (base model)
 
-**To use these models, you need an OpenAI API key:**
+**ChatGPT accounts do NOT support:**
+- `gpt-5-codex Low` ❌
+- `gpt-5-codex Medium` ❌
+- `gpt-5-codex High` ❌
+
+**To use tier-specific models, you need an OpenAI API key:**
 
 ```bash
 # Logout from ChatGPT account

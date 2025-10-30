@@ -43,6 +43,7 @@ export type LLMModel =
   | 'generate-xlarge'
   | 'generate-medium'
   // Codex Models (OpenAI)
+  | 'gpt-5-codex'
   | 'gpt-5-codex Low'
   | 'gpt-5-codex Medium'
   | 'gpt-5-codex High'

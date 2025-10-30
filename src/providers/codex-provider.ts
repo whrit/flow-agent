@@ -26,16 +26,19 @@ export class CodexProvider extends BaseProvider {
   readonly name: LLMProvider = 'codex';
   readonly capabilities: ProviderCapabilities = {
     supportedModels: [
+      'gpt-5-codex',        // Base model (maps to Medium)
       'gpt-5-codex Low',
       'gpt-5-codex Medium',
       'gpt-5-codex High',
     ],
     maxContextLength: {
+      'gpt-5-codex': 128000,
       'gpt-5-codex Low': 128000,
       'gpt-5-codex Medium': 128000,
       'gpt-5-codex High': 128000,
     } as Record<LLMModel, number>,
     maxOutputTokens: {
+      'gpt-5-codex': 32768,
       'gpt-5-codex Low': 16384,
       'gpt-5-codex Medium': 32768,
       'gpt-5-codex High': 65536,
@@ -56,6 +59,11 @@ export class CodexProvider extends BaseProvider {
       concurrentRequests: 50,
     },
     pricing: {
+      'gpt-5-codex': {
+        promptCostPer1k: 0.0005, // Base model uses Medium pricing
+        completionCostPer1k: 0.002,
+        currency: 'USD',
+      },
       'gpt-5-codex Low': {
         promptCostPer1k: 0.0002, // Estimated - adjust based on actual pricing
         completionCostPer1k: 0.0008,
@@ -381,6 +389,7 @@ export class CodexProvider extends BaseProvider {
    */
   private getModelDescription(model: LLMModel): string {
     const descriptions: Record<string, string> = {
+      'gpt-5-codex': 'Base Codex model (equivalent to Medium tier)',
       'gpt-5-codex Low': 'Fast and efficient model for simple coding tasks',
       'gpt-5-codex Medium': 'Balanced model for most coding and development tasks',
       'gpt-5-codex High': 'Advanced model for complex reasoning and challenging tasks',
