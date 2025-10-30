@@ -1,8 +1,10 @@
-# Codex Feature Parity Update - 2025-10-30
+# Codex Feature Parity Update - 2025-10-30 (Under Review)
 
 ## 🎯 Overview
 
 This document summarizes the Codex CLI integration improvements made to achieve feature parity with Claude Code integration in claude-flow.
+
+> ⚠️ **Status Update (2025-10-30):** Subsequent regression testing uncovered gaps, so Codex parity is **not** yet considered complete. Treat the sections below as historical notes only. For the current remediation plan, see [`docs/CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md).
 
 ## ✅ Completed Improvements
 
@@ -152,7 +154,7 @@ if (flags && flags.codex) {
 
 ## 📊 Current Parity Status
 
-### Feature Parity: 100% 🎉 (up from ~40%)
+### Historical Parity Snapshot (Superseded)
 
 | Feature | Claude Code | Codex CLI | Status |
 |---------|-------------|-----------|--------|
@@ -171,7 +173,7 @@ if (flags && flags.codex) {
 | **Session Restoration** | ✅ | ⚠️ | ⚠️ PARTIAL |
 | **Telemetry Tracking** | ✅ | ❌ | ⏳ PENDING |
 
-**Core Feature Parity: 100% Complete** ✅
+**Historical Claim:** 100% parity (superseded; see [`CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md))
 
 *Note: Session Restoration and Telemetry Tracking are optional enhancement features that don't affect core functionality.*
 
@@ -185,7 +187,7 @@ if (flags && flags.codex) {
 **Effort**: 4 hours
 
 ### What Was Added
-The automation commands now have full Codex support, achieving 100% parity with Claude Code integration.
+The automation commands gained Codex support, but parity is still under remediation; see [`docs/CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md) for outstanding gaps.
 
 ### Implementation Details
 
@@ -352,16 +354,16 @@ npx . automation mle-star \
 
 ---
 
-## 🎉 Key Achievements
+## 🎉 Key Achievements (Historical Snapshot)
 
-### 1. Feature Parity Achieved: 100% 🎊
+### 1. Historical Parity Celebration (Superseded) 🎊
 - **Before**: ~40% parity (started with basic provider support)
 - **Milestone 1**: ~70% parity (hive-mind and swarm support)
-- **Final**: **100% parity** (automation/MLE-STAR support)
+- **Final (historical)**: Claimed parity after automation/MLE-STAR support — now marked inaccurate pending rebuild.
 - **Total Improvement**: +60% (150% increase)
 
-### 2. ALL Core Commands Now Support Both Providers
-Every primary command now supports both Claude Code and Codex CLI:
+### 2. Command Coverage Snapshot (Oct 2025)
+Every primary command was reported as supporting both Claude Code and Codex CLI:
 - ✅ `hive-mind spawn "objective" --codex`
 - ✅ `swarm "objective" --codex`
 - ✅ `automation run-workflow workflow.json --codex` ⭐ **NEW**
@@ -370,16 +372,16 @@ Every primary command now supports both Claude Code and Codex CLI:
 - ✅ `agent spawn researcher --provider codex`
 - ✅ `sparc run architect "design" --provider codex`
 
-### 3. Workspace Access Parity
-Codex now has IDENTICAL workspace access to Claude Code:
+### 3. Workspace Access Status (Oct 2025)
+Codex was reported as matching Claude Code workspace access with:
 - ✅ Working directory configuration
 - ✅ Permission flags
 - ✅ Environment variables
 - ✅ Trust validation
 - ✅ Memory protocol integration
 
-### 4. User Experience Consistency
-Users can now:
+### 4. User Experience Notes (Oct 2025)
+Users were advised they could:
 - Switch between `--claude` and `--codex` seamlessly
 - Use the same command syntax for both providers
 - Get consistent output and feedback
@@ -433,13 +435,13 @@ $ npx . automation mle-star --dataset data.csv --target price --codex
 
 ---
 
-## 🚀 Next Steps (Optional Enhancements)
+## 🚀 Next Steps (Historical Notes)
 
-### ✅ All Critical Features Complete!
+### ✅ Original Completion Claim (Superseded)
 
-**Core Feature Parity: 100%** - All critical functionality is now complete!
+This section recorded the belief that core parity was finished; current remediation tasks live in [`docs/CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md).
 
-### Optional Future Enhancements
+### Optional Future Enhancements (now part of remediation discussions)
 
 **Short Term (If Needed)**
 1. **Enhanced session restoration** (4 hours)
@@ -485,7 +487,7 @@ $ npx . automation mle-star --dataset data.csv --target price --codex
 
 ## ✨ Summary
 
-This update achieved **100% feature parity** between Claude Code and Codex CLI integration in claude-flow!
+This update originally claimed **100% feature parity** between Claude Code and Codex CLI integration in claude-flow. Subsequent audits invalidated that claim; use [`docs/CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md) to track remaining work.
 
 ### Milestones Completed:
 
@@ -495,9 +497,9 @@ This update achieved **100% feature parity** between Claude Code and Codex CLI i
 3. **Hive-Mind Integration**: Full `--codex` flag support for complex coordination
 
 **Phase 2 (This Session)** ⭐:
-4. **Automation/MLE-STAR Support**: Complete Codex integration for workflow automation
-5. **100% Parity Achieved**: All core commands now support both providers
-6. **Updated Documentation**: Comprehensive guides reflecting complete parity
+4. **Automation/MLE-STAR Support**: Introduced Codex integration for workflow automation
+5. **Historical Parity Claim**: Reported all core commands supporting both providers (disputed)
+6. **Updated Documentation**: Guides updated to claim complete parity (now annotated as historical)
 
 ### All Core Commands Now Support Codex:
 - ✅ `hive-mind spawn "objective" --codex` - Complex multi-agent coordination
@@ -511,13 +513,11 @@ This update achieved **100% feature parity** between Claude Code and Codex CLI i
 ### Feature Parity Journey:
 - **Starting Point**: ~40% parity (basic provider support)
 - **Phase 1 Complete**: ~70% parity (hive-mind + swarm)
-- **Phase 2 Complete**: **100% parity** (automation + MLE-STAR) ✅
+- **Phase 2 (historical)**: Reported parity after automation + MLE-STAR ✅ (superseded by ongoing audit)
 
 **Total Improvement**: +60% (150% increase) 🎉
 
 ---
 
-**Status**: ✅ **100% CORE FEATURE PARITY ACHIEVED**
-**Critical Work**: ✅ Complete
-**Overall Progress**: 100% Complete (Core Features)
-**Optional Enhancements**: Session restoration & telemetry (non-critical)
+**Historical Status Log**: Documented as “100% core feature parity achieved” in Oct 2025.
+**Remediation Note**: Active gaps and validation tasks now tracked in [`docs/CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md).

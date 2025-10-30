@@ -44,7 +44,7 @@ Restore real feature parity between Codex Flow and Claude Flow by addressing the
 - [x] Reinstate unit/integration tests by mocking the Codex SDK so parity assertions run in CI.
 
 ### 4. Documentation Hygiene
-- [ ] Amend parity claims in existing docs once fixes are merged.
+- [x] Amend parity claims in existing docs once fixes are merged.
 - [x] Keep this tracker updated with status notes and links to PRs/tests.
 
 ---
@@ -66,6 +66,7 @@ Restore real feature parity between Codex Flow and Claude Flow by addressing the
 |------|--------|-------|-------|
 | 2025-10-30 | Tracker created, findings captured | Codex CLI Agent | Initial audit from parity review |
 | 2025-10-30 | Automation, hive-mind, and provider parity fixes landed with unit coverage | Codex CLI Agent | See new tests under `src/cli/simple-commands/__tests__/` and `src/__tests__/unit/` |
+| 2025-10-31 | Doc sweep linked historical parity claims to tracker | Codex CLI Agent | Updated parity docs & handoff notes to flag superseded messaging |
 
 ---
 
@@ -74,7 +75,7 @@ Restore real feature parity between Codex Flow and Claude Flow by addressing the
 1. Land automation executor fixes + tests.
 2. Upgrade Codex hive-mind prompt and CLI wiring.
 3. Expand provider capabilities and revive test suites.
-4. Update parity documentation once validations are green.
+4. Monitor parity documentation so messaging stays aligned with tracker as fixes land.
 
 ---
 

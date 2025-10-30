@@ -1,6 +1,8 @@
 # Feature Parity Quick Reference
 **Claude Code ↔ Codex Integration Comparison**
 
+> ⚠️ **Note:** This quick reference predates the latest regression audit. Use it for historical context only and rely on [`docs/CODEX_PARITY_REBUILD.md`](../CODEX_PARITY_REBUILD.md) for the active plan.
+
 ## 🎯 At-a-Glance Status
 
 | Category | Claude Code | Codex | Gap |

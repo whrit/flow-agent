@@ -18,6 +18,9 @@ import {
   RateLimitError,
   AuthenticationError,
 } from './types.js';
+import { translateCodexEvent } from '../integration/codex/event-translator.js';
+import { generateCorrelationId } from '../integration/codex/types.js';
+import type { CodexEvent } from '../integration/codex/types.js';
 
 // Note: Real Codex SDK types are imported from '@openai/codex-sdk'
 // The SDK uses: Thread, Turn, ThreadEvent, Usage, etc.
@@ -85,6 +88,235 @@ export class CodexProvider extends BaseProvider {
   private codexClient?: Codex;
   private headers: Record<string, string> = {};
   private threadId?: string; // Cache thread ID for resumption
+  private mapThreadEventToCodexEvent(rawEvent: any): CodexEvent | null {
+    if (!rawEvent || typeof rawEvent !== 'object') {
+      return null;
+    }
+
+    const eventType = rawEvent.type;
+    if (typeof eventType !== 'string') {
+      return null;
+    }
+
+    const base = {
+      jsonrpc: '2.0',
+      event: eventType as any,
+      data: {} as Record<string, any>,
+    };
+
+    switch (eventType) {
+      case 'thread.started':
+        base.data = {
+          thread_id: rawEvent.thread_id,
+          agent_name: rawEvent.agent_name,
+          workspace_path: rawEvent.workspace_path,
+          metadata: rawEvent.metadata,
+        };
+        return base;
+
+      case 'turn.started':
+        base.data = {
+          turn_id: rawEvent.turn_id,
+          thread_id: rawEvent.thread_id,
+          user_prompt: rawEvent.user_prompt,
+          context: rawEvent.context,
+        };
+        return base;
+
+      case 'turn.completed':
+        base.data = {
+          turn_id: rawEvent.turn_id,
+          thread_id: rawEvent.thread_id,
+          summary: rawEvent.summary,
+        };
+        return base;
+
+      case 'turn.failed':
+        base.data = {
+          turn_id: rawEvent.turn_id,
+          thread_id: rawEvent.thread_id,
+          error: rawEvent.error,
+        };
+        return base;
+
+      case 'item.completed': {
+        const item = rawEvent.item || {};
+        const content: Record<string, any> = {
+          ...(item.content ?? {}),
+        };
+
+        const setIfMissing = (sourceValue: any, targetKey: string) => {
+          if (sourceValue === undefined || sourceValue === null) {
+            return;
+          }
+          if (content[targetKey] === undefined) {
+            content[targetKey] = sourceValue;
+          }
+        };
+
+        setIfMissing(item.text, 'text');
+        setIfMissing(item.tokens_used, 'tokens_used');
+        setIfMissing(item.model, 'model');
+        setIfMissing(item.command, 'command');
+        setIfMissing(item.exit_code, 'exit_code');
+        setIfMissing(item.aggregated_output, 'stdout');
+        setIfMissing(item.stdout, 'stdout');
+        setIfMissing(item.stderr, 'stderr');
+        setIfMissing(item.tool_name, 'tool_name');
+        setIfMissing(item.parameters, 'parameters');
+        if (content.parameters === undefined && item.arguments !== undefined) {
+          content.parameters = item.arguments;
+        }
+        setIfMissing(item.result, 'result');
+        setIfMissing(item.execution_time_ms, 'execution_time_ms');
+        setIfMissing(item.status, 'status');
+        setIfMissing(item.reasoning_steps, 'reasoning_steps');
+        setIfMissing(item.confidence, 'confidence');
+        setIfMissing(item.file_path, 'file_path');
+        setIfMissing(item.operation, 'operation');
+        setIfMissing(item.patch, 'patch');
+        if (content.patch === undefined && item.diff !== undefined) {
+          content.patch = item.diff;
+        }
+        setIfMissing(item.lines_added, 'lines_added');
+        setIfMissing(item.lines_removed, 'lines_removed');
+        setIfMissing(item.sha_before, 'sha_before');
+        setIfMissing(item.sha_after, 'sha_after');
+        setIfMissing(item.metadata, 'metadata');
+
+        base.data = {
+          item_id: item.id,
+          turn_id: item.turn_id ?? rawEvent.turn_id,
+          item_type: item.type,
+          timestamp: rawEvent.timestamp,
+          content,
+        };
+        return base;
+      }
+
+      case 'error':
+        base.data = {
+          error_id: rawEvent.error_id,
+          thread_id: rawEvent.thread_id,
+          error: rawEvent.error,
+        };
+        return base;
+
+      default:
+        return null;
+    }
+  }
+
+  private emitTranslatedCodexEvent(rawEvent: any, correlationId: string): void {
+    const codexEvent = this.mapThreadEventToCodexEvent(rawEvent);
+    if (!codexEvent) {
+      return;
+    }
+
+    const translation = translateCodexEvent(codexEvent, correlationId);
+    if (translation.success) {
+      for (const translated of translation.events) {
+        this.emit(translated.type, translated);
+      }
+    } else {
+      this.emit('codex:translation:error', {
+        originalEvent: codexEvent,
+        errors: translation.errors,
+      });
+    }
+  }
+
+  private emitCodexTurnArtifacts(turn: Turn, correlationId: string): void {
+    if (!turn) {
+      return;
+    }
+
+    this.emitTranslatedCodexEvent(
+      {
+        type: 'turn.completed',
+        turn_id: (turn as any).id,
+        thread_id: (turn as any).thread_id,
+        summary: (turn as any).summary,
+      },
+      correlationId,
+    );
+
+    if (Array.isArray(turn.items)) {
+      for (const item of turn.items as any[]) {
+        this.emitTranslatedCodexEvent(
+          {
+            type: 'item.completed',
+            item,
+          },
+          correlationId,
+        );
+      }
+    }
+  }
+  /**
+   * Merge config/request level overrides into the thread options passed to Codex.
+   * Ensures the CLI receives a full context (working directory, sandbox, approvals, etc.).
+   */
+  private resolveThreadOptions(model: LLMModel, request?: LLMRequest): Record<string, any> {
+    const configOptions = {
+      ...(this.config.providerOptions ?? {}),
+      ...(this.config.providerOptions?.codex ?? {}),
+    };
+
+    const requestOptionsRaw = request?.providerOptions ?? {};
+    const requestCodex = (requestOptionsRaw as Record<string, any>)?.codex ?? {};
+    const requestOptions = {
+      ...requestOptionsRaw,
+      ...requestCodex,
+    };
+
+    const merged = {
+      ...configOptions,
+      ...requestOptions,
+    };
+
+    const workingDirectory =
+      merged.workingDirectory ||
+      merged.cwd ||
+      process.cwd();
+
+    const sandboxMode =
+      merged.sandboxMode ||
+      merged.sandbox ||
+      'workspace-write';
+
+    const approvalPolicy =
+      merged.approvalPolicy ||
+      merged.askForApproval ||
+      'on-failure';
+
+    const threadOptions: Record<string, any> = {
+      model: this.mapToCodexModel(model),
+      workingDirectory,
+      sandboxMode,
+      approvalPolicy,
+      skipGitRepoCheck:
+        merged.skipGitRepoCheck !== undefined ? merged.skipGitRepoCheck : true,
+    };
+
+    if (merged.profile) {
+      threadOptions.profile = merged.profile;
+    }
+    if (merged.config) {
+      threadOptions.config = merged.config;
+    }
+    if (merged.baseInstructions) {
+      threadOptions.baseInstructions = merged.baseInstructions;
+    }
+    if (merged.includePlanTool !== undefined) {
+      threadOptions.includePlanTool = merged.includePlanTool;
+    }
+    if (merged.includeApplyPatchTool !== undefined) {
+      threadOptions.includeApplyPatchTool = merged.includeApplyPatchTool;
+    }
+
+    return threadOptions;
+  }
 
   protected async doInitialize(): Promise<void> {
     // Note: Codex CLI no longer requires an API key
@@ -134,22 +366,21 @@ export class CodexProvider extends BaseProvider {
     }
 
     const model = request.model || this.config.model;
+    const threadOptions = this.resolveThreadOptions(model, request);
 
     try {
       // Get or create thread
       const thread = this.threadId
-        ? this.codexClient.resumeThread(this.threadId, {
-            model: this.mapToCodexModel(model),
-          })
-        : this.codexClient.startThread({
-            model: this.mapToCodexModel(model),
-          });
+        ? this.codexClient.resumeThread(this.threadId, threadOptions)
+        : this.codexClient.startThread(threadOptions);
 
       // Build input from messages
       const prompt = this.formatMessagesToPrompt(request, model);
 
       // Run turn (non-streaming)
       const turn = await thread.run(prompt);
+      const correlationId = generateCorrelationId('codex');
+      this.emitCodexTurnArtifacts(turn, correlationId);
 
       // Cache thread ID
       if (thread.id) {
@@ -201,16 +432,13 @@ export class CodexProvider extends BaseProvider {
     }
 
     const model = request.model || this.config.model;
+    const threadOptions = this.resolveThreadOptions(model, request);
 
     try {
       // Get or create thread
       const thread = this.threadId
-        ? this.codexClient.resumeThread(this.threadId, {
-            model: this.mapToCodexModel(model),
-          })
-        : this.codexClient.startThread({
-            model: this.mapToCodexModel(model),
-          });
+        ? this.codexClient.resumeThread(this.threadId, threadOptions)
+        : this.codexClient.startThread(threadOptions);
 
       // Build input from messages
       const prompt = this.formatMessagesToPrompt(request, model);
@@ -219,8 +447,11 @@ export class CodexProvider extends BaseProvider {
       const { events } = await thread.runStreamed(prompt);
 
       let accumulatedContent = '';
+      const correlationId = generateCorrelationId('codex');
 
       for await (const event of events) {
+        this.emitTranslatedCodexEvent(event, correlationId);
+
         if (event.type === 'thread.started') {
           // Cache thread ID
           this.threadId = event.thread_id;

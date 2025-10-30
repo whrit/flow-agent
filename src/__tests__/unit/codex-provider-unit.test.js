@@ -98,6 +98,14 @@ describe('CodexProvider prompt construction', () => {
     });
 
     expect(mockThread.run).toHaveBeenCalledTimes(1);
+    const startOptions = provider['codexClient'].startThread.mock.calls[0][0];
+    expect(startOptions).toMatchObject({
+      model: 'gpt-5-codex',
+      workingDirectory: process.cwd(),
+      sandboxMode: 'workspace-write',
+      approvalPolicy: 'on-failure',
+      skipGitRepoCheck: true,
+    });
     const promptArg = mockThread.run.mock.calls[0][0];
     expect(promptArg).toContain('"tools"');
     expect(promptArg).toContain('memory_usage');

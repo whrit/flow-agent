@@ -228,7 +228,11 @@ function translateItemCompleted(
           itemId: data.item_id,
           turnId: data.turn_id,
           reasoningSteps: data.content?.reasoning_steps || [],
-          confidence: data.content?.confidence || 0,
+          confidence:
+            data.content?.confidence !== undefined
+              ? data.content.confidence
+              : null,
+          raw: data.content || {},
         },
         metadata,
       };
@@ -259,6 +263,9 @@ function translateItemCompleted(
           patch: data.content?.patch || '',
           linesAdded: data.content?.lines_added || 0,
           linesRemoved: data.content?.lines_removed || 0,
+          shaBefore: data.content?.sha_before || null,
+          shaAfter: data.content?.sha_after || null,
+          metadata: data.content?.metadata || {},
         },
         metadata,
       };

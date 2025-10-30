@@ -2,7 +2,9 @@
 
 ## Executive Summary
 
-Successfully implemented workspace and platform access for Codex instances in the Hive Mind coordination system, providing **identical capabilities** to Claude Code. Codex agents now have full workspace access, proper trust verification, MCP server integration, and memory coordination.
+> ⚠️ **Status Update:** Later regressions showed Codex is still missing features relative to Claude. The details below capture the original implementation, but parity is currently **under remediation**. See [`docs/CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md) for the live plan.
+
+Successfully implemented workspace and platform access for Codex instances in the Hive Mind coordination system, aiming to provide identical capabilities to Claude Code. Codex agents now have full workspace access, proper trust verification, MCP server integration, and memory coordination; however, further validation is required before claiming parity.
 
 ## Implementation Details
 
@@ -331,7 +333,7 @@ Could not verify project trust status
 
 ## Success Metrics
 
-✅ **Feature Parity**: 100% - All Claude Code features implemented for Codex
+✅ **Feature Parity (historical claim)**: Logged as 100% during initial rollout — now under remediation per [`docs/CODEX_PARITY_REBUILD.md`](CODEX_PARITY_REBUILD.md)
 ✅ **Code Quality**: Builds successfully, no new lint errors
 ✅ **Documentation**: Comprehensive guides created
 ✅ **Error Handling**: Graceful degradation with helpful messages

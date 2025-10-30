@@ -73,6 +73,17 @@ jobs:
       - name: Run all tests  
         run: npm test
 
+      - name: Codex smoke test (optional)
+        if: vars.CODEX_SMOKE_TEST == 'true' || vars.CODEX_SMOKE_TEST == '1'
+        env:
+          CODEX_SMOKE_TEST: '1'
+          CODEX_SMOKE_TEST_BINARY: ${{ vars.CODEX_SMOKE_TEST_BINARY }}
+          CODEX_SMOKE_TEST_MODEL: ${{ vars.CODEX_SMOKE_TEST_MODEL }}
+          CODEX_SMOKE_TEST_SANDBOX: ${{ vars.CODEX_SMOKE_TEST_SANDBOX }}
+          CODEX_SMOKE_TEST_APPROVAL: ${{ vars.CODEX_SMOKE_TEST_APPROVAL }}
+          CODEX_SMOKE_TEST_API_KEY: ${{ secrets.CODEX_SMOKE_TEST_API_KEY }}
+        run: npm run test:codex:smoke
+
       - name: Generate coverage report
         if: matrix.os == 'ubuntu-latest'
         run: npm run test:coverage

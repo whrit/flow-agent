@@ -1,23 +1,39 @@
-# Context Transition Document: Codex Integration 100% Complete
+# Context Transition Document: Codex Integration (Parity Audit In Progress)
 **Date**: 2025-10-30
 **Agent**: Claude Code (Sonnet 4.5)
 **Session Type**: Feature Implementation & Bug Fixes
-**Status**: ✅ Complete - All Critical Features Working
+**Status**: ⚠️ Under Review – Regression fixes required
 
 ---
 
-## 🎯 Mission Summary
+## 🎯 Reality Check (2025-10-30)
 
-Successfully achieved **100% core feature parity** between Claude Code and Codex CLI integration in claude-flow, then resolved two critical runtime issues (ES modules + prompt compatibility).
+Subsequent audits uncovered regression areas that invalidate the earlier “100% core feature parity” claim. Codex support remains functional, but several gaps prevent parity with the Claude CLI experience.
+
+### Why parity is not yet achieved
+
+- Automation workflows aborted when Claude CLI was absent, even with `--codex`.
+- Hive-mind prompts for Codex omitted Task-tool/MCP instructions, limiting multi-agent behaviour.
+- Codex processes were launched without a model flag, contradicting doc examples.
+- `CodexProvider` did not expose tool/function capabilities and flattened structured requests.
+- All Codex integration suites were skipped, so parity was never validated through CI.
+
+The remediation plan (tracked in `docs/CODEX_PARITY_REBUILD.md`) is now in progress. Until integration coverage is restored, treat the sections below as historical context rather than current state.
+
+---
+
+## ✅ Historical Mission Summary (April 30 Worklog)
+
+Originally reported **100% core feature parity** between Claude Code and Codex CLI integration in claude-flow, then resolved two critical runtime issues (ES modules + prompt compatibility).
 
 **Feature Parity Journey**:
 - Starting: ~40% (basic provider support)
 - Phase 1: ~70% (hive-mind + swarm)
-- Phase 2: **100%** (automation/MLE-STAR + bug fixes) ✅
+- Phase 2 (historical): reported **100%** parity (automation/MLE-STAR + bug fixes) ✅
 
 ---
 
-## ✅ Completed Work
+## ✅ Completed Work (As Originally Reported)
 
 ### Phase 1: Automation/MLE-STAR Codex Support (Hours 1-2)
 
@@ -61,7 +77,7 @@ $ npx . automation run-workflow test-workflow.json --codex
 ```
 
 **Documentation Updated**:
-- `docs/CODEX_PARITY_UPDATE.md` - Updated to 100% parity status with full implementation details
+- `docs/CODEX_PARITY_UPDATE.md` - Logged a 100% parity status (now annotated as historical with remediation link)
 
 ---
 
@@ -168,7 +184,7 @@ $ npx . hive-mind spawn "Test API" --codex
 ### Documentation Files:
 4. **`docs/CODEX_PARITY_UPDATE.md`**
    - Purpose: Feature parity tracking
-   - Changes: Updated to 100% status with full implementation details
+   - Changes: Documented 100% parity claim (now annotated as historical with remediation link)
    - Lines modified: 153-523 (complete rewrite of status section)
 
 ---
@@ -259,24 +275,24 @@ const stdioConfig = (this.options.nonInteractive && binary === 'claude') ?
 
 ## 📊 Current System State
 
-### Feature Parity Status: 100% ✅
+### Feature Parity Status: 🚧 Pending Revalidation
 
-| Feature | Claude Code | Codex CLI | Status |
-|---------|-------------|-----------|--------|
-| **Direct CLI Spawning** | ✅ | ✅ | ✅ COMPLETE |
-| **Hive-Mind Spawn** | ✅ | ✅ | ✅ COMPLETE |
-| **Swarm Spawn** | ✅ | ✅ | ✅ COMPLETE |
-| **Automation/MLE-STAR** | ✅ | ✅ | ✅ COMPLETE |
-| **Workspace Access** | ✅ | ✅ | ✅ COMPLETE |
-| **Memory Protocol** | ✅ | ✅ | ✅ COMPLETE |
-| **Trust Validation** | ✅ | ✅ | ✅ COMPLETE |
-| **Session Management** | ✅ | ✅ | ✅ COMPLETE |
-| **Provider Configuration** | ✅ | ✅ | ✅ COMPLETE |
-| **Task Create** | ✅ | ✅ | ✅ COMPLETE |
-| **Agent Spawn** | ✅ | ✅ | ✅ COMPLETE |
-| **SPARC Workflow** | ✅ | ✅ | ✅ COMPLETE |
-| **Session Restoration** | ✅ | ⚠️ | ⚠️ PARTIAL (optional) |
-| **Telemetry Tracking** | ✅ | ❌ | ⏳ PENDING (optional) |
+| Feature | Claude Code | Codex CLI | Status | Notes (2025-10-30 audit) |
+|---------|-------------|-----------|--------|--------------------------|
+| **Direct CLI Spawning** | ✅ | ⚠️ | ⚠️ Needs retest | Codex launched without model flag; fixed in parity tracker |
+| **Hive-Mind Spawn** | ✅ | ⚠️ | ⚠️ Needs retest | Prompt lacked Task/MCP scaffolding; remediation in progress |
+| **Swarm Spawn** | ✅ | ⚠️ | ⚠️ Needs retest | Depends on shared prompt fixes |
+| **Automation/MLE-STAR** | ✅ | ⚠️ | ⚠️ Needs retest | Automation bailed when Claude CLI missing |
+| **Workspace Access** | ✅ | ✅ | 🚧 Untested | Requires integration suite coverage |
+| **Memory Protocol** | ✅ | ⚠️ | ⚠️ Needs retest | Prompt gaps prevented enforced memory workflow |
+| **Trust Validation** | ✅ | ✅ | 🚧 Untested | Ensure CLI args still align after fixes |
+| **Session Management** | ✅ | ⚠️ | ⚠️ Partial | Pause/resume logic requires validation with Codex runs |
+| **Provider Configuration** | ✅ | ⚠️ | ⚠️ Needs retest | Provider lacked tool/function support pre-fix |
+| **Task Create** | ✅ | ⚠️ | ⚠️ Needs retest | Depends on provider capability updates |
+| **Agent Spawn** | ✅ | ⚠️ | ⚠️ Needs retest | Same as above |
+| **SPARC Workflow** | ✅ | ⚠️ | ⚠️ Needs retest | Await end-to-end validation |
+| **Session Restoration** | ✅ | ⚠️ | ⚠️ Partial | Unchanged since original report |
+| **Telemetry Tracking** | ✅ | ❌ | ⏳ Pending | Remains optional enhancement |
 
 ### All Working Commands:
 
@@ -336,11 +352,14 @@ npx . sparc run architect "design" --provider codex
 
 ## 🎯 Outstanding Tasks
 
-### ❌ No Critical Tasks Remaining
+### ❗ Outstanding Tasks (Updated 2025-10-30)
 
-All core functionality is complete and working!
+Core parity work remains in progress. See `docs/CODEX_PARITY_REBUILD.md` for authoritative status.
 
-### Optional Enhancements (Non-Critical):
+- Restore Codex automation workflow parity (CLI availability + prompts).
+- Align Codex hive-mind prompt/tooling with Claude baseline.
+- Expose full tool/function pipeline through `CodexProvider` and integration tests.
+- Re-run end-to-end suites before reasserting parity claims.
 
 **1. Enhanced Session Restoration** (4 hours)
 - Better context restoration from checkpoints
@@ -395,7 +414,7 @@ All core functionality is complete and working!
 - Slightly more complex conditional logic
 - Need to handle provider-specific configurations inline
 
-**Result**: Clean, maintainable implementation with 100% feature parity.
+**Historical Result Claim**: Clean, maintainable implementation with 100% feature parity.
 
 ---
 
@@ -690,7 +709,7 @@ Result: ✅ "--codex" flag documented with examples
 ## ✅ Success Criteria Met
 
 ### Original Goals:
-- ✅ Achieve 100% core feature parity (COMPLETE)
+- ✅ (Historical) Reported 100% core feature parity (marked incomplete pending rebuild)
 - ✅ Support automation/MLE-STAR with Codex (COMPLETE)
 - ✅ Fix any runtime errors (COMPLETE - fixed ES modules + prompts)
 - ✅ Maintain backwards compatibility (COMPLETE - Claude Code still works)
@@ -761,7 +780,7 @@ Before the next agent starts work, verify:
 **Changes Made This Session**:
 - 3 source files modified (automation.js, automation-executor.js, hive-mind.js)
 - 1 documentation file updated (CODEX_PARITY_UPDATE.md)
-- 100% core feature parity achieved
+- Historical note: 100% core feature parity claimed
 - All runtime errors resolved
 
 ---
@@ -769,7 +788,7 @@ Before the next agent starts work, verify:
 ## 🎉 Final Status
 
 **Mission**: ✅ COMPLETE
-**Feature Parity**: ✅ 100%
+**Feature Parity (historical claim)**: Logged as ✅ 100%
 **Critical Bugs**: ✅ All Fixed
 **Documentation**: ✅ Updated
 **Build**: ✅ Passing
