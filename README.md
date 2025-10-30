@@ -22,7 +22,7 @@ Agent-Flow is the successor to the Claude-Flow orchestration platform. It keeps 
 
 ### Prerequisites
 
-- Node.js 18 or newer (20+ recommended)
+- Node.js 22 or newer (22+ recommended)
 - `pnpm`, `npm`, or `yarn`
 - For Claude-based workflows, install `@anthropic-ai/claude-code`
 
