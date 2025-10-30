@@ -1,0 +1,865 @@
+openapi: 3.0.3
+info:
+  title: OpenAI Codex TypeScript SDK API
+  description: |
+    Complete OpenAPI specification for the OpenAI Codex TypeScript SDK.
+
+    The Codex SDK provides programmatic access to AI-powered code analysis,
+    generation, and manipulation capabilities. This specification documents
+    the data types, events, and patterns used by the SDK.
+
+    **Key Features:**
+    - Multi-turn conversations with persistent context
+    - Real-time streaming events
+    - Structured JSON output with schema validation
+    - Image input support
+    - Session persistence
+
+    **Links:**
+    - [SDK Documentation](./API_REFERENCE.md)
+    - [Getting Started Guide](./GETTING_STARTED.md)
+    - [Integration Examples](./EXAMPLES.md)
+  version: 0.0.0-dev
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  contact:
+    name: OpenAI
+    url: https://github.com/openai/codex
+
+servers:
+  - url: https://api.openai.com/v1
+    description: OpenAI Production API
+
+tags:
+  - name: Core
+    description: Core SDK types and classes
+  - name: Events
+    description: Streaming event types
+  - name: Items
+    description: Thread item types
+  - name: Options
+    description: Configuration options
+
+paths:
+  # Note: This is a SDK specification, not a REST API
+  # These paths document the conceptual API surface
+  /:
+    get:
+      summary: SDK Entry Point
+      description: Import the Codex SDK to get started
+      operationId: importSDK
+      tags:
+        - Core
+      responses:
+        '200':
+          description: SDK imported successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SDKInfo'
+
+components:
+  schemas:
+    # ==================
+    # Core Classes
+    # ==================
+
+    Codex:
+      type: object
+      description: Main entry point for the Codex SDK
+      properties:
+        constructor:
+          type: object
+          properties:
+            options:
+              $ref: '#/components/schemas/CodexOptions'
+        methods:
+          type: object
+          properties:
+            startThread:
+              type: object
+              description: Start a new conversation thread
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    options:
+                      $ref: '#/components/schemas/ThreadOptions'
+                returns:
+                  $ref: '#/components/schemas/Thread'
+            resumeThread:
+              type: object
+              description: Resume an existing conversation thread
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "thread-abc123-def456"
+                    options:
+                      $ref: '#/components/schemas/ThreadOptions'
+                returns:
+                  $ref: '#/components/schemas/Thread'
+
+    Thread:
+      type: object
+      description: Represents a conversation thread with the agent
+      properties:
+        id:
+          type: string
+          nullable: true
+          description: Unique thread identifier (null until first turn)
+          example: "thread-abc123-def456"
+        methods:
+          type: object
+          properties:
+            run:
+              type: object
+              description: Execute a turn and wait for completion
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    input:
+                      $ref: '#/components/schemas/Input'
+                    turnOptions:
+                      $ref: '#/components/schemas/TurnOptions'
+                returns:
+                  $ref: '#/components/schemas/Turn'
+            runStreamed:
+              type: object
+              description: Execute a turn with streaming events
+              properties:
+                parameters:
+                  type: object
+                  properties:
+                    input:
+                      $ref: '#/components/schemas/Input'
+                    turnOptions:
+                      $ref: '#/components/schemas/TurnOptions'
+                returns:
+                  $ref: '#/components/schemas/StreamedTurn'
+
+    # ==================
+    # Options
+    # ==================
+
+    CodexOptions:
+      type: object
+      description: Configuration options for Codex instance
+      properties:
+        codexPathOverride:
+          type: string
+          description: Custom path to codex binary
+          example: "/usr/local/bin/codex"
+        baseUrl:
+          type: string
+          format: uri
+          description: Base URL for OpenAI API
+          example: "https://api.openai.com/v1"
+        apiKey:
+          type: string
+          description: API key for authentication
+          example: "sk-..."
+
+    ThreadOptions:
+      type: object
+      description: Configuration options for a thread
+      properties:
+        model:
+          type: string
+          description: Model to use for the conversation
+          example: "gpt-4"
+          enum:
+            - gpt-4
+            - gpt-3.5-turbo
+        sandboxMode:
+          $ref: '#/components/schemas/SandboxMode'
+        workingDirectory:
+          type: string
+          description: Working directory for the agent
+          example: "/path/to/project"
+        skipGitRepoCheck:
+          type: boolean
+          description: Skip Git repository validation
+          default: false
+
+    TurnOptions:
+      type: object
+      description: Options for a single turn
+      properties:
+        outputSchema:
+          type: object
+          description: JSON schema for structured output validation
+          example:
+            type: object
+            properties:
+              summary:
+                type: string
+              status:
+                type: string
+                enum: ["ok", "error"]
+            required: ["summary", "status"]
+
+    SandboxMode:
+      type: string
+      description: File system access permission level
+      enum:
+        - read-only
+        - workspace-write
+        - danger-full-access
+      example: "workspace-write"
+
+    # ==================
+    # Input/Output Types
+    # ==================
+
+    Input:
+      oneOf:
+        - type: string
+          description: Simple text prompt
+          example: "Analyze this codebase"
+        - type: array
+          description: Structured input with text and images
+          items:
+            $ref: '#/components/schemas/UserInput'
+
+    UserInput:
+      oneOf:
+        - $ref: '#/components/schemas/TextInput'
+        - $ref: '#/components/schemas/ImageInput'
+
+    TextInput:
+      type: object
+      required:
+        - type
+        - text
+      properties:
+        type:
+          type: string
+          enum: ["text"]
+        text:
+          type: string
+          example: "Describe this screenshot"
+
+    ImageInput:
+      type: object
+      required:
+        - type
+        - path
+      properties:
+        type:
+          type: string
+          enum: ["local_image"]
+        path:
+          type: string
+          format: path
+          example: "./screenshot.png"
+
+    Turn:
+      type: object
+      description: Completed turn result
+      required:
+        - items
+        - finalResponse
+        - usage
+      properties:
+        items:
+          type: array
+          description: All items produced during the turn
+          items:
+            $ref: '#/components/schemas/ThreadItem'
+        finalResponse:
+          type: string
+          description: Agent's final text or JSON response
+          example: "Analysis complete. Found 3 issues."
+        usage:
+          $ref: '#/components/schemas/Usage'
+
+    StreamedTurn:
+      type: object
+      description: Streaming turn result
+      required:
+        - events
+      properties:
+        events:
+          type: object
+          description: Async generator yielding ThreadEvent objects
+          example: "AsyncGenerator<ThreadEvent>"
+
+    Usage:
+      type: object
+      description: Token usage statistics
+      required:
+        - input_tokens
+        - cached_input_tokens
+        - output_tokens
+      properties:
+        input_tokens:
+          type: integer
+          description: Number of input tokens used
+          example: 1250
+        cached_input_tokens:
+          type: integer
+          description: Number of cached input tokens (reduces cost)
+          example: 500
+        output_tokens:
+          type: integer
+          description: Number of output tokens generated
+          example: 380
+
+    # ==================
+    # Event Types
+    # ==================
+
+    ThreadEvent:
+      oneOf:
+        - $ref: '#/components/schemas/ThreadStartedEvent'
+        - $ref: '#/components/schemas/TurnStartedEvent'
+        - $ref: '#/components/schemas/TurnCompletedEvent'
+        - $ref: '#/components/schemas/TurnFailedEvent'
+        - $ref: '#/components/schemas/ItemStartedEvent'
+        - $ref: '#/components/schemas/ItemUpdatedEvent'
+        - $ref: '#/components/schemas/ItemCompletedEvent'
+        - $ref: '#/components/schemas/ThreadErrorEvent'
+      discriminator:
+        propertyName: type
+        mapping:
+          "thread.started": '#/components/schemas/ThreadStartedEvent'
+          "turn.started": '#/components/schemas/TurnStartedEvent'
+          "turn.completed": '#/components/schemas/TurnCompletedEvent'
+          "turn.failed": '#/components/schemas/TurnFailedEvent'
+          "item.started": '#/components/schemas/ItemStartedEvent'
+          "item.updated": '#/components/schemas/ItemUpdatedEvent'
+          "item.completed": '#/components/schemas/ItemCompletedEvent'
+          "error": '#/components/schemas/ThreadErrorEvent'
+
+    ThreadStartedEvent:
+      type: object
+      description: Emitted when a new thread begins
+      required:
+        - type
+        - thread_id
+      properties:
+        type:
+          type: string
+          enum: ["thread.started"]
+        thread_id:
+          type: string
+          example: "thread-abc123-def456"
+
+    TurnStartedEvent:
+      type: object
+      description: Emitted when a turn begins processing
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: ["turn.started"]
+
+    TurnCompletedEvent:
+      type: object
+      description: Emitted when a turn completes successfully
+      required:
+        - type
+        - usage
+      properties:
+        type:
+          type: string
+          enum: ["turn.completed"]
+        usage:
+          $ref: '#/components/schemas/Usage'
+
+    TurnFailedEvent:
+      type: object
+      description: Emitted when a turn fails with an error
+      required:
+        - type
+        - error
+      properties:
+        type:
+          type: string
+          enum: ["turn.failed"]
+        error:
+          $ref: '#/components/schemas/ThreadError'
+
+    ItemStartedEvent:
+      type: object
+      description: Emitted when a new item starts
+      required:
+        - type
+        - item
+      properties:
+        type:
+          type: string
+          enum: ["item.started"]
+        item:
+          $ref: '#/components/schemas/ThreadItem'
+
+    ItemUpdatedEvent:
+      type: object
+      description: Emitted when an item's state changes
+      required:
+        - type
+        - item
+      properties:
+        type:
+          type: string
+          enum: ["item.updated"]
+        item:
+          $ref: '#/components/schemas/ThreadItem'
+
+    ItemCompletedEvent:
+      type: object
+      description: Emitted when an item reaches terminal state
+      required:
+        - type
+        - item
+      properties:
+        type:
+          type: string
+          enum: ["item.completed"]
+        item:
+          $ref: '#/components/schemas/ThreadItem'
+
+    ThreadErrorEvent:
+      type: object
+      description: Fatal error from the event stream
+      required:
+        - type
+        - message
+      properties:
+        type:
+          type: string
+          enum: ["error"]
+        message:
+          type: string
+          example: "Connection lost"
+
+    ThreadError:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "Rate limit exceeded"
+
+    # ==================
+    # Thread Items
+    # ==================
+
+    ThreadItem:
+      oneOf:
+        - $ref: '#/components/schemas/AgentMessageItem'
+        - $ref: '#/components/schemas/ReasoningItem'
+        - $ref: '#/components/schemas/CommandExecutionItem'
+        - $ref: '#/components/schemas/FileChangeItem'
+        - $ref: '#/components/schemas/McpToolCallItem'
+        - $ref: '#/components/schemas/WebSearchItem'
+        - $ref: '#/components/schemas/TodoListItem'
+        - $ref: '#/components/schemas/ErrorItem'
+      discriminator:
+        propertyName: type
+        mapping:
+          "agent_message": '#/components/schemas/AgentMessageItem'
+          "reasoning": '#/components/schemas/ReasoningItem'
+          "command_execution": '#/components/schemas/CommandExecutionItem'
+          "file_change": '#/components/schemas/FileChangeItem'
+          "mcp_tool_call": '#/components/schemas/McpToolCallItem'
+          "web_search": '#/components/schemas/WebSearchItem'
+          "todo_list": '#/components/schemas/TodoListItem'
+          "error": '#/components/schemas/ErrorItem'
+
+    AgentMessageItem:
+      type: object
+      description: Agent's text or JSON response
+      required:
+        - id
+        - type
+        - text
+      properties:
+        id:
+          type: string
+          example: "msg_abc123"
+        type:
+          type: string
+          enum: ["agent_message"]
+        text:
+          type: string
+          description: Natural language or JSON when using outputSchema
+          example: "The codebase contains 42 files with 3,500 lines of code."
+
+    ReasoningItem:
+      type: object
+      description: Agent's reasoning summary
+      required:
+        - id
+        - type
+        - text
+      properties:
+        id:
+          type: string
+          example: "reasoning_abc123"
+        type:
+          type: string
+          enum: ["reasoning"]
+        text:
+          type: string
+          example: "I'll first check the test files to identify failures..."
+
+    CommandExecutionItem:
+      type: object
+      description: A command executed by the agent
+      required:
+        - id
+        - type
+        - command
+        - aggregated_output
+        - status
+      properties:
+        id:
+          type: string
+          example: "cmd_abc123"
+        type:
+          type: string
+          enum: ["command_execution"]
+        command:
+          type: string
+          example: "npm test"
+        aggregated_output:
+          type: string
+          description: Combined stdout and stderr
+          example: "Running tests...\n✓ 15 passing\n✗ 2 failing"
+        exit_code:
+          type: integer
+          description: Set when command completes
+          example: 1
+        status:
+          $ref: '#/components/schemas/CommandExecutionStatus'
+
+    CommandExecutionStatus:
+      type: string
+      enum:
+        - in_progress
+        - completed
+        - failed
+      example: "completed"
+
+    FileChangeItem:
+      type: object
+      description: File changes made by the agent
+      required:
+        - id
+        - type
+        - changes
+        - status
+      properties:
+        id:
+          type: string
+          example: "file_abc123"
+        type:
+          type: string
+          enum: ["file_change"]
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileUpdateChange'
+        status:
+          $ref: '#/components/schemas/PatchApplyStatus'
+
+    FileUpdateChange:
+      type: object
+      required:
+        - path
+        - kind
+      properties:
+        path:
+          type: string
+          example: "src/utils.ts"
+        kind:
+          $ref: '#/components/schemas/PatchChangeKind'
+
+    PatchChangeKind:
+      type: string
+      enum:
+        - add
+        - delete
+        - update
+      example: "update"
+
+    PatchApplyStatus:
+      type: string
+      enum:
+        - completed
+        - failed
+      example: "completed"
+
+    McpToolCallItem:
+      type: object
+      description: Call to an MCP (Model Context Protocol) tool
+      required:
+        - id
+        - type
+        - server
+        - tool
+        - arguments
+        - status
+      properties:
+        id:
+          type: string
+          example: "mcp_abc123"
+        type:
+          type: string
+          enum: ["mcp_tool_call"]
+        server:
+          type: string
+          description: MCP server name
+          example: "filesystem"
+        tool:
+          type: string
+          description: Tool name
+          example: "read_file"
+        arguments:
+          type: object
+          description: Tool arguments
+          additionalProperties: true
+          example:
+            path: "src/index.ts"
+        result:
+          type: object
+          description: Present on success
+          properties:
+            content:
+              type: array
+              items:
+                type: object
+            structured_content:
+              type: object
+              additionalProperties: true
+        error:
+          type: object
+          description: Present on failure
+          properties:
+            message:
+              type: string
+              example: "File not found"
+        status:
+          $ref: '#/components/schemas/McpToolCallStatus'
+
+    McpToolCallStatus:
+      type: string
+      enum:
+        - in_progress
+        - completed
+        - failed
+      example: "completed"
+
+    WebSearchItem:
+      type: object
+      description: Web search performed by the agent
+      required:
+        - id
+        - type
+        - query
+      properties:
+        id:
+          type: string
+          example: "search_abc123"
+        type:
+          type: string
+          enum: ["web_search"]
+        query:
+          type: string
+          example: "TypeScript best practices 2024"
+
+    TodoListItem:
+      type: object
+      description: Agent's running to-do list
+      required:
+        - id
+        - type
+        - items
+      properties:
+        id:
+          type: string
+          example: "todo_abc123"
+        type:
+          type: string
+          enum: ["todo_list"]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TodoItem'
+
+    TodoItem:
+      type: object
+      required:
+        - text
+        - completed
+      properties:
+        text:
+          type: string
+          example: "Run test suite"
+        completed:
+          type: boolean
+          example: true
+
+    ErrorItem:
+      type: object
+      description: Non-fatal error surfaced as an item
+      required:
+        - id
+        - type
+        - message
+      properties:
+        id:
+          type: string
+          example: "err_abc123"
+        type:
+          type: string
+          enum: ["error"]
+        message:
+          type: string
+          example: "Failed to parse file: syntax error"
+
+    # ==================
+    # Utility Types
+    # ==================
+
+    SDKInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "@openai/codex-sdk"
+        version:
+          type: string
+          example: "0.0.0-dev"
+        description:
+          type: string
+          example: "TypeScript SDK for OpenAI Codex"
+
+  # ==================
+  # Examples
+  # ==================
+
+  examples:
+    SimpleTextInput:
+      summary: Simple text prompt
+      value: "Analyze this codebase and identify issues"
+
+    StructuredInput:
+      summary: Structured input with images
+      value:
+        - type: "text"
+          text: "Compare these UI mockups"
+        - type: "local_image"
+          path: "./before.png"
+        - type: "local_image"
+          path: "./after.png"
+
+    StructuredOutputSchema:
+      summary: JSON schema for structured output
+      value:
+        type: "object"
+        properties:
+          summary:
+            type: "string"
+          issues:
+            type: "array"
+            items:
+              type: "object"
+              properties:
+                severity:
+                  type: "string"
+                  enum: ["error", "warning", "info"]
+                message:
+                  type: "string"
+          status:
+            type: "string"
+            enum: ["ok", "action_required"]
+        required: ["summary", "status"]
+
+    TurnResult:
+      summary: Completed turn
+      value:
+        items:
+          - id: "msg_001"
+            type: "agent_message"
+            text: "Found 3 issues in the codebase."
+          - id: "cmd_001"
+            type: "command_execution"
+            command: "eslint src/"
+            aggregated_output: "3 problems (2 errors, 1 warning)"
+            exit_code: 1
+            status: "completed"
+        finalResponse: "Found 3 issues in the codebase."
+        usage:
+          input_tokens: 1250
+          cached_input_tokens: 500
+          output_tokens: 380
+
+    StreamingEvents:
+      summary: Example streaming events
+      value:
+        - type: "thread.started"
+          thread_id: "thread-abc123"
+        - type: "turn.started"
+        - type: "item.started"
+          item:
+            id: "cmd_001"
+            type: "command_execution"
+            command: "npm test"
+            aggregated_output: ""
+            status: "in_progress"
+        - type: "item.updated"
+          item:
+            id: "cmd_001"
+            type: "command_execution"
+            command: "npm test"
+            aggregated_output: "Running tests..."
+            status: "in_progress"
+        - type: "item.completed"
+          item:
+            id: "cmd_001"
+            type: "command_execution"
+            command: "npm test"
+            aggregated_output: "✓ 15 passing"
+            exit_code: 0
+            status: "completed"
+        - type: "turn.completed"
+          usage:
+            input_tokens: 1250
+            cached_input_tokens: 500
+            output_tokens: 380
+
+# ==================
+# Security Schemes
+# ==================
+
+security:
+  - ApiKeyAuth: []
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: |
+        API key for OpenAI authentication. Set via `CODEX_API_KEY` environment
+        variable or passed to Codex constructor.
+
+        Example: `Bearer sk-...`
+
+# ==================
+# External Docs
+# ==================
+
+externalDocs:
+  description: Full SDK Documentation
+  url: https://github.com/openai/codex/tree/main/sdk/typescript
