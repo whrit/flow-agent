@@ -64,20 +64,20 @@ Legacy scripts installed as `claude-flow` continue to work, forwarding to the Fl
 ## Development Workflow
 
 ```bash
-pnpm install
-pnpm build
-pnpm lint
-pnpm test
+npm install
+npm build
+npm lint
+npm test
 ```
 
 Targeted tests:
 
 ```bash
 # Unit and integration tests covering the Codex provider
-pnpm test -- src/__tests__/unit/codex-event-translation-unit.test.ts src/__tests__/integration/codex-provider-integration.test.js
+npm test -- src/__tests__/unit/codex-event-translation-unit.test.ts src/__tests__/integration/codex-provider-integration.test.js
 
 # Optional smoke test (requires CODEX CLI on PATH)
-CODEX_SMOKE_TEST=1 pnpm test:codex:smoke
+CODEX_SMOKE_TEST=1 npm test:codex:smoke
 ```
 
 ## Roadmap
@@ -94,7 +94,7 @@ Roadmap items are tracked in `docs/CODEX_PARITY_REBUILD.md`, `docs/CODEX_PARITY_
 We welcome contributions that improve robustness, parity, and documentation clarity. When opening a pull request:
 
 1. Follow the established coding standards (TypeScript, two-space indentation, explicit exports).
-2. Run `pnpm lint`, `pnpm typecheck`, and the relevant Jest suites.
+2. Run `npm lint`, `npm typecheck`, and the relevant Jest suites.
 3. Update parity trackers or docs when behaviour changes.
 
 ### Attribution
