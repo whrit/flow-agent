@@ -64,6 +64,7 @@ init-test/
 exported-memory.json
 test-memory.json
 *.json.bak
+.claude/
 
 # Reports and analysis
 reports/

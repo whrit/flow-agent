@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { Queen } from './Queen.js';
 import { Agent } from './Agent.js';
 import { Memory } from './Memory.js';
@@ -42,7 +42,7 @@ export class HiveMind extends EventEmitter {
   constructor(config: HiveMindConfig) {
     super();
     this.config = config;
-    this.id = uuidv4();
+    this.id = randomUUID();
     this.agents = new Map();
     this.startTime = Date.now();
   }
@@ -246,7 +246,7 @@ export class HiveMind extends EventEmitter {
    */
   async submitTask(options: TaskSubmitOptions): Promise<Task> {
     const task: Task = {
-      id: uuidv4(),
+      id: randomUUID(),
       swarmId: this.id,
       description: options.description,
       priority: options.priority,

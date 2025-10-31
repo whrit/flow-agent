@@ -6,7 +6,7 @@
  */
 
 import { fileURLToPath } from 'url';
-import { dirname, join, resolve } from 'path';
+import { dirname, join, resolve, basename } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { spawn } from 'child_process';
 import process from 'process';
@@ -20,6 +20,18 @@ const VERSION = packageJson.version;
 // Get root directory
 const ROOT_DIR = resolve(__dirname, '..');
 
+const invokedExecutable = basename(process.argv[1] ?? '').toLowerCase();
+const BRAND = invokedExecutable.includes('claude') ? 'Claude-Flow' : 'Flow-Agent';
+const COMMAND_NAME = BRAND === 'Claude-Flow' ? 'claude-flow' : 'flow-agent';
+const DOCS_URL =
+  BRAND === 'Claude-Flow'
+    ? 'https://github.com/ruvnet/claude-flow'
+    : 'https://github.com/whrit/flow-agent';
+const TAGLINE =
+  BRAND === 'Claude-Flow'
+    ? 'Legacy AI Agent Orchestration System'
+    : 'Flow-Agent Orchestration Toolkit';
+
 // Show help if no arguments provided
 const args = process.argv.slice(2);
 if (args.length === 0) {
@@ -29,16 +41,15 @@ if (args.length === 0) {
 // Quick version check
 for (const arg of args) {
   if (arg === '--version' || arg === '-v') {
-    console.log(`v${VERSION}`);
+    console.log(`${BRAND} v${VERSION}`);
     console.log('');
-    console.log('⚡ Alpha 128 - Build Optimization & Memory Coordination');
-    console.log('  • Build System Fixed - Removed 32 UI files, clean compilation');
-    console.log('  • Memory Coordination Validated - MCP tools fully operational');
-    console.log('  • Agent Updates - All core agents with MCP tool integration');
-    console.log('  • Hive-Mind Agents - 5 new agents with memory coordination');
-    console.log('  • Command System - All CLI commands tested and working');
-    console.log('');
-    console.log('📚 Docs: https://github.com/ruvnet/claude-flow');
+    if (BRAND === 'Flow-Agent') {
+      console.log('Evolution of Claude-Flow with unified provider tooling.');
+      console.log('Documentation & migration guide: https://github.com/whrit/flow-agent');
+    } else {
+      console.log('Legacy entrypoint. Flow-Agent is the successor CLI.');
+      console.log('Flow-Agent documentation: https://github.com/whrit/flow-agent');
+    }
     process.exit(0);
   }
 }
@@ -132,18 +143,18 @@ async function main() {
 }
 
 function showFallbackHelp() {
-  console.log(`🧠 Claude-Flow v${VERSION} - Advanced AI Agent Orchestration System`);
+  console.log(`🧠 ${BRAND} v${VERSION} - ${TAGLINE}`);
   console.log('');
   console.log('⚠️  No compatible runtime found.');
   console.log('');
   console.log('To install and run:');
   console.log('  1. Install tsx: npm install -g tsx');
-  console.log('  2. Run: claude-flow <command>');
+  console.log(`  2. Run: ${COMMAND_NAME} <command>`);
   console.log('');
   console.log('Or use directly:');
   console.log('  node src/cli/simple-cli.js <command>');
   console.log('');
-  console.log('Documentation: https://github.com/ruvnet/claude-code-flow');
+  console.log(`Documentation: ${DOCS_URL}`);
 }
 
 main();

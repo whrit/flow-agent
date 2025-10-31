@@ -270,7 +270,7 @@ async function verifyMcpConfiguration() {
     if (missingServers.length > 0) {
       console.log(chalk.yellow(`\n⚠️  Missing MCP servers: ${missingServers.join(', ')}`));
       console.log(chalk.cyan('Run this to add them:'));
-      console.log(chalk.green('  codex mcp add claude-flow npx claude-flow@alpha mcp start'));
+      console.log(chalk.green('  codex mcp add claude-flow npx flow-agent@alpha mcp start'));
       console.log(chalk.green('  codex mcp add ruv-swarm npx ruv-swarm mcp start'));
 
       // Ask user if they want to continue
@@ -306,7 +306,7 @@ async function ensureMcpServers() {
 
     if (!mcpList.includes('claude-flow')) {
       console.log(chalk.cyan('📦 Adding claude-flow MCP server...'));
-      execSync('codex mcp add claude-flow npx claude-flow@alpha mcp start', { stdio: 'inherit' });
+      execSync('codex mcp add claude-flow npx flow-agent@alpha mcp start', { stdio: 'inherit' });
     }
 
     if (!mcpList.includes('ruv-swarm')) {
@@ -608,7 +608,7 @@ function setupStreamHandlers(codexProcess) {
 echo "🔧 Setting up Codex MCP servers for claude-flow..."
 
 # Add claude-flow MCP server
-codex mcp add claude-flow npx claude-flow@alpha mcp start
+codex mcp add claude-flow npx flow-agent@alpha mcp start
 
 # Add ruv-swarm MCP server (optional but recommended)
 codex mcp add ruv-swarm npx ruv-swarm mcp start
@@ -673,7 +673,7 @@ async function validateCodexEnvironment(flags) {
       const mcpConfigured = await verifyMcpConfiguration();
       return {
         passed: mcpConfigured,
-        message: 'Run: codex mcp add claude-flow npx claude-flow@alpha mcp start',
+        message: 'Run: codex mcp add claude-flow npx flow-agent@alpha mcp start',
         critical: false
       };
     }

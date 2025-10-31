@@ -6,7 +6,7 @@
  * with automatic capability assignment and coordination.
  */
 
-import { Command } from '../commander-fix.js';
+import { Command } from '../../commander-fix.js';
 import chalk from 'chalk';
 import ora from 'ora';
 import inquirer from 'inquirer';

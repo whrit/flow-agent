@@ -10,7 +10,7 @@ The stream-chain command is included in Claude Flow and registered in the comman
 
 ```bash
 # Access stream-chain command
-npx claude-flow stream-chain help
+npx flow-agent stream-chain help
 
 # Or with the local CLI
 ./claude-flow stream-chain help
@@ -136,7 +136,7 @@ $ ./claude-flow stream-chain monitor
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🔗 stream_1755021020133
-   Command: npx claude-flow stream-chain demo
+   Command: npx flow-agent stream-chain demo
    PID: 366567
    Started: 2025-08-12T17:50:20.135Z
    Status: 🟢 Running
@@ -324,13 +324,13 @@ Background processes are tracked in:
 ```json
 {
   "stream_1234567890": {
-    "command": "npx claude-flow stream-chain demo",
+    "command": "npx flow-agent stream-chain demo",
     "pid": 12345,
     "startTime": "2025-08-12T17:50:20.135Z",
     "status": "running"
   },
   "stream_9876543210": {
-    "command": "npx claude-flow stream-chain pipeline analysis",
+    "command": "npx flow-agent stream-chain pipeline analysis",
     "pid": 67890,
     "startTime": "2025-08-12T18:00:00.000Z",
     "status": "killed",
@@ -407,7 +407,7 @@ stream-chain run "task1" "task2" --verbose
 #### With Hive Mind
 ```bash
 # Start hive mind coordination
-npx claude-flow hive-mind spawn "coordinator"
+npx flow-agent hive-mind spawn "coordinator"
 
 # Run stream chain managed by hive
 ./claude-flow stream-chain run \
@@ -433,7 +433,7 @@ npx claude-flow hive-mind spawn "coordinator"
 #### With MCP Tools
 ```bash
 # Initialize swarm with MCP
-npx claude-flow swarm init --topology mesh
+npx flow-agent swarm init --topology mesh
 
 # Run stream chain with swarm coordination
 ./claude-flow stream-chain run \

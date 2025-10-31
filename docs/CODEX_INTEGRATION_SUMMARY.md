@@ -130,16 +130,16 @@ const response = await provider.complete({
 ### With Claude Flow CLI
 ```bash
 # Task orchestration
-npx claude-flow@alpha task orchestrate "analyze codebase" \
+npx flow-agent@alpha task orchestrate "analyze codebase" \
   --provider codex \
   --model "gpt-5-codex"
 
 # Hive mind swarm
-npx claude-flow@alpha hive-mind spawn "build feature" \
+npx flow-agent@alpha hive-mind spawn "build feature" \
   --provider codex
 
 # SPARC workflow
-npx claude-flow@alpha sparc run architect "design system" \
+npx flow-agent@alpha sparc run architect "design system" \
   --provider codex
 ```
 

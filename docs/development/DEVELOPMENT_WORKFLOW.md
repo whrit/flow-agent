@@ -270,10 +270,10 @@ main                # Production-ready code
 git checkout -b feature/agent-improvements
 
 # Use SPARC for architecture
-npx claude-flow@alpha sparc run architect "Agent selection improvements"
+npx flow-agent@alpha sparc run architect "Agent selection improvements"
 
 # Implement with TDD
-npx claude-flow@alpha sparc run tdd "Better agent selection algorithm"
+npx flow-agent@alpha sparc run tdd "Better agent selection algorithm"
 
 # Start development mode
 npm run dev
@@ -283,7 +283,7 @@ npm run test:comprehensive
 npm run test:coverage
 
 # Security review
-npx claude-flow@alpha sparc run security-review "Review agent selection"
+npx flow-agent@alpha sparc run security-review "Review agent selection"
 
 # Commit changes
 git add .
@@ -293,7 +293,7 @@ git commit -m "feat: improve agent selection algorithm"
 git push origin feature/agent-improvements
 
 # Create pull request with swarm review
-npx claude-flow@alpha swarm spawn code-review-swarm
+npx flow-agent@alpha swarm spawn code-review-swarm
 gh pr create --title "Improve agent selection" --body "..."
 ```
 
@@ -357,7 +357,7 @@ Brief description of changes
 
 ```bash
 # List all available modes
-npx claude-flow@alpha sparc modes
+npx flow-agent@alpha sparc modes
 
 # Available modes:
 # 🏗️ architect              - System architecture design
@@ -382,18 +382,18 @@ npx claude-flow@alpha sparc modes
 
 ```bash
 # Single mode execution
-npx claude-flow@alpha sparc run architect "Design user authentication system"
-npx claude-flow@alpha sparc run tdd "Implement user login functionality"
-npx claude-flow@alpha sparc run security-review "Review API endpoints"
+npx flow-agent@alpha sparc run architect "Design user authentication system"
+npx flow-agent@alpha sparc run tdd "Implement user login functionality"
+npx flow-agent@alpha sparc run security-review "Review API endpoints"
 
 # Batch mode execution (multiple modes)
-npx claude-flow@alpha sparc batch architect,tdd,security-review "Build secure API"
+npx flow-agent@alpha sparc batch architect,tdd,security-review "Build secure API"
 
 # Full pipeline execution
-npx claude-flow@alpha sparc pipeline "Complete user management system"
+npx flow-agent@alpha sparc pipeline "Complete user management system"
 
 # TDD workflow
-npx claude-flow@alpha sparc tdd "User registration feature"
+npx flow-agent@alpha sparc tdd "User registration feature"
 ```
 
 ### SPARC Development Workflow
@@ -420,18 +420,18 @@ graph TD
 
 ```bash
 # Initialize swarm with different topologies
-npx claude-flow@alpha swarm init --topology mesh --max-agents 10
-npx claude-flow@alpha swarm init --topology hierarchical --max-agents 15
-npx claude-flow@alpha swarm init --topology adaptive --max-agents 8
+npx flow-agent@alpha swarm init --topology mesh --max-agents 10
+npx flow-agent@alpha swarm init --topology hierarchical --max-agents 15
+npx flow-agent@alpha swarm init --topology adaptive --max-agents 8
 
 # Spawn specialized agents
-npx claude-flow@alpha swarm spawn coder
-npx claude-flow@alpha swarm spawn reviewer
-npx claude-flow@alpha swarm spawn tester
-npx claude-flow@alpha swarm spawn system-architect
+npx flow-agent@alpha swarm spawn coder
+npx flow-agent@alpha swarm spawn reviewer
+npx flow-agent@alpha swarm spawn tester
+npx flow-agent@alpha swarm spawn system-architect
 
 # Coordinate multi-agent tasks
-npx claude-flow@alpha swarm coordinate "Build full-stack application"
+npx flow-agent@alpha swarm coordinate "Build full-stack application"
 ```
 
 ### Available Agent Types (54 Total)
@@ -916,10 +916,10 @@ git merge upstream/main
 git checkout -b feature/your-feature
 
 # 2. Plan with SPARC architect
-npx claude-flow@alpha sparc run architect "Your feature description"
+npx flow-agent@alpha sparc run architect "Your feature description"
 
 # 3. Implement with TDD
-npx claude-flow@alpha sparc run tdd "Feature implementation"
+npx flow-agent@alpha sparc run tdd "Feature implementation"
 
 # 4. Make changes and test
 npm run dev
@@ -927,7 +927,7 @@ npm run test:comprehensive
 npm run lint
 
 # 5. Security review
-npx claude-flow@alpha sparc run security-review "Review changes"
+npx flow-agent@alpha sparc run security-review "Review changes"
 
 # 6. Commit changes
 git add .
@@ -937,7 +937,7 @@ git commit -m "feat: add amazing feature"
 git push origin feature/your-feature
 
 # 8. Create pull request with swarm review
-npx claude-flow@alpha swarm spawn code-review-swarm
+npx flow-agent@alpha swarm spawn code-review-swarm
 gh pr create --repo ruvnet/claude-flow
 ```
 

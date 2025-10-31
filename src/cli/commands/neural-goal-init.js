@@ -22,7 +22,10 @@ export async function registerNeuralGoalCommands(program) {
     .option('--force', 'Overwrite existing module')
     .option('--target <dir>', 'Target directory', '.claude/agents/neural')
     .action(async (options) => {
-      await initNeuralModule(options);
+      await initNeuralModule({
+        force: options.force,
+        targetDir: options.target,
+      });
     });
 
   // Goal init command  
@@ -34,12 +37,18 @@ export async function registerNeuralGoalCommands(program) {
     .option('--force', 'Overwrite existing module')
     .option('--target <dir>', 'Target directory', '.claude/agents/goal')
     .action(async (options) => {
-      await initGoalModule(options);
+      await initGoalModule({
+        force: options.force,
+        targetDir: options.target,
+      });
     });
 }
 
-async function initNeuralModule(options) {
-  const targetDir = path.resolve(process.cwd(), options.target || '.claude/agents/neural');
+export async function initNeuralModule(options = {}) {
+  const targetDir = path.resolve(
+    process.cwd(),
+    options.targetDir || options.target || '.claude/agents/neural',
+  );
   
   console.log(chalk.cyan('🧠 Initializing Claude Flow Neural Module...'));
   
@@ -105,8 +114,11 @@ mcp__claude-flow__neural_train {
   }
 }
 
-async function initGoalModule(options) {
-  const targetDir = path.resolve(process.cwd(), options.target || '.claude/agents/goal');
+export async function initGoalModule(options = {}) {
+  const targetDir = path.resolve(
+    process.cwd(),
+    options.targetDir || options.target || '.claude/agents/goal',
+  );
   
   console.log(chalk.magenta('🎯 Initializing Claude Flow Goal Module...'));
   

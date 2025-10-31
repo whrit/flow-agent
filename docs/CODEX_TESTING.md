@@ -299,17 +299,17 @@ Tests automatically coordinate via hooks:
 
 ```bash
 # Before testing
-npx claude-flow@alpha hooks pre-task --description "Run Codex tests"
+npx flow-agent@alpha hooks pre-task --description "Run Codex tests"
 
 # After testing
-npx claude-flow@alpha hooks post-task --task-id "codex-tests"
-npx claude-flow@alpha hooks notify --message "Tests complete: 95% coverage"
+npx flow-agent@alpha hooks post-task --task-id "codex-tests"
+npx flow-agent@alpha hooks notify --message "Tests complete: 95% coverage"
 ```
 
 Store test results in swarm memory:
 
 ```bash
-npx claude-flow@alpha hooks post-edit \
+npx flow-agent@alpha hooks post-edit \
   --file "src/__tests__/integration/codex-provider-integration.test.ts" \
   --memory-key "swarm/tester/test-results"
 ```

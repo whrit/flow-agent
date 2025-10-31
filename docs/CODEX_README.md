@@ -70,23 +70,23 @@ console.log(`Cost: $${response.cost.totalCost.toFixed(6)}`);
 
 ```bash
 # Create a task with Codex
-npx claude-flow@alpha task create general "Analyze codebase" --provider codex
+npx flow-agent@alpha task create general "Analyze codebase" --provider codex
 
 # Swarm coordination
-npx claude-flow@alpha swarm init --provider codex --topology mesh
+npx flow-agent@alpha swarm init --provider codex --topology mesh
 
 # Agent spawning
-npx claude-flow@alpha agent spawn researcher --provider codex
+npx flow-agent@alpha agent spawn researcher --provider codex
 
 # SPARC workflow
-npx claude-flow@alpha sparc run architect "Design API" --provider codex
+npx flow-agent@alpha sparc run architect "Design API" --provider codex
 ```
 
 ### Multi-Provider Workflows
 
 ```bash
 # Use Claude for architecture, Codex for implementation
-npx claude-flow@alpha hive-mind spawn "Build REST API" \
+npx flow-agent@alpha hive-mind spawn "Build REST API" \
   --queen-provider claude \
   --worker-provider codex
 ```
@@ -292,7 +292,7 @@ node test-codex-system.js
 npm test -- src/__tests__/providers/codex-provider.test.ts
 
 # Health check
-npx claude-flow@alpha agent health
+npx flow-agent@alpha agent health
 ```
 
 ## Commands Reference
@@ -305,13 +305,13 @@ npm run build
 node test-codex-system.js
 
 # Create task with Codex
-npx claude-flow@alpha task create general "Task description" --provider codex
+npx flow-agent@alpha task create general "Task description" --provider codex
 
 # Initialize swarm
-npx claude-flow@alpha swarm init --provider codex
+npx flow-agent@alpha swarm init --provider codex
 
 # Spawn agent
-npx claude-flow@alpha agent spawn researcher --provider codex
+npx flow-agent@alpha agent spawn researcher --provider codex
 
 # Check status
 codex login status
