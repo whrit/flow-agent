@@ -1,16 +1,16 @@
 {
-  "name": "bot-flow",
+  "name": "flow-agent",
   "version": "1.0.0-alpha.0",
-  "description": "Bot-Flow orchestration toolkit evolved from Claude-Flow",
-  "mcpName": "io.github.bot-flow/bot-flow",
+  "description": "flow-agent orchestration toolkit evolved from Claude-Flow",
+  "mcpName": "io.github.flow-agent/flow-agent",
   "main": "cli.mjs",
   "bin": {
-    "bot-flow": "bin/bot-flow.js",
+    "flow-agent": "bin/flow-agent.js",
     "agent-flow": "bin/agent-flow.js",
     "claude-flow": "bin/claude-flow.js"
   },
   "scripts": {
-    "preinstall": "node -e \"if(process.platform === 'win32' && process.env.npm_config_user_agent && process.env.npm_config_user_agent.includes('npm')) { console.warn('⚠️  Warning: On Windows, it is recommended to use npm to install this package to avoid potential native dependency build issues.'); console.warn('💡 Try: npm install or pnpx bot-flow@alpha'); }\"",
+    "preinstall": "node -e \"if(process.platform === 'win32' && process.env.npm_config_user_agent && process.env.npm_config_user_agent.includes('npm')) { console.warn('⚠️  Warning: On Windows, it is recommended to use npm to install this package to avoid potential native dependency build issues.'); console.warn('💡 Try: npm install or pnpx flow-agent@alpha'); }\"",
     "dev": "tsx src/cli/main.ts",
     "init:neural": "node scripts/init-neural.js",
     "init:goal": "node scripts/init-goal.js",
@@ -21,8 +21,8 @@
     "build:cjs": "swc src -d dist-cjs --config-file swcrc.commonjs.json",
     "copy:scripts": "node scripts/copy-scripts.js",
     "build:ts": "npm run build:esm && npm run build:cjs && npm run copy:scripts",
-    "build:binary": "pkg dist-cjs/src/cli/main.js --targets node22-linux-x64,node22-macos-x64,node22-win-x64 --output bin/bot-flow",
-    "build:simple": "npm run build:ts && pkg dist/cli/simple-cli.js --output bin/bot-flow-simple",
+    "build:binary": "pkg dist-cjs/src/cli/main.js --targets node22-linux-x64,node22-macos-x64,node22-win-x64 --output bin/flow-agent",
+    "build:simple": "npm run build:ts && pkg dist/cli/simple-cli.js --output bin/flow-agent-simple",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "dev:build": "tsc --watch",
@@ -88,19 +88,19 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/whrit/bot-flow.git"
+    "url": "git+https://github.com/whrit/flow-agent.git"
   },
   "bugs": {
-    "url": "https://github.com/whrit/bot-flow/issues"
+    "url": "https://github.com/whrit/flow-agent/issues"
   },
-  "homepage": "https://github.com/whrit/bot-flow#readme",
+  "homepage": "https://github.com/whrit/flow-agent#readme",
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=11.0.0"
   },
   "files": [
     "cli.js",
-    "bin/bot-flow.js",
+    "bin/flow-agent.js",
     "bin/agent-flow.js",
     "bin/claude-flow.js",
     "bin/claude-flow",
