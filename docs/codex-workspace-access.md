@@ -124,13 +124,13 @@ http_headers = { "CONTEXT7_API_KEY" = "YOUR_API_KEY" }
 
 ```bash
 # Spawn Codex hive-mind with default settings
-npx bot-flow hive-mind start "Build a REST API" --codex --workers coder,tester,reviewer
+npx flow-agent hive-mind start "Build a REST API" --codex --workers coder,tester,reviewer
 
 # With full automation (recommended)
-npx bot-flow hive-mind start "Build a REST API" --codex --workers coder,tester,reviewer --full-auto
+npx flow-agent hive-mind start "Build a REST API" --codex --workers coder,tester,reviewer --full-auto
 
 # With maximum permissions (use with caution)
-npx bot-flow hive-mind start "Build a REST API" --codex --workers coder,tester,reviewer --dangerously-bypass-approvals-and-sandbox
+npx flow-agent hive-mind start "Build a REST API" --codex --workers coder,tester,reviewer --dangerously-bypass-approvals-and-sandbox
 ```
 
 ### Manual Execution
@@ -205,7 +205,7 @@ This creates `~/.codex/config.toml` with default settings.
 
 **Solution**: Use `--full-auto` or `--dangerously-bypass-approvals-and-sandbox`:
 ```bash
-npx bot-flow hive-mind start "task" --codex --full-auto
+npx flow-agent hive-mind start "task" --codex --full-auto
 ```
 
 ## Security Considerations
@@ -240,7 +240,7 @@ For production:
 
 ```bash
 # 1. Start a test swarm
-npx bot-flow hive-mind start "Create a test file in the current directory" --codex --workers coder --full-auto
+npx flow-agent hive-mind start "Create a test file in the current directory" --codex --workers coder --full-auto
 
 # 2. Codex should be able to:
 #    - Read existing files
@@ -290,7 +290,7 @@ codex
 
 **Solution**: Use `--full-auto` or `--dangerously-bypass-approvals-and-sandbox`
 ```bash
-npx bot-flow hive-mind start "task" --codex --full-auto
+npx flow-agent hive-mind start "task" --codex --full-auto
 ```
 
 ### Issue: "MCP servers not accessible"

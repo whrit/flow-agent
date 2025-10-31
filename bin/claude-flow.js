@@ -21,16 +21,16 @@ const VERSION = packageJson.version;
 const ROOT_DIR = resolve(__dirname, '..');
 
 const invokedExecutable = basename(process.argv[1] ?? '').toLowerCase();
-const BRAND = invokedExecutable.includes('claude') ? 'Claude-Flow' : 'Bot-Flow';
-const COMMAND_NAME = BRAND === 'Claude-Flow' ? 'claude-flow' : 'bot-flow';
+const BRAND = invokedExecutable.includes('claude') ? 'Claude-Flow' : 'Flow-Agent';
+const COMMAND_NAME = BRAND === 'Claude-Flow' ? 'claude-flow' : 'flow-agent';
 const DOCS_URL =
   BRAND === 'Claude-Flow'
     ? 'https://github.com/ruvnet/claude-flow'
-    : 'https://github.com/whrit/bot-flow';
+    : 'https://github.com/whrit/flow-agent';
 const TAGLINE =
   BRAND === 'Claude-Flow'
     ? 'Legacy AI Agent Orchestration System'
-    : 'Bot-Flow Orchestration Toolkit';
+    : 'Flow-Agent Orchestration Toolkit';
 
 // Show help if no arguments provided
 const args = process.argv.slice(2);
@@ -43,12 +43,12 @@ for (const arg of args) {
   if (arg === '--version' || arg === '-v') {
     console.log(`${BRAND} v${VERSION}`);
     console.log('');
-    if (BRAND === 'Bot-Flow') {
+    if (BRAND === 'Flow-Agent') {
       console.log('Evolution of Claude-Flow with unified provider tooling.');
-      console.log('Documentation & migration guide: https://github.com/whrit/bot-flow');
+      console.log('Documentation & migration guide: https://github.com/whrit/flow-agent');
     } else {
-      console.log('Legacy entrypoint. Bot-Flow is the successor CLI.');
-      console.log('Bot-Flow documentation: https://github.com/whrit/bot-flow');
+      console.log('Legacy entrypoint. Flow-Agent is the successor CLI.');
+      console.log('Flow-Agent documentation: https://github.com/whrit/flow-agent');
     }
     process.exit(0);
   }

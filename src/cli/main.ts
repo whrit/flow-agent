@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Bot-Flow CLI - Main entry point for Node.js
+ * Flow-Agent CLI - Main entry point for Node.js
  */
 
 import { CLI, VERSION } from './cli-core.js';
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 
 async function main() {
-  const cli = new CLI('bot-flow', 'Bot-Flow Orchestration Toolkit');
+  const cli = new CLI('flow-agent', 'Flow-Agent Orchestration Toolkit');
 
   // Setup all commands
   setupCommands(cli);

@@ -174,7 +174,7 @@ Legend: ✅ Full Support | ⚠️ Partial | ❌ Missing
 
 ```bash
 # Start Codex hive-mind with workspace access
-npx bot-flow hive-mind start "Build a REST API" \
+npx flow-agent hive-mind start "Build a REST API" \
   --codex \
   --workers coder,tester,reviewer \
   --full-auto
@@ -184,7 +184,7 @@ npx bot-flow hive-mind start "Build a REST API" \
 
 ```bash
 # Maximum automation (for CI/CD)
-npx bot-flow hive-mind start "Deploy application" \
+npx flow-agent hive-mind start "Deploy application" \
   --codex \
   --workers coder,tester,deployer \
   --dangerously-bypass-approvals-and-sandbox
@@ -266,17 +266,17 @@ http_headers = { "CONTEXT7_API_KEY" = "YOUR_KEY" }
 
 **Development**: Use `--full-auto`
 ```bash
-npx bot-flow hive-mind start "task" --codex --full-auto
+npx flow-agent hive-mind start "task" --codex --full-auto
 ```
 
 **CI/CD**: Use `--dangerously-bypass-approvals-and-sandbox` (in isolated environment)
 ```bash
-npx bot-flow hive-mind start "task" --codex --dangerously-bypass-approvals-and-sandbox
+npx flow-agent hive-mind start "task" --codex --dangerously-bypass-approvals-and-sandbox
 ```
 
 **Production**: Manual approval (no flags)
 ```bash
-npx bot-flow hive-mind start "task" --codex
+npx flow-agent hive-mind start "task" --codex
 ```
 
 ## Error Handling

@@ -18,8 +18,8 @@ const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 const version = packageJson.version;
 
 const candidateFiles = [
-  path.join(__dirname, '..', 'bin', 'bot-flow'),
-  path.join(__dirname, '..', 'bin', 'bot-flow.js'),
+  path.join(__dirname, '..', 'bin', 'flow-agent'),
+  path.join(__dirname, '..', 'bin', 'flow-agent.js'),
   path.join(__dirname, '..', 'bin', 'agent-flow'),
   path.join(__dirname, '..', 'bin', 'agent-flow.js'),
   path.join(__dirname, '..', 'bin', 'claude-flow'),
@@ -29,7 +29,7 @@ const candidateFiles = [
 const binPath = candidateFiles.find((file) => fs.existsSync(file));
 
 if (!binPath) {
-  console.warn('⚠️  No bot-flow/claude-flow shim found to update VERSION.');
+  console.warn('⚠️  No flow-agent/claude-flow shim found to update VERSION.');
   process.exit(0);
 }
 

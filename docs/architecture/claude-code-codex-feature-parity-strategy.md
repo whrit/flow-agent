@@ -191,7 +191,7 @@ class CodexEventTranslator {
 - Basic health check implementation
 
 **Success Criteria:**
-- ✅ `npx bot-flow start --provider codex` works
+- ✅ `npx flow-agent start --provider codex` works
 - ✅ Simple prompt returns response
 - ✅ Threads persist across turns
 

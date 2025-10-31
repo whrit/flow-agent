@@ -13,20 +13,20 @@ The `--codex` flag now **ACTUALLY spawns Codex instances** (just like `--claude`
 ### Before (Provider Configuration Only)
 ```bash
 # This only set the provider config, didn't spawn Codex
-npx bot-flow@alpha hive-mind spawn "Build API" --provider codex
+npx flow-agent@alpha hive-mind spawn "Build API" --provider codex
 ```
 **Result:** Created coordination but NO Codex execution ❌
 
 ### After (Direct Spawning) ✅
 ```bash
 # This LAUNCHES actual Codex CLI with hive-mind prompt
-npx bot-flow@alpha hive-mind spawn "Build API" --codex
+npx flow-agent@alpha hive-mind spawn "Build API" --codex
 ```
 **Result:** Spawns real Codex process that executes the objective! ✅
 
 ## 🎯 How It Works
 
-1. **Command**: `npx bot-flow@alpha hive-mind spawn "objective" --codex`
+1. **Command**: `npx flow-agent@alpha hive-mind spawn "objective" --codex`
 2. **Flow**:
    ```
    claude-flow detects --codex flag

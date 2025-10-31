@@ -91,20 +91,20 @@ Once configured, you can use Codex just like Claude Code:
 
 ```bash
 # Task orchestration with Codex
-npx bot-flow@alpha task orchestrate "analyze this codebase" \
+npx flow-agent@alpha task orchestrate "analyze this codebase" \
   --provider codex \
   --model "gpt-5-codex"
 
 # Hive mind (multi-agent swarm)
-npx bot-flow@alpha hive-mind spawn "refactor the API" \
+npx flow-agent@alpha hive-mind spawn "refactor the API" \
   --provider codex
 
 # SPARC workflow
-npx bot-flow@alpha sparc run architect "design payment system" \
+npx flow-agent@alpha sparc run architect "design payment system" \
   --provider codex
 
 # Swarm initialization
-npx bot-flow@alpha swarm init \
+npx flow-agent@alpha swarm init \
   --provider codex \
   --topology mesh \
   --model "gpt-5-codex"
@@ -116,12 +116,12 @@ One of the most powerful features - use multiple providers together:
 
 ```bash
 # Queen uses Claude Code, workers use Codex
-npx bot-flow@alpha hive-mind spawn "complex system design" \
+npx flow-agent@alpha hive-mind spawn "complex system design" \
   --queen-provider claude \
   --worker-provider codex
 
 # Compare responses from different models
-npx bot-flow@alpha task orchestrate "explain async/await" \
+npx flow-agent@alpha task orchestrate "explain async/await" \
   --provider codex,anthropic,openai
 ```
 
@@ -165,7 +165,7 @@ Use profiles with:
 codex --profile automation "run tests"
 
 # Use with claude-flow
-npx bot-flow@alpha task orchestrate "refactor" \
+npx flow-agent@alpha task orchestrate "refactor" \
   --provider codex \
   --config model="gpt-5-codex Low"
 ```
@@ -396,7 +396,7 @@ Estimated pricing (adjust based on actual usage):
 1. **Configure your `~/.codex/config.toml`** with the recommended settings above
 2. **Build claude-flow**: `npm run build`
 3. **Test the integration**: `node test-codex-system.js`
-4. **Try a simple task**: `npx bot-flow@alpha task orchestrate "hello world" --provider codex`
+4. **Try a simple task**: `npx flow-agent@alpha task orchestrate "hello world" --provider codex`
 5. **Explore advanced features**: Profiles, MCP servers, multi-agent swarms
 
 ---

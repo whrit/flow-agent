@@ -26,13 +26,13 @@
 npm install -g claude-flow@alpha
 
 # Verify installation
-npx bot-flow@alpha --version
+npx flow-agent@alpha --version
 
 # Initialize configuration
-npx bot-flow@alpha init --force
+npx flow-agent@alpha init --force
 
 # Test installation
-npx bot-flow@alpha swarm "test deployment" --agents 3
+npx flow-agent@alpha swarm "test deployment" --agents 3
 ```
 
 ### Prerequisites Check
@@ -170,13 +170,13 @@ EOF
 
 ```bash
 # Validate environment configuration
-npx bot-flow@alpha config validate --env production
+npx flow-agent@alpha config validate --env production
 
 # Test API connectivity
-npx bot-flow@alpha diagnostics --api-check
+npx flow-agent@alpha diagnostics --api-check
 
 # Verify database connection
-npx bot-flow@alpha diagnostics --db-check
+npx flow-agent@alpha diagnostics --db-check
 ```
 
 ---
@@ -273,7 +273,7 @@ set -e
 # Initialize configuration if not exists
 if [ ! -f "/app/config/config.json" ]; then
     echo "Initializing Claude Flow configuration..."
-    npx bot-flow@alpha init --force --config-dir /app/config
+    npx flow-agent@alpha init --force --config-dir /app/config
 fi
 
 # Wait for database if DATABASE_URL is set
@@ -299,7 +299,7 @@ fi
 # Run database migrations
 if [ "$NODE_ENV" = "production" ]; then
     echo "Running database migrations..."
-    npx bot-flow@alpha db migrate
+    npx flow-agent@alpha db migrate
 fi
 
 # Start the application
@@ -1077,7 +1077,7 @@ jobs:
         kubectl port-forward svc/claude-flow-service 3000:80 -n claude-flow-staging &
         sleep 10
         curl -f http://localhost:3000/health || exit 1
-        npx bot-flow@alpha swarm "test deployment" --agents 1 || exit 1
+        npx flow-agent@alpha swarm "test deployment" --agents 1 || exit 1
 
   deploy-production:
     needs: build
@@ -2083,7 +2083,7 @@ kubectl scale deployment claude-flow --replicas=5 -n claude-flow
 kubectl exec deployment/claude-flow -n claude-flow -- psql $DATABASE_URL -c "SELECT count(*) FROM pg_stat_activity;"
 
 # Optimize database queries
-kubectl exec deployment/claude-flow -n claude-flow -- npx bot-flow@alpha db optimize
+kubectl exec deployment/claude-flow -n claude-flow -- npx flow-agent@alpha db optimize
 ```
 
 #### Issue: Database Connection Pool Exhaustion
@@ -2111,7 +2111,7 @@ kubectl rollout restart deployment/claude-flow -n claude-flow
 kubectl exec deployment/claude-flow -n claude-flow -- curl -f http://localhost:3000/health
 
 # View detailed health status
-kubectl exec deployment/claude-flow -n claude-flow -- npx bot-flow@alpha diagnostics --health
+kubectl exec deployment/claude-flow -n claude-flow -- npx flow-agent@alpha diagnostics --health
 
 # Check ingress configuration
 kubectl describe ingress claude-flow-ingress -n claude-flow
@@ -2161,7 +2161,7 @@ kubectl set env deployment/claude-flow -n claude-flow \
   CLAUDE_FLOW_LOG_LEVEL=debug
 
 # Get comprehensive diagnostics
-kubectl exec deployment/claude-flow -n claude-flow -- npx bot-flow@alpha diagnostics --full > diagnostic-report.txt
+kubectl exec deployment/claude-flow -n claude-flow -- npx flow-agent@alpha diagnostics --full > diagnostic-report.txt
 
 # Monitor real-time logs
 kubectl logs -f deployment/claude-flow -n claude-flow --tail=100
@@ -2315,10 +2315,10 @@ Level 3: Leadership
 
 ```bash
 # Essential production commands
-npx bot-flow@alpha --version                    # Check version
-npx bot-flow@alpha diagnostics --full           # Full system check
-npx bot-flow@alpha swarm "test" --agents 3      # Quick functionality test
-npx bot-flow@alpha config validate              # Validate configuration
+npx flow-agent@alpha --version                    # Check version
+npx flow-agent@alpha diagnostics --full           # Full system check
+npx flow-agent@alpha swarm "test" --agents 3      # Quick functionality test
+npx flow-agent@alpha config validate              # Validate configuration
 
 # Kubernetes shortcuts
 alias kgp="kubectl get pods -n claude-flow"

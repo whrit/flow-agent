@@ -250,7 +250,7 @@ if (codexAvailable && !flags.dryRun) {
 cd /path/to/test-project
 
 # 2. Run Codex spawn
-npx bot-flow@alpha hive-mind spawn "Test workspace access" --codex
+npx flow-agent@alpha hive-mind spawn "Test workspace access" --codex
 
 # 3. Verify in Codex:
 # - Run: pwd  (should show /path/to/test-project)

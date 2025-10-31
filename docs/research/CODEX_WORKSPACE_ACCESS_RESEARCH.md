@@ -289,12 +289,12 @@ codex -C $(pwd) --full-auto "Use the ref MCP tool to search for TypeScript inter
 
 1. **Add `--workspace` flag** to hive-mind command:
    ```bash
-   npx bot-flow hive-mind spawn "task" --codex --workspace /custom/path
+   npx flow-agent hive-mind spawn "task" --codex --workspace /custom/path
    ```
 
 2. **Add `--sandbox-mode` flag** for security control:
    ```bash
-   npx bot-flow hive-mind spawn "task" --codex --sandbox-mode read-only
+   npx flow-agent hive-mind spawn "task" --codex --sandbox-mode read-only
    ```
 
 3. **Auto-trust prompt** if workspace not trusted:

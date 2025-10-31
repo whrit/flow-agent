@@ -61,16 +61,16 @@ console.log('Cost:', `$${response.cost.totalCost.toFixed(6)}`);
 
 ```bash
 # Task orchestration with Codex
-npx bot-flow@alpha task orchestrate "analyze codebase" \
+npx flow-agent@alpha task orchestrate "analyze codebase" \
   --provider codex \
   --model "gpt-5-codex"
 
 # Hive mind with Codex workers
-npx bot-flow@alpha hive-mind spawn "build feature" \
+npx flow-agent@alpha hive-mind spawn "build feature" \
   --provider codex
 
 # SPARC workflow
-npx bot-flow@alpha sparc run architect "design system" \
+npx flow-agent@alpha sparc run architect "design system" \
   --provider codex
 ```
 
@@ -173,7 +173,7 @@ npm run build
 node test-codex-system.js
 
 # Use with claude-flow
-npx bot-flow@alpha task "your task" --provider codex
+npx flow-agent@alpha task "your task" --provider codex
 
 # Check Codex status
 codex login status

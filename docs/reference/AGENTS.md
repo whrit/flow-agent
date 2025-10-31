@@ -39,8 +39,8 @@ Claude-Flow provides a comprehensive ecosystem of specialized AI agents designed
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha agent spawn coder --name "API-Builder"
-npx bot-flow@alpha task assign coder "implement REST API endpoints"
+npx flow-agent@alpha agent spawn coder --name "API-Builder"
+npx flow-agent@alpha task assign coder "implement REST API endpoints"
 ```
 
 ### `planner`
@@ -55,8 +55,8 @@ npx bot-flow@alpha task assign coder "implement REST API endpoints"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha agent spawn planner --name "Project-Strategist"
-npx bot-flow@alpha sparc run planner "create microservices architecture plan"
+npx flow-agent@alpha agent spawn planner --name "Project-Strategist"
+npx flow-agent@alpha sparc run planner "create microservices architecture plan"
 ```
 
 ### `researcher`
@@ -71,8 +71,8 @@ npx bot-flow@alpha sparc run planner "create microservices architecture plan"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha agent spawn researcher --name "Tech-Scout"
-npx bot-flow@alpha task assign researcher "research GraphQL best practices"
+npx flow-agent@alpha agent spawn researcher --name "Tech-Scout"
+npx flow-agent@alpha task assign researcher "research GraphQL best practices"
 ```
 
 ### `reviewer`
@@ -87,8 +87,8 @@ npx bot-flow@alpha task assign researcher "research GraphQL best practices"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha agent spawn reviewer --name "Quality-Guardian"
-npx bot-flow@alpha task assign reviewer "review authentication implementation"
+npx flow-agent@alpha agent spawn reviewer --name "Quality-Guardian"
+npx flow-agent@alpha task assign reviewer "review authentication implementation"
 ```
 
 ### `tester`
@@ -103,8 +103,8 @@ npx bot-flow@alpha task assign reviewer "review authentication implementation"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha agent spawn tester --name "Test-Master"
-npx bot-flow@alpha sparc tdd "user authentication system"
+npx flow-agent@alpha agent spawn tester --name "Test-Master"
+npx flow-agent@alpha sparc tdd "user authentication system"
 ```
 
 ---
@@ -123,8 +123,8 @@ npx bot-flow@alpha sparc tdd "user authentication system"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha swarm init --topology hierarchical --coordinator queen-coordinator
-npx bot-flow@alpha agent spawn hierarchical-coordinator --name "Queen-Genesis"
+npx flow-agent@alpha swarm init --topology hierarchical --coordinator queen-coordinator
+npx flow-agent@alpha agent spawn hierarchical-coordinator --name "Queen-Genesis"
 ```
 
 ### `mesh-coordinator`
@@ -139,8 +139,8 @@ npx bot-flow@alpha agent spawn hierarchical-coordinator --name "Queen-Genesis"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha swarm init --topology mesh --max-agents 8
-npx bot-flow@alpha agent spawn mesh-coordinator --name "Mesh-Alpha"
+npx flow-agent@alpha swarm init --topology mesh --max-agents 8
+npx flow-agent@alpha agent spawn mesh-coordinator --name "Mesh-Alpha"
 ```
 
 ### `adaptive-coordinator`
@@ -155,8 +155,8 @@ npx bot-flow@alpha agent spawn mesh-coordinator --name "Mesh-Alpha"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha swarm init --topology adaptive --auto-scale
-npx bot-flow@alpha agent spawn adaptive-coordinator --name "Adaptive-Prime"
+npx flow-agent@alpha swarm init --topology adaptive --auto-scale
+npx flow-agent@alpha agent spawn adaptive-coordinator --name "Adaptive-Prime"
 ```
 
 ### `collective-intelligence-coordinator`
@@ -171,8 +171,8 @@ npx bot-flow@alpha agent spawn adaptive-coordinator --name "Adaptive-Prime"
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha hive-mind spawn --collective-intelligence
-npx bot-flow@alpha agent spawn collective-intelligence-coordinator --name "Hive-Mind"
+npx flow-agent@alpha hive-mind spawn --collective-intelligence
+npx flow-agent@alpha agent spawn collective-intelligence-coordinator --name "Hive-Mind"
 ```
 
 ### `swarm-memory-manager`
@@ -187,8 +187,8 @@ npx bot-flow@alpha agent spawn collective-intelligence-coordinator --name "Hive-
 
 **Usage Examples**:
 ```bash
-npx bot-flow@alpha agent spawn swarm-memory-manager --name "Memory-Keeper"
-npx bot-flow@alpha memory distributed init --coordinator swarm-memory-manager
+npx flow-agent@alpha agent spawn swarm-memory-manager --name "Memory-Keeper"
+npx flow-agent@alpha memory distributed init --coordinator swarm-memory-manager
 ```
 
 ---
@@ -780,23 +780,23 @@ npx bot-flow@alpha memory distributed init --coordinator swarm-memory-manager
 ### Single Agent Usage
 ```bash
 # Spawn individual agents
-npx bot-flow@alpha agent spawn coder --name "API-Builder"
-npx bot-flow@alpha agent spawn reviewer --name "Code-Guardian"
+npx flow-agent@alpha agent spawn coder --name "API-Builder"
+npx flow-agent@alpha agent spawn reviewer --name "Code-Guardian"
 
 # Assign tasks to specific agents
-npx bot-flow@alpha task assign coder "implement user authentication"
-npx bot-flow@alpha task assign tester "create unit tests for auth module"
+npx flow-agent@alpha task assign coder "implement user authentication"
+npx flow-agent@alpha task assign tester "create unit tests for auth module"
 ```
 
 ### Swarm Coordination
 ```bash
 # Initialize different swarm topologies
-npx bot-flow@alpha swarm init --topology hierarchical --max-agents 8
-npx bot-flow@alpha swarm init --topology mesh --agents researcher,coder,tester
-npx bot-flow@alpha swarm init --topology adaptive --auto-scale
+npx flow-agent@alpha swarm init --topology hierarchical --max-agents 8
+npx flow-agent@alpha swarm init --topology mesh --agents researcher,coder,tester
+npx flow-agent@alpha swarm init --topology adaptive --auto-scale
 
 # Batch agent spawning for complex projects
-npx bot-flow@alpha swarm spawn \
+npx flow-agent@alpha swarm spawn \
   --agents system-architect,backend-dev,frontend-dev,tester,reviewer \
   --task "build e-commerce platform"
 ```
@@ -804,18 +804,18 @@ npx bot-flow@alpha swarm spawn \
 ### SPARC Development Workflow
 ```bash
 # Full SPARC methodology execution
-npx bot-flow@alpha sparc pipeline "user authentication system"
-npx bot-flow@alpha sparc run specification "define user management requirements"
-npx bot-flow@alpha sparc run architecture "design auth system architecture"
-npx bot-flow@alpha sparc run code "implement authentication module"
+npx flow-agent@alpha sparc pipeline "user authentication system"
+npx flow-agent@alpha sparc run specification "define user management requirements"
+npx flow-agent@alpha sparc run architecture "design auth system architecture"
+npx flow-agent@alpha sparc run code "implement authentication module"
 ```
 
 ### GitHub Integration
 ```bash
 # GitHub workflow automation
-npx bot-flow@alpha github pr-manager "review and merge feature branch"
-npx bot-flow@alpha github issue-tracker "manage project issues"
-npx bot-flow@alpha github release-manager "prepare v2.0.0 release"
+npx flow-agent@alpha github pr-manager "review and merge feature branch"
+npx flow-agent@alpha github issue-tracker "manage project issues"
+npx flow-agent@alpha github release-manager "prepare v2.0.0 release"
 ```
 
 ---
@@ -923,16 +923,16 @@ priority: high
 ### Agent Performance Metrics
 ```bash
 # View agent performance
-npx bot-flow@alpha metrics agents --detailed
-npx bot-flow@alpha performance analyze --agent-type coder
-npx bot-flow@alpha swarm status --topology hierarchical
+npx flow-agent@alpha metrics agents --detailed
+npx flow-agent@alpha performance analyze --agent-type coder
+npx flow-agent@alpha swarm status --topology hierarchical
 ```
 
 ### Real-time Monitoring
 ```bash
 # Monitor swarm coordination
-npx bot-flow@alpha monitor swarm --real-time
-npx bot-flow@alpha dashboard --agents --performance
+npx flow-agent@alpha monitor swarm --real-time
+npx flow-agent@alpha dashboard --agents --performance
 ```
 
 ---

@@ -26,7 +26,7 @@ npx @yourname/claude-flow task create general "task" --provider codex
 - No scope needed
 
 **Package name:** `claude-flow-codex` or `yourname-claude-flow`
-**Usage:** `npx bot-flow-codex ...`
+**Usage:** `npx flow-agent-codex ...`
 
 ---
 
@@ -127,7 +127,7 @@ npm publish
 ### Step 4: Use From Anywhere
 
 ```bash
-npx bot-flow-codex task create general "test" --provider codex
+npx flow-agent-codex task create general "test" --provider codex
 
 # Or install globally:
 npm install -g claude-flow-codex
@@ -412,7 +412,7 @@ npm pack --dry-run
 
 ### 1. **Original Package**
 The original `claude-flow@alpha` will still exist. Your scoped version is separate:
-- Original: `npx bot-flow@alpha ...`
+- Original: `npx flow-agent@alpha ...`
 - Yours: `npx @beckett/claude-flow ...`
 
 ### 2. **Updates**

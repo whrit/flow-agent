@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Bot-Flow dispatcher
+ * Flow-Agent dispatcher
  * Delegates to the shared runtime used by the legacy claude-flow and agent-flow binaries.
  */
 
