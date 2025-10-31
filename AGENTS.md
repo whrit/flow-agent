@@ -8,26 +8,26 @@
 - Scripts live in `scripts/`, while Docker helpers and benchmark harnesses reside in `docker/` and `benchmark/`.
 
 ## Build, Test, and Development Commands
-- `pnpm install` installs dependencies; prefer pnpm to stay in sync with the published lockfile.
-- `pnpm dev` runs the CLI in watch mode via `tsx`.
-- `pnpm build` performs a clean SWC compile to ESM and CJS targets before assembling binaries.
-- `pnpm typecheck`, `pnpm lint`, and `pnpm format` enforce typing, ESLint, and Prettier expectations before committing.
-- `pnpm test`, `pnpm test:unit`, and `pnpm test:integration` run Jest suites; `pnpm test:ci` emits coverage for pipelines.
+- `npm install` installs dependencies; prefer npm to stay in sync with the published lockfile.
+- `npm run dev` runs the CLI in watch mode via `tsx`.
+- `npm run build` performs a clean SWC compile to ESM and CJS targets before assembling binaries.
+- `npm run typecheck`, `npm run lint`, and `npm run format` enforce typing, ESLint, and Prettier expectations before committing.
+- `npm test`, `npm run test:unit`, and `npm run test:integration` run Jest suites; `npm run test:ci` emits coverage for pipelines.
 
 ## Coding Style & Naming Conventions
 - Use TypeScript with ES modules, two-space indentation, and explicit exports; avoid default exports where possible.
 - Name classes and orchestrators with `PascalCase`, functions and variables with `camelCase`, and constants with `SCREAMING_SNAKE_CASE`.
 - Keep filenames kebab-cased (`session-registry.ts`) and co-locate helper tests under matching directories.
-- Run `pnpm lint` before opening a PR; ESLint and Prettier configs are authoritative—do not hand-format around them.
+- Run `npm run lint` before opening a PR; ESLint and Prettier configs are authoritative—do not hand-format around them.
 
 ## Testing Guidelines
 - Prefer co-located unit tests in `src/**/__tests__` named `*.test.ts`, and stage broader flows under `tests/`.
 - Use Jest with the provided `NODE_OPTIONS='--experimental-vm-modules'` scripts to mirror the ESM runtime.
-- Use `pnpm test:coverage` when behaviour changes, and document complex fixtures in `tests/fixtures/README.md` if added.
+- Use `npm run test:coverage` when behaviour changes, and document complex fixtures in `tests/fixtures/README.md` if added.
 - Integration suites often depend on `memory/` state—reset test data with the helpers in `tests/utils/` rather than manual cleanup.
 
 ## Commit & Pull Request Guidelines
 - Follow the history pattern: prefix commits with a tag such as `[feat]`, `[fix]`, `[docs]`, or the matching emoji (e.g., `✨`) plus an imperative summary.
 - Reference related issues in the commit body or PR description, and call out breaking changes explicitly.
-- Before requesting review, run `pnpm build`, `pnpm lint`, and the relevant Jest command; attach output or screenshots for CLI/UI regressions.
+- Before requesting review, run `npm run build`, `npm run lint`, and the relevant Jest command; attach output or screenshots for CLI/UI regressions.
 - PRs should describe the agent scenario touched, list test results, and note configuration updates (for example, new entries under `config/` or `templates/`).

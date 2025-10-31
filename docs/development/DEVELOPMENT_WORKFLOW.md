@@ -28,7 +28,6 @@ npm --version   # v9.0.0 or higher
 git --version   # v2.30.0 or higher
 
 # Recommended tools
-pnpm --version  # Preferred package manager (especially on Windows)
 docker --version  # For containerized development
 code --version  # VS Code for development
 ```
@@ -40,10 +39,8 @@ code --version  # VS Code for development
 git clone https://github.com/ruvnet/claude-flow.git
 cd claude-flow
 
-# Install dependencies (use pnpm on Windows)
+# Install dependencies
 npm install
-# OR on Windows:
-# pnpm install
 
 # Start development mode
 npm run dev

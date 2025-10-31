@@ -18,7 +18,7 @@ This guide will help you get up and running with the Codex TypeScript SDK in min
 ### Requirements
 
 - **Node.js** 18 or higher
-- **npm**, **yarn**, or **pnpm**
+- **npm** (installed with Node.js)
 - An OpenAI API key
 
 ### Install the SDK
@@ -31,12 +31,6 @@ or with yarn:
 
 ```bash
 yarn add @openai/codex-sdk
-```
-
-or with pnpm:
-
-```bash
-pnpm add @openai/codex-sdk
 ```
 
 ### Verify Installation

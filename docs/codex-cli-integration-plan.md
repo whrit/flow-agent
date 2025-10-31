@@ -18,8 +18,8 @@
 ### 1. Workspace & SDK Packaging
 - [ ] Depend on the published `@openai/codex-sdk` npm package (pin the version, add change management via Dependabot), and remove the temporary `codex-typescript-sdk/` copy once parity is confirmed.
 - [ ] Verify the installed package bundles the correct platform-specific `codex` binary (macOS aarch64/x86, Linux, Windows) and document any runtime prerequisites (e.g., API key env vars, optional binary overrides).
-- [ ] Add build/test scripts so CI verifies the SDK (e.g., `pnpm --filter codex-typescript-sdk test`) without bloating claude-flow pipelines.
-- [ ] Gate binary download/build behind explicit approval (respect existing sandbox/approval policies); ensure `pnpm approve-builds` is updated so Codex binaries can run when needed.
+- [ ] Add build/test scripts so CI verifies the SDK (e.g., `npm run test:codex-sdk`) without bloating claude-flow pipelines.
+- [ ] Gate binary download/build behind explicit approval (respect existing sandbox/approval policies); ensure the approval script (for example, `npm run approve-builds`) is updated so Codex binaries can run when needed.
 
 ### 2. Provider Abstraction & SDK Hook
 - [ ] Extend `src/providers/types.ts` to recognize a new provider key (`'codex'`) and enrich `LLMModel` (e.g., `codex-mini`, `codex-standard` if applicable).

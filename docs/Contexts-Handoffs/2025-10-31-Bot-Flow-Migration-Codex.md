@@ -56,12 +56,12 @@
 1. **Binary packaging warnings**  
    - After recent changes pkg will still emit “Failed to make bytecode …” warnings for some third-party modules (chalk, inquirer, ora, etc.). These are typical and safe to ignore, but confirm at release time.
 2. **Version updater**  
-   - `scripts/update-bin-version.js` now finds `bin/flow-agent` and will update `VERSION="..."`. Confirm during the next `pnpm run build` that it writes the actual version instead of `0.0.0`.
+   - `scripts/update-bin-version.js` now finds `bin/flow-agent` and will update `VERSION="..."`. Confirm during the next `npm run build` that it writes the actual version instead of `0.0.0`.
 3. **Local verification**  
    - Run:
      ```bash
-     pnpm install    # picks up uuid & cli-progress
-     pnpm run build  # rebuild dist + pkg binaries
+     npm install    # picks up uuid & cli-progress
+     npm run build  # rebuild dist + pkg binaries
      ```
    - Validate `bin/flow-agent` executes and that `dist-cjs/scripts/**` covers all required assets.
 4. **MCP registration**  
@@ -69,7 +69,7 @@
      `claude mcp add flow-agent "npx flow-agent@alpha mcp start"`  
    - Announce the new MCP ID (`io.github.flow-agent/flow-agent`) wherever it’s referenced.
 5. **Test run**  
-   - Re-run lint/tests outside this sandbox (e.g. `pnpm lint`, `pnpm test -- <targets>`) to confirm nothing regressed during rename.
+   - Re-run lint/tests outside this sandbox (e.g. `npm run lint`, `npm test -- <targets>`) to confirm nothing regressed during rename.
 
 ---
 
@@ -83,6 +83,6 @@
 ---
 
 **Next Suggested Actions**
-1. `pnpm install` → `pnpm run build` locally to verify binary packaging now completes with expected warnings only.
+1. `npm install` → `npm run build` locally to verify binary packaging now completes with expected warnings only.
 2. Smoke-test the produced binary (`./bin/flow-agent --help`) to ensure runtime command loads scripts correctly.
 3. Begin documentation or release prep for publishing `flow-agent@alpha` to npm and updating MCP registrations.

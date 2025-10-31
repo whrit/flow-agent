@@ -2215,7 +2215,7 @@ function createEnhancedSettingsJsonFallback() {
           'Bash(npx claude-flow:*)',
           'Bash(npm run lint)',
           'Bash(npm run test:*)',
-          'Bash(npm test:*)',
+          'Bash(npm run test:*)',
           'Bash(git status)',
           'Bash(git diff:*)',
           'Bash(git log:*)',

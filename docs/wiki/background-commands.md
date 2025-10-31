@@ -508,7 +508,7 @@ The main bottleneck appears to be database-related.
 npm run dev              # run_in_background: true
 npm run serve           # run_in_background: true
 yarn dev                # run_in_background: true
-pnpm dev                # run_in_background: true
+npm run dev                # run_in_background: true
 
 # Watch modes
 npm run watch           # run_in_background: true
@@ -603,7 +603,7 @@ Claude-Flow can be enhanced to automatically detect and run certain commands in 
 
 #### Pattern-Based Detection
 Commands matching these patterns could automatically use background execution:
-- `npm run dev`, `yarn start`, `pnpm dev`
+- `npm run dev`, `yarn start`, `npm run dev`
 - `python manage.py runserver`, `flask run`, `uvicorn`
 - `docker-compose up`, `docker run`
 - `webpack --watch`, `parcel watch`
@@ -830,7 +830,6 @@ Create a command wrapper that automatically determines background execution:
 const BACKGROUND_PATTERNS = [
   /^npm run (dev|watch|serve)/,
   /^yarn (dev|watch|start)/,
-  /^pnpm (dev|watch|serve)/,
   /docker-compose up/,
   /--watch/,
   /webpack.*watch/,

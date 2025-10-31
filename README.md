@@ -22,8 +22,8 @@ Flow-Agent is a personal successor to the Claude-Flow orchestration platform. It
 
 ### Prerequisites
 
-- Node.js 22 or newer (22+ recommended)
-- `pnpm`, `npm`, or `yarn`
+ - Node.js 22 or newer (22+ recommended)
+ - npm (ships with Node.js 22+)
 - For Claude-based workflows, install `@anthropic-ai/claude-code`
 
 ### Install & Initialise
@@ -58,15 +58,15 @@ Legacy scripts installed as `claude-flow` continue to work, forwarding to the Fl
 
 - **Plan & Apply Tooling** – out-of-the-box plan actions, apply-patch helpers, and sandbox propagation across threads.
 - **Automation Executors** – run structured workflows (`automation run-workflow`, `automation mle-star`) with provider-aware spawning.
-- **Parity Monitoring** – `docs/CODEX_PARITY_REBUILD.md` tracks the Codex remediation backlog; smoke tests (`CODEX_SMOKE_TEST=1 pnpm test:codex:smoke`) exercise real binaries behind a feature flag.
+- **Parity Monitoring** – `docs/CODEX_PARITY_REBUILD.md` tracks the Codex remediation backlog; smoke tests (`CODEX_SMOKE_TEST=1 npm run test:codex:smoke`) exercise real binaries behind a feature flag.
 - **Documentation Set** – architecture briefs, quick references, and coordination guides have been updated to refer to Flow-Agent while citing Claude-Flow as the originating design.
 
 ## Development Workflow
 
 ```bash
 npm install
-npm build
-npm lint
+npm run build
+npm run lint
 npm test
 ```
 
@@ -77,7 +77,7 @@ Targeted tests:
 npm test -- src/__tests__/unit/codex-event-translation-unit.test.ts src/__tests__/integration/codex-provider-integration.test.js
 
 # Optional smoke test (requires CODEX CLI on PATH)
-CODEX_SMOKE_TEST=1 npm test:codex:smoke
+CODEX_SMOKE_TEST=1 npm run test:codex:smoke
 ```
 
 ## Roadmap
@@ -94,7 +94,7 @@ Roadmap items are tracked in `docs/CODEX_PARITY_REBUILD.md`, `docs/CODEX_PARITY_
 We welcome contributions that improve robustness, parity, and documentation clarity. When opening a pull request:
 
 1. Follow the established coding standards (TypeScript, two-space indentation, explicit exports).
-2. Run `npm lint`, `npm typecheck`, and the relevant Jest suites.
+2. Run `npm run lint`, `npm run typecheck`, and the relevant Jest suites.
 3. Update parity trackers or docs when behaviour changes.
 
 ### Attribution
