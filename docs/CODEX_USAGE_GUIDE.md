@@ -39,7 +39,7 @@ codex login status
 
 # Check your model
 cat ~/.codex/config.toml | grep model
-# Should show: model = "gpt-5-codex"
+# Should show: model = "gpt-5.1-codex"
 ```
 
 ## 🚀 Usage: Two Ways
@@ -478,7 +478,7 @@ brew install codex
 # Verify model in config
 cat ~/.codex/config.toml | grep model
 
-# Should be: model = "gpt-5-codex"
+# Should be: model = "gpt-5.1-codex"
 # NOT: model = "gpt-5-codex Medium" (requires API key)
 ```
 
@@ -516,7 +516,7 @@ npm install -g flow-agent@alpha
 
 - [x] Codex installed: `/opt/homebrew/bin/codex`
 - [x] Authenticated: `codex login status`
-- [x] Model configured: `model = "gpt-5-codex"`
+- [x] Model configured: `model = "gpt-5.1-codex"`
 - [x] Claude-flow built: `npm run build`
 - [x] Integration tested: `node test-codex-system.js`
 - [ ] First task created: `npx . task create general "test" --provider codex`

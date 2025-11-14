@@ -19,7 +19,7 @@ function createProvider() {
 
   const config = {
     provider: 'codex',
-    model: 'gpt-5-codex',
+    model: 'gpt-5.1-codex',
     apiKey: 'test-key',
     temperature: 0,
     maxTokens: 256,
@@ -104,7 +104,7 @@ describe('CodexProvider integration', () => {
     });
 
     const response = await provider.complete({
-      model: 'gpt-5-codex',
+      model: 'gpt-5.1-codex',
       messages: [
         { role: 'system', content: 'You are Codex.' },
         { role: 'user', content: 'Summarize progress.' },
@@ -120,7 +120,7 @@ describe('CodexProvider integration', () => {
 
     expect(client.startThread).toHaveBeenCalledTimes(1);
     expect(client.startThread.mock.calls[0][0]).toMatchObject({
-      model: 'gpt-5-codex',
+      model: 'gpt-5.1-codex',
       workingDirectory: process.cwd(),
       sandboxMode: 'workspace-write',
       approvalPolicy: 'on-failure',

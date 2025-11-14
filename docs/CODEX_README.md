@@ -28,7 +28,7 @@ This integration enables seamless use of the Codex CLI within claude-flow, allow
 2. **Check Your Config**
    ```bash
    cat ~/.codex/config.toml
-   # Should have: model = "gpt-5-codex"
+   # Should have: model = "gpt-5.1-codex"
    ```
 
 3. **Test the Integration**
@@ -48,7 +48,7 @@ const provider = new CodexProvider({
   logger: console,
   config: {
     provider: 'codex',
-    model: 'gpt-5-codex',
+   model: 'gpt-5.1-codex',
   },
 });
 
@@ -58,7 +58,7 @@ const response = await provider.complete({
   messages: [
     { role: 'user', content: 'Explain async/await in JavaScript' }
   ],
-  model: 'gpt-5-codex',
+ model: 'gpt-5.1-codex',
   maxTokens: 500,
 });
 
@@ -94,22 +94,22 @@ npx flow-agent@alpha hive-mind spawn "Build REST API" \
 ## Model Configuration
 
 ### ChatGPT Account (Current Setup)
-✅ **Supported:** `gpt-5-codex` (base model)
+✅ **Supported:** `gpt-5.1-codex` (base model)
 
 ### OpenAI API Key Account
 - `gpt-5-codex Low` - Fast, efficient
 - `gpt-5-codex Medium` - Balanced
 - `gpt-5-codex High` - Advanced reasoning
 
-**Your current config uses:** `gpt-5-codex` ✅
+**Your current config uses:** `gpt-5.1-codex` ✅
 
 ## Configuration
 
 ### Your Current Setup (`~/.codex/config.toml`)
 
 ```toml
-model = "gpt-5-codex"
-model_reasoning_effort = "high"
+model = "gpt-5.1-codex"
+model_reasoning_effort = "medium"
 
 [projects."/Users/beckett/Projects/github_clones/claude-flow"]
 trust_level = "trusted"
@@ -129,14 +129,14 @@ http_headers = { "CONTEXT7_API_KEY" = "ctx7sk-93d4579e-23cb-4e41-beb9-048916bc8a
 ```toml
 # Fast automation
 [profiles.automation]
-model = "gpt-5-codex"
+model = "gpt-5.1-codex"
 approval_policy = "on-failure"
 sandbox_mode = "workspace-write"
 
 # Deep reasoning
 [profiles.complex]
-model = "gpt-5-codex"
-model_reasoning_effort = "high"
+model = "gpt-5.1-codex"
+model_reasoning_effort = "medium"
 model_reasoning_summary = "detailed"
 ```
 
@@ -202,7 +202,7 @@ ChatGPT OAuth Authentication
 ```javascript
 const provider = new CodexProvider({
   logger: console,
-  config: { provider: 'codex', model: 'gpt-5-codex' },
+  config: { provider: 'codex', model: 'gpt-5.1-codex' },
 });
 
 await provider.initialize();
@@ -212,7 +212,7 @@ const response = await provider.complete({
     { role: 'system', content: 'You are a code reviewer' },
     { role: 'user', content: 'Review this function: ...' }
   ],
-  model: 'gpt-5-codex',
+  model: 'gpt-5.1-codex',
 });
 ```
 
@@ -235,13 +235,13 @@ for await (const event of provider.streamComplete(request)) {
 // First message
 await provider.complete({
   messages: [{ role: 'user', content: 'What is React?' }],
-  model: 'gpt-5-codex',
+  model: 'gpt-5.1-codex',
 });
 
 // Codex remembers context automatically
 const followUp = await provider.complete({
   messages: [{ role: 'user', content: 'Show me an example' }],
-  model: 'gpt-5-codex',
+  model: 'gpt-5.1-codex',
 });
 ```
 
@@ -249,9 +249,9 @@ const followUp = await provider.complete({
 
 ### Error: Model not supported
 
-**Solution:** Ensure you're using `gpt-5-codex` (without tier suffix)
+**Solution:** Ensure you're using `gpt-5.1-codex` (without tier suffix)
 ```javascript
-model: 'gpt-5-codex'  // ✅ Correct
+model: 'gpt-5.1-codex'  // ✅ Correct
 model: 'gpt-5-codex Medium'  // ❌ Wrong (requires API key)
 ```
 
@@ -325,7 +325,7 @@ cat ~/.codex/config.toml
 A: No, with ChatGPT authentication you don't need an API key.
 
 **Q: Which model should I use?**
-A: Use `gpt-5-codex` (base model) with ChatGPT accounts.
+A: Use `gpt-5.1-codex` (base model) with ChatGPT accounts.
 
 **Q: How do I switch to tier-specific models?**
 A: You need an OpenAI API key. Run: `codex logout && codex login --api-key YOUR_KEY`
@@ -355,7 +355,7 @@ A: Yes! Use Codex alongside Claude, OpenAI, and others in multi-agent workflows.
 - ✅ Thread persistence
 - ✅ Streaming support
 - ✅ Cost tracking
-- ✅ Model validation (gpt-5-codex)
+- ✅ Model validation (gpt-5.1-codex)
 - ✅ Comprehensive documentation
 - ✅ Integration tests
 
@@ -363,6 +363,6 @@ A: Yes! Use Codex alongside Claude, OpenAI, and others in multi-agent workflows.
 
 **Integration Status:** ✅ Production Ready
 **Authentication:** ChatGPT OAuth
-**Model:** gpt-5-codex
+**Model:** gpt-5.1-codex
 **Binary:** /opt/homebrew/bin/codex (v0.50.0)
 **Test Status:** ✅ All tests passing

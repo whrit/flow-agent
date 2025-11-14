@@ -54,7 +54,11 @@ describe('buildCodexLaunchConfig', () => {
     expect(args).toContain('-m');
 
     const modelIndex = args.indexOf('-m');
-    expect(args[modelIndex + 1]).toBe('gpt-5-codex');
+    expect(args[modelIndex + 1]).toBe('gpt-5.1-codex');
+
+    const configIndex = args.indexOf('-c');
+    expect(configIndex).toBeGreaterThan(-1);
+    expect(args[configIndex + 1]).toBe('model_reasoning_effort=high');
 
     const promptIndex = args.length - 1;
     expect(args[promptIndex]).toBe('PROMPT');

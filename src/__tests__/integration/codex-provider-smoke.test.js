@@ -68,7 +68,7 @@ describeIfCli('CodexProvider real CLI smoke test', () => {
       logger,
       config: {
         provider: 'codex',
-        model: process.env.CODEX_SMOKE_TEST_MODEL || 'gpt-5-codex',
+        model: process.env.CODEX_SMOKE_TEST_MODEL || 'gpt-5.1-codex',
         apiKey: process.env.CODEX_SMOKE_TEST_API_KEY || 'unused',
         temperature: 0,
         maxTokens: 128,

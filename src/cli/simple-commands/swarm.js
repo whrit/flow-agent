@@ -232,6 +232,8 @@ OPTIONS:
   --auto                     (Deprecated: auto-permissions enabled by default)
   --no-auto-permissions      Disable automatic --dangerously-skip-permissions
   --auto-mcp                 Ensure Flow-Agent MCP server config before spawning Claude/Codex (default: enabled)
+  --model-reasoning-effort <level>
+                             Codex reasoning effort (minimal, low, medium, high). Default: high
   --analysis                 Enable analysis/read-only mode (no code changes)
   --read-only                Enable read-only mode (alias for --analysis)
 
@@ -986,7 +988,14 @@ The swarm should be self-documenting - use memory_store to save all important in
         }
 
         // Add model specification
-        codexArgs.push('-m', 'gpt-5-codex');
+        const reasoningEffort =
+          flags.modelReasoningEffort ||
+          flags['model-reasoning-effort'] ||
+          flags.reasoningEffort ||
+          'medium';
+
+        codexArgs.push('-m', 'gpt-5.1-codex');
+        codexArgs.push('-c', `model_reasoning_effort=${reasoningEffort}`);
 
         // Add the prompt as the LAST argument
         codexArgs.push(swarmPrompt);

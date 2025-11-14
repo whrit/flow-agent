@@ -116,6 +116,8 @@ ${chalk.bold('OPTIONS:')}
   --spawn                Alias for --claude
   --auto-spawn           Automatically spawn instances
   --auto-mcp             Ensure Flow-Agent MCP server config exists before spawning (default: enabled)
+  --model-reasoning-effort <level>
+                         Set Codex reasoning effort (minimal, low, medium, high). Default: high
   --execute              Execute spawn commands immediately
 
 ${chalk.bold('For more information:')}
@@ -2261,8 +2263,15 @@ export function buildCodexLaunchConfig(workspaceDir, prompt, flags = {}) {
     args.push('-a', 'on-failure');
   }
 
-  const model = flags.model || 'gpt-5-codex';
+  const model = flags.model || 'gpt-5.1-codex';
   args.push('-m', model);
+
+  const reasoningEffort =
+    flags.modelReasoningEffort ||
+    flags['model-reasoning-effort'] ||
+    flags.reasoningEffort ||
+    'medium';
+  args.push('-c', `model_reasoning_effort=${reasoningEffort}`);
 
   args.push(prompt);
 
@@ -2308,7 +2317,7 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
     console.log(chalk.cyan('Worker Types:'), Object.keys(workerGroups).join(', '));
     console.log(chalk.cyan('Consensus Algorithm:'), flags.consensus || 'majority');
     console.log(chalk.cyan('MCP Tools:'), 'Full Claude-Flow integration enabled');
-    console.log(chalk.cyan('Provider:'), 'Codex (gpt-5-codex)');
+    console.log(chalk.cyan('Provider:'), 'Codex (gpt-5.1-codex)');
 
     try {
       // Ensure sessions directory exists
@@ -2407,7 +2416,7 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
         console.log(chalk.cyan('\n📂 Workspace Configuration:'));
         console.log(chalk.gray('  Working Directory:'), workspaceDir);
         console.log(chalk.gray('  Config Directory:'), codexEnv.CODEX_CONFIG_DIR);
-        console.log(chalk.gray('  Model:'), flags.model || 'gpt-5-codex');
+        console.log(chalk.gray('  Model:'), flags.model || 'gpt-5.1-codex');
         console.log(chalk.gray('  Trust Status:'), projectTrusted ? chalk.green('Trusted') : chalk.yellow('Unknown'));
 
         // Spawn codex with properly configured workspace access

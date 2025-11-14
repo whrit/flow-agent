@@ -105,7 +105,7 @@ const codexProcess = childSpawn('codex', codexArgs, {
 
 ```toml
 model = "gpt-5-codex"
-model_reasoning_effort = "high"
+model_reasoning_effort = "medium"
 
 [projects."/Users/beckett/Projects/github_clones/claude-flow"]
 trust_level = "trusted"

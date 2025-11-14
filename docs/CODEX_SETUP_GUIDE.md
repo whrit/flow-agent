@@ -147,7 +147,7 @@ sandbox_mode = "workspace-write"
 # Deep reasoning profile
 [profiles.complex]
 model = "gpt-5-codex High"
-model_reasoning_effort = "high"
+model_reasoning_effort = "medium"
 model_reasoning_summary = "detailed"
 approval_policy = "on-request"
 

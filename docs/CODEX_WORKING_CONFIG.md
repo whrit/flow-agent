@@ -6,9 +6,9 @@
 
 ### Model Configuration
 
-**Correct Model Name:** `gpt-5-codex`
-- The base model is `gpt-5-codex` without tier suffix
-- Your `~/.codex/config.toml` already has this: `model = "gpt-5-codex"`
+**Correct Model Name:** `gpt-5.1-codex`
+- The base model is `gpt-5.1-codex` without tier suffix
+- Update your `~/.codex/config.toml` to: `model = "gpt-5.1-codex"`
 - Tier-specific variants (`Low`, `Medium`, `High`) are NOT supported with ChatGPT accounts
 
 ### Authentication
@@ -108,8 +108,8 @@ node test-codex-system.js
 
 **File:** `~/.codex/config.toml`
 ```toml
-model = "gpt-5-codex"  # ✅ Already correct!
-model_reasoning_effort = "high"
+model = "gpt-5.1-codex"  # ✅ Flow-Agent default
+model_reasoning_effort = "medium"
 
 [projects."/Users/beckett/Projects/github_clones/flow-agent"]
 trust_level = "trusted"  # ✅ Project trusted

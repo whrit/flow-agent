@@ -269,7 +269,13 @@ export class WorkflowExecutor {
       cliArgs.push('--full-auto');
 
       // Model specification
-      cliArgs.push('-m', 'gpt-5-codex');
+      cliArgs.push('-m', 'gpt-5.1-codex');
+
+      const reasoningEffort =
+        this.options.modelReasoningEffort ||
+        this.options.reasoningEffort ||
+        'medium';
+      cliArgs.push('-c', `model_reasoning_effort=${reasoningEffort}`);
 
       // Approval policy
       cliArgs.push('-a', 'on-failure');

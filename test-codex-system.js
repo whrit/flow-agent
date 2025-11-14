@@ -17,7 +17,7 @@ const provider = new CodexProvider({
   },
   config: {
     provider: 'codex',
-    model: 'gpt-5-codex', // Codex model without tier suffix
+    model: 'gpt-5.1-codex', // Default Codex model
     // NO codexPathOverride - should find /opt/homebrew/bin/codex automatically
   },
 });
@@ -37,7 +37,7 @@ try {
     messages: [
       { role: 'user', content: 'Say "Hello from Codex!" and nothing else.' }
     ],
-    model: 'gpt-5-codex',
+    model: 'gpt-5.1-codex',
     maxTokens: 20,
   });
 
