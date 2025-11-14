@@ -267,14 +267,14 @@ Codex has MCP support via config:
 
 ```javascript
 // Add MCP configuration
-codexArgs.push('-c', 'mcp_servers.claude-flow.command="npx flow-agent@alpha mcp start"');
+codexArgs.push('-c', 'mcp_servers.flow-agent.command="npx flow-agent@alpha mcp start"');
 ```
 
 Or via config.toml:
 ```toml
-[mcp_servers.claude-flow]
+[mcp_servers.flow-agent]
 command = "npx"
-args = ["claude-flow@alpha", "mcp", "start"]
+args = ["flow-agent@alpha", "mcp", "start"]
 ```
 
 ### 5.4 **Model & Output Configuration**
@@ -397,8 +397,8 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
 
       // 6. MCP servers (if not in config.toml)
       if (flags.enableMcp) {
-        codexArgs.push('-c', 'mcp_servers.claude-flow.command="npx"');
-        codexArgs.push('-c', 'mcp_servers.claude-flow.args=["claude-flow@alpha", "mcp", "start"]');
+        codexArgs.push('-c', 'mcp_servers.flow-agent.command="npx"');
+        codexArgs.push('-c', 'mcp_servers.flow-agent.args=["flow-agent@alpha", "mcp", "start"]');
       }
 
       // 7. Additional directories (if needed)
@@ -563,7 +563,7 @@ env: {
 
 ### Should Have:
 
-6. ✅ **MCP Configuration**: Configure `claude-flow` MCP server in `config.toml` or via `-c` flags
+6. ✅ **MCP Configuration**: Configure `flow-agent` MCP server in `config.toml` or via `-c` flags
 7. ✅ **Model Configuration**: Specify model via `-m` flag
 8. ✅ **Non-Interactive Support**: Add `--json` and `--color never` for non-interactive mode
 

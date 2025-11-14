@@ -111,7 +111,7 @@ node test-codex-system.js
 model = "gpt-5-codex"  # ✅ Already correct!
 model_reasoning_effort = "high"
 
-[projects."/Users/beckett/Projects/github_clones/claude-flow"]
+[projects."/Users/beckett/Projects/github_clones/flow-agent"]
 trust_level = "trusted"  # ✅ Project trusted
 
 # MCP servers configured
@@ -161,7 +161,7 @@ Your Codex integration is complete and ready to use:
 4. ✅ Integration tested and validated
 5. ✅ Documentation updated
 
-You can now use Codex with claude-flow commands using the `--provider codex` flag!
+You can now use Codex with flow-agent commands using the `--provider codex` flag!
 
 ## Common Commands
 
@@ -172,7 +172,7 @@ npm run build
 # Run integration test
 node test-codex-system.js
 
-# Use with claude-flow
+# Use with flow-agent
 npx flow-agent@alpha task "your task" --provider codex
 
 # Check Codex status

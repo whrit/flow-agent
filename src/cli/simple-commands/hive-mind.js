@@ -41,12 +41,137 @@ import { HiveMindSessionManager } from './hive-mind/session-manager.js';
 import { createAutoSaveMiddleware } from './hive-mind/auto-save-middleware.js';
 import { HiveMindMetricsReader } from './hive-mind/metrics-reader.js';
 
+const FLOW_AGENT_MCP_JSON_CONFIG = {
+  command: 'npx',
+  args: ['flow-agent@alpha', 'mcp', 'start', '--transport', 'stdio'],
+  type: 'stdio',
+  restartOnExit: true,
+};
+
+const FLOW_AGENT_MCP_TOML_BLOCK = `[mcp_servers.flow-agent]
+command = "npx"
+args = ["flow-agent@alpha", "mcp", "start", "--transport", "stdio"]
+type = "stdio"
+restart_on_exit = true`;
+
+function isAutoMcpEnabled(flags = {}) {
+  if (!flags || !Object.prototype.hasOwnProperty.call(flags, 'auto-mcp')) {
+    return true;
+  }
+
+  const rawValue = flags['auto-mcp'];
+  if (typeof rawValue === 'string') {
+    return !['false', '0', 'no', 'off'].includes(rawValue.toLowerCase());
+  }
+
+  return Boolean(rawValue);
+}
+
+async function ensureMcpServerReady({ provider, flags = {}, verbose = false }) {
+  if (!isAutoMcpEnabled(flags)) {
+    if (verbose) {
+      console.log(chalk.gray('Skipping MCP auto-setup (--auto-mcp=false)'));
+    }
+    return { skipped: true };
+  }
+
+  try {
+    if (provider === 'codex') {
+      const configDir = path.join(os.homedir(), '.codex');
+      const configPath = path.join(configDir, 'config.toml');
+      await mkdirAsync(configDir, { recursive: true });
+
+      let configText = '';
+      try {
+        configText = await readFile(configPath, 'utf8');
+      } catch {
+        configText = '';
+      }
+
+      let migratedText = configText;
+      let mutated = false;
+
+      if (migratedText.includes('mcp_servers.claude-flow')) {
+        migratedText = migratedText.replace(/mcp_servers\.claude-flow/g, 'mcp_servers.flow-agent');
+        mutated = true;
+      }
+
+      if (migratedText.includes('claude-flow@alpha')) {
+        migratedText = migratedText.replace(/claude-flow@alpha/g, 'flow-agent@alpha');
+        mutated = true;
+      }
+
+      if (mutated) {
+        await writeFile(configPath, migratedText, 'utf8');
+        configText = migratedText;
+        console.log(chalk.cyan('🔁 Updated Codex config to use flow-agent MCP server entries'));
+      }
+
+      if (configText.includes('[mcp_servers.flow-agent]')) {
+        if (verbose) {
+          console.log(chalk.gray('Flow-Agent MCP server already configured for Codex CLI'));
+        }
+        return { ensured: true, configPath };
+      }
+
+      const sanitized = configText.trimEnd();
+      const nextContent = sanitized
+        ? `${sanitized}\n\n${FLOW_AGENT_MCP_TOML_BLOCK}\n`
+        : `${FLOW_AGENT_MCP_TOML_BLOCK}\n`;
+      await writeFile(configPath, nextContent, 'utf8');
+      console.log(chalk.cyan(`⚙️  Added Flow-Agent MCP server entry to ${configPath}`));
+      return { ensured: true, configPath };
+    }
+
+    // Default to Claude Code configuration
+    const claudeConfigDir = path.join(os.homedir(), '.config', 'claude');
+    const claudeConfigPath = path.join(claudeConfigDir, 'config.json');
+    await mkdirAsync(claudeConfigDir, { recursive: true });
+
+    let jsonConfig = {};
+    try {
+      const content = await readFile(claudeConfigPath, 'utf8');
+      jsonConfig = JSON.parse(content || '{}');
+    } catch {
+      jsonConfig = {};
+    }
+
+    if (!jsonConfig.mcpServers) {
+      jsonConfig.mcpServers = {};
+    }
+
+    let updated = false;
+
+    if (jsonConfig.mcpServers['claude-flow'] && !jsonConfig.mcpServers['flow-agent']) {
+      jsonConfig.mcpServers['flow-agent'] = jsonConfig.mcpServers['claude-flow'];
+      delete jsonConfig.mcpServers['claude-flow'];
+      updated = true;
+    }
+
+    if (!jsonConfig.mcpServers['flow-agent']) {
+      jsonConfig.mcpServers['flow-agent'] = { ...FLOW_AGENT_MCP_JSON_CONFIG };
+      updated = true;
+    }
+
+    if (updated) {
+      await writeFile(claudeConfigPath, JSON.stringify(jsonConfig, null, 2));
+      console.log(chalk.cyan(`⚙️  Updated Claude config at ${claudeConfigPath} with Flow-Agent MCP server`));
+    } else if (verbose) {
+      console.log(chalk.gray('Flow-Agent MCP server already configured for Claude Code'));
+    }
+
+    return { ensured: true, configPath: claudeConfigPath };
+  } catch (error) {
+    throw new Error(`Failed to ensure MCP server configuration (${provider}): ${error.message}`);
+  }
+}
+
 function showHiveMindHelp() {
   console.log(`
 ${chalk.yellow('🧠 Claude Flow Hive Mind System')}
 
 ${chalk.bold('USAGE:')}
-  claude-flow hive-mind [subcommand] [options]
+  flow-agent hive-mind [subcommand] [options]
 
 ${chalk.bold('SUBCOMMANDS:')}
   ${chalk.green('init')}         Initialize hive mind system
@@ -62,34 +187,34 @@ ${chalk.bold('SUBCOMMANDS:')}
 
 ${chalk.bold('EXAMPLES:')}
   ${chalk.gray('# Initialize hive mind')}
-  claude-flow hive-mind init
+  flow-agent hive-mind init
 
   ${chalk.gray('# Spawn swarm with interactive wizard')}
-  claude-flow hive-mind spawn
+  flow-agent hive-mind spawn
 
   ${chalk.gray('# Quick spawn with objective')}
-  claude-flow hive-mind spawn "Build microservices architecture"
+  flow-agent hive-mind spawn "Build microservices architecture"
 
   ${chalk.gray('# View current status')}
-  claude-flow hive-mind status
+  flow-agent hive-mind status
 
   ${chalk.gray('# Interactive wizard with Claude Code spawning')}
-  claude-flow hive-mind wizard
+  flow-agent hive-mind wizard
 
   ${chalk.gray('# Spawn with Claude Code coordination')}
-  claude-flow hive-mind spawn "Build REST API" --claude
+  flow-agent hive-mind spawn "Build REST API" --claude
 
   ${chalk.gray('# Spawn with Codex coordination')}
-  claude-flow hive-mind spawn "Build REST API" --codex
+  flow-agent hive-mind spawn "Build REST API" --codex
 
   ${chalk.gray('# Auto-spawn coordinated Claude Code instances')}
-  claude-flow hive-mind spawn "Research AI trends" --auto-spawn --verbose
+  flow-agent hive-mind spawn "Research AI trends" --auto-spawn --verbose
 
   ${chalk.gray('# List all sessions')}
-  claude-flow hive-mind sessions
+  flow-agent hive-mind sessions
 
   ${chalk.gray('# Resume a paused session')}
-  claude-flow hive-mind resume session-1234567890-abc123
+  flow-agent hive-mind resume session-1234567890-abc123
 
 ${chalk.bold('KEY FEATURES:')}
   ${chalk.cyan('🐝')} Queen-led coordination with worker specialization
@@ -114,10 +239,13 @@ ${chalk.bold('OPTIONS:')}
   --codex                Spawn Codex with hive-mind coordination
   --spawn                Alias for --claude
   --auto-spawn           Automatically spawn instances
+  --auto-mcp             Ensure Flow-Agent MCP server config exists before spawning (default: enabled)
   --execute              Execute spawn commands immediately
 
 ${chalk.bold('For more information:')}
-${chalk.blue('https://github.com/ruvnet/claude-flow/tree/main/docs/hive-mind')}
+${chalk.blue('https://github.com/whrit/flow-agent/tree/main/docs/hive-mind')}
+
+${chalk.gray('Legacy alias:')} run the same commands with the `claude-flow` binary if you still rely on the old entry point.
 `);
 }
 
@@ -235,10 +363,10 @@ async function initHiveMind(flags) {
     console.log(chalk.green('✓') + ' Created configuration file');
     console.log('\n' + chalk.yellow('Next steps:'));
     console.log(
-      '  1. Run ' + chalk.cyan('claude-flow hive-mind spawn') + ' to create your first swarm',
+      '  1. Run ' + chalk.cyan('flow-agent hive-mind spawn') + ' to create your first swarm',
     );
     console.log(
-      '  2. Use ' + chalk.cyan('claude-flow hive-mind wizard') + ' for interactive setup',
+      '  2. Use ' + chalk.cyan('flow-agent hive-mind wizard') + ' for interactive setup',
     );
   } catch (error) {
     spinner.fail('Failed to initialize Hive Mind system');
@@ -479,10 +607,10 @@ async function spawnSwarm(args, flags) {
   if (!objective && !flags.wizard) {
     if (isNonInteractive) {
       console.error(chalk.red('Error: Objective required in non-interactive mode'));
-      console.log('Usage: claude-flow hive-mind spawn "Your objective" --non-interactive');
+      console.log('Usage: flow-agent hive-mind spawn "Your objective" --non-interactive');
     } else {
       console.error(chalk.red('Error: Please provide an objective or use --wizard flag'));
-      console.log('Example: claude-flow hive-mind spawn "Build REST API"');
+      console.log('Example: flow-agent hive-mind spawn "Build REST API"');
     }
     return;
   }
@@ -851,10 +979,10 @@ async function spawnSwarm(args, flags) {
 
     // Enhanced coordination instructions with MCP tools
     console.log('\n' + chalk.green('✓') + ' Swarm is ready for coordination');
-    console.log(chalk.gray('Use "claude-flow hive-mind status" to view swarm activity'));
+    console.log(chalk.gray('Use "flow-agent hive-mind status" to view swarm activity'));
     console.log(chalk.gray('Session auto-save enabled - progress saved every 30 seconds'));
     console.log(chalk.blue('💡 To pause:') + ' Press Ctrl+C to safely pause and resume later');
-    console.log(chalk.blue('💡 To resume:') + ' claude-flow hive-mind resume ' + sessionId);
+    console.log(chalk.blue('💡 To resume:') + ' flow-agent hive-mind resume ' + sessionId);
 
     // Set up SIGINT handler for automatic session pausing
     let isExiting = false;
@@ -890,7 +1018,7 @@ async function spawnSwarm(args, flags) {
         
         console.log(chalk.green('✓') + ' Session paused successfully');
         console.log(chalk.cyan('\nTo resume this session, run:'));
-        console.log(chalk.bold(`  claude-flow hive-mind resume ${sessionId}`));
+        console.log(chalk.bold(`  flow-agent hive-mind resume ${sessionId}`));
         console.log();
         
         // Clean up auto-save if active
@@ -922,8 +1050,8 @@ async function spawnSwarm(args, flags) {
           chalk.blue('💡 Pro Tip:') +
           ' Add --claude or --codex to spawn coordinated instances',
       );
-      console.log(chalk.gray('   claude-flow hive-mind spawn "objective" --claude'));
-      console.log(chalk.gray('   claude-flow hive-mind spawn "objective" --codex'));
+      console.log(chalk.gray('   flow-agent hive-mind spawn "objective" --claude'));
+      console.log(chalk.gray('   flow-agent hive-mind spawn "objective" --codex'));
     }
 
     // Return swarm info for wizard use
@@ -975,7 +1103,7 @@ async function showStatus(flags) {
 
     if (!existsSync(dbPath)) {
       console.error(chalk.red('Error: Hive Mind not initialized'));
-      console.log('Run "claude-flow hive-mind init" first');
+      console.log('Run "flow-agent hive-mind init" first');
       return;
     }
 
@@ -1560,7 +1688,7 @@ export async function hiveMindCommand(args, flags) {
         // In non-interactive mode, skip wizard and use defaults
         if (subArgs.length === 0) {
           console.error(chalk.red('Error: Objective required in non-interactive mode'));
-          console.log('Usage: claude-flow hive-mind spawn "Your objective" --non-interactive');
+          console.log('Usage: flow-agent hive-mind spawn "Your objective" --non-interactive');
           return;
         }
         await spawnSwarm(subArgs, flags);
@@ -1611,7 +1739,7 @@ export async function hiveMindCommand(args, flags) {
 
     default:
       console.error(chalk.red(`Unknown subcommand: ${subcommand}`));
-      console.log('Run "claude-flow hive-mind help" for usage information');
+      console.log('Run "flow-agent hive-mind help" for usage information');
       exit(1);
   }
 }
@@ -2147,7 +2275,7 @@ async function spawnClaudeCodeInstances(swarmId, swarmName, objective, workers, 
               
               console.log(chalk.green('✓') + ' Session paused successfully');
               console.log(chalk.cyan('\nTo resume this session, run:'));
-              console.log(chalk.bold(`  claude-flow hive-mind resume ${sessionId}`));
+              console.log(chalk.bold(`  flow-agent hive-mind resume ${sessionId}`));
             }
             
             sessionManager.close();
@@ -2231,7 +2359,7 @@ async function spawnClaudeCodeInstances(swarmId, swarmName, objective, workers, 
     console.log(chalk.gray('─'.repeat(30)));
     console.log('• Use --auto-spawn to launch instances automatically');
     console.log('• Add --verbose for detailed coordination context');
-    console.log('• Monitor with: claude-flow hive-mind status');
+    console.log('• Monitor with: flow-agent hive-mind status');
     console.log('• Share memories: mcp__ruv-swarm__memory_usage');
   } catch (error) {
     spinner.fail('Failed to prepare Claude Code coordination');
@@ -2330,6 +2458,7 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
       }
 
       if (codexAvailable && !flags.dryRun) {
+        await ensureMcpServerReady({ provider: 'codex', flags, verbose: flags.verbose });
         // Inject memory coordination protocol into CLAUDE.md
         try {
           const { injectMemoryProtocol, enhanceHiveMindPrompt } = await import('./inject-memory-protocol.js');
@@ -2450,7 +2579,7 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
 
               console.log(chalk.green('✓') + ' Session paused successfully');
               console.log(chalk.cyan('\nTo resume this session, run:'));
-              console.log(chalk.bold(`  claude-flow hive-mind resume ${sessionId}`));
+              console.log(chalk.bold(`  flow-agent hive-mind resume ${sessionId}`));
             }
 
             sessionManager.close();
@@ -2523,7 +2652,7 @@ async function spawnCodexInstances(swarmId, swarmName, objective, workers, flags
     console.log(chalk.gray('─'.repeat(30)));
     console.log('• Use --auto-spawn to launch instances automatically');
     console.log('• Add --verbose for detailed coordination context');
-    console.log('• Monitor with: claude-flow hive-mind status');
+    console.log('• Monitor with: flow-agent hive-mind status');
     console.log('• Trust projects: Run codex in directory first');
     console.log('• Use --full-auto for automatic workspace access');
     console.log('• Share memories: mcp__ruv-swarm__memory_usage');
@@ -2828,9 +2957,9 @@ Every agent MUST:
      { "id": "4", "content": "Aggregate and verify deliverables", "status": "pending", "priority": "medium" }
    ] }
 2. Use hooks:
-   - npx claude-flow@alpha hooks pre-task --description "[objective]"
-   - npx claude-flow@alpha hooks post-edit --file "[path]"
-   - npx claude-flow@alpha hooks post-task --task-id "[agent]"
+   - npx flow-agent@alpha hooks pre-task --description "[objective]"
+   - npx flow-agent@alpha hooks post-edit --file "[path]"
+   - npx flow-agent@alpha hooks post-task --task-id "[agent]"
 3. Coordinate through MCP tools listed above.
 4. Document insights and final outputs in shared memory.
 
@@ -3060,8 +3189,8 @@ async function showSessions(flags) {
     console.log(chalk.yellow('═'.repeat(60)) + '\n');
 
     console.log(chalk.blue('💡 Tips:'));
-    console.log('  • Resume a session: claude-flow hive-mind resume <session-id>');
-    console.log('  • View session details: claude-flow hive-mind status');
+    console.log('  • Resume a session: flow-agent hive-mind resume <session-id>');
+    console.log('  • View session details: flow-agent hive-mind status');
 
     metricsReader.close();
   } catch (error) {
@@ -3078,8 +3207,8 @@ async function resumeSession(args, flags) {
 
   if (!sessionId) {
     console.error(chalk.red('Error: Please provide a session ID'));
-    console.log('Usage: claude-flow hive-mind resume <session-id>');
-    console.log('Run "claude-flow hive-mind sessions" to see available sessions');
+    console.log('Usage: flow-agent hive-mind resume <session-id>');
+    console.log('Run "flow-agent hive-mind sessions" to see available sessions');
     return;
   }
 
@@ -3093,7 +3222,7 @@ async function resumeSession(args, flags) {
 
     if (!session) {
       spinner.fail(`Session ${sessionId} not found`);
-      console.log('\nRun "claude-flow hive-mind sessions" to see available sessions');
+      console.log('\nRun "flow-agent hive-mind sessions" to see available sessions');
       sessionManager.close();
       return;
     }
@@ -3165,7 +3294,7 @@ async function resumeSession(args, flags) {
           chalk.blue('💡 Pro Tip:') +
           ' Add --claude to spawn Claude Code with restored context',
       );
-      console.log(chalk.gray('   claude-flow hive-mind resume ' + sessionId + ' --claude'));
+      console.log(chalk.gray('   flow-agent hive-mind resume ' + sessionId + ' --claude'));
     }
   } catch (error) {
     spinner.fail('Failed to resume session');
@@ -3182,8 +3311,8 @@ async function stopSession(args, flags) {
 
   if (!sessionId) {
     console.error(chalk.red('Error: Please provide a session ID'));
-    console.log('Usage: claude-flow hive-mind stop <session-id>');
-    console.log('Run "claude-flow hive-mind sessions" to see available sessions');
+    console.log('Usage: flow-agent hive-mind stop <session-id>');
+    console.log('Run "flow-agent hive-mind sessions" to see available sessions');
     return;
   }
 
@@ -3197,7 +3326,7 @@ async function stopSession(args, flags) {
 
     if (!session) {
       spinner.fail(`Session ${sessionId} not found`);
-      console.log('\nRun "claude-flow hive-mind sessions" to see available sessions');
+      console.log('\nRun "flow-agent hive-mind sessions" to see available sessions');
       sessionManager.close();
       return;
     }
@@ -3221,7 +3350,7 @@ async function stopSession(args, flags) {
 
     console.log('\n' + chalk.yellow('💡 Session has been stopped and all processes cleaned up.'));
     console.log(
-      chalk.gray('To resume this session later, use: claude-flow hive-mind resume ' + sessionId),
+      chalk.gray('To resume this session later, use: flow-agent hive-mind resume ' + sessionId),
     );
 
     sessionManager.close();
@@ -3396,7 +3525,7 @@ Resume the hive mind operation with full context awareness and continue working 
 /**
  * Launch Claude Code with context
  */
-async function launchClaudeWithContext(prompt, flags, sessionId) {
+async function launchClaudeWithContext(prompt, flags = {}, sessionId) {
   try {
     // ALWAYS save the prompt file first (fix for issue #330)
     // Ensure sessions directory exists
@@ -3420,6 +3549,7 @@ async function launchClaudeWithContext(prompt, flags, sessionId) {
     }
 
     if (claudeAvailable && !flags.dryRun) {
+      await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags.verbose });
       // Debug logging to track spawn calls
       console.log(chalk.blue('\n🔍 Debug: About to spawn Claude Code process...'));
       console.log(chalk.gray(`  Session ID: ${sessionId}`));
@@ -3478,7 +3608,7 @@ async function launchClaudeWithContext(prompt, flags, sessionId) {
           
           console.log(chalk.green('✓') + ' Session paused successfully');
           console.log(chalk.cyan('\nTo resume this session, run:'));
-          console.log(chalk.bold(`  claude-flow hive-mind resume ${sessionId}`));
+          console.log(chalk.bold(`  flow-agent hive-mind resume ${sessionId}`));
           console.log();
           
           process.exit(0);

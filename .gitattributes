@@ -1,0 +1,2 @@
+bin/flow-agent-linux filter=lfs diff=lfs merge=lfs -text
+bin/flow-agent-macos filter=lfs diff=lfs merge=lfs -text

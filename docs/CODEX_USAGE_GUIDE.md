@@ -48,7 +48,7 @@ cat ~/.codex/config.toml | grep model
 
 ```bash
 # You're currently here
-cd /Users/beckett/Projects/github_clones/claude-flow
+cd /Users/beckett/Projects/github_clones/flow-agent
 
 # Build (already done)
 npm run build
@@ -71,8 +71,8 @@ npx flow-agent@alpha swarm init --provider codex
 npx flow-agent@alpha hive-mind spawn "Refactor API" --provider codex
 
 # Or install globally
-npm install -g claude-flow@alpha
-claude-flow task create general "Your task" --provider codex
+npm install -g flow-agent@alpha
+flow-agent task create general "Your task" --provider codex
 ```
 
 ## 💻 Command Examples
@@ -258,7 +258,7 @@ npx flow-agent@alpha sparc run architect "Design distributed system" \
 In your Node.js application:
 
 ```javascript
-import { CodexProvider } from 'claude-flow';
+import { CodexProvider } from 'flow-agent';
 
 const provider = new CodexProvider({
   logger: console,
@@ -343,7 +343,7 @@ npx flow-agent@alpha task create general "Your task"
 
 ### Config File
 
-Create `claude-flow.config.json`:
+Create `flow-agent.config.json`:
 
 ```json
 {
@@ -496,12 +496,12 @@ codex login
 ### Issue: "Provider not found"
 
 ```bash
-# Rebuild claude-flow
-cd /path/to/claude-flow
+# Rebuild flow-agent
+cd /path/to/flow-agent
 npm run build
 
 # Or reinstall globally
-npm install -g claude-flow@alpha
+npm install -g flow-agent@alpha
 ```
 
 ## 📚 Additional Resources
