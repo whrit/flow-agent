@@ -9,6 +9,7 @@ import { open, readFile } from 'fs/promises';
 import process from 'process';
 import path from 'path';
 import os from 'os';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 /**
  * Detects if the environment is headless (non-interactive)
@@ -153,22 +154,22 @@ async function basicSwarmNew(args, flags) {
 
 function showSwarmHelp() {
   console.log(`
-🐝 Claude Flow Advanced Swarm System
+🐝 Flow-Agent Advanced Swarm System
 
 USAGE:
-  claude-flow swarm <objective> [options]
+  flow-agent swarm <objective> [options]
 
 EXAMPLES:
-  claude-flow swarm "Build a REST API with authentication"
-  claude-flow swarm "Research cloud architecture patterns" --strategy research
-  claude-flow swarm "Analyze database performance" --max-agents 3 --parallel
-  claude-flow swarm "Develop user registration feature" --mode distributed
-  claude-flow swarm "Optimize React app performance" --strategy optimization
-  claude-flow swarm "Create microservice" --executor  # Use built-in executor
-  claude-flow swarm "Build API" --claude  # Open Claude Code CLI
-  claude-flow swarm "Build API" --codex   # Open Codex CLI
-  claude-flow swarm "Build API endpoints" --output-format json  # Get JSON output
-  claude-flow swarm "Research AI trends" --output-format json --output-file results.json
+  flow-agent swarm "Build a REST API with authentication"
+  flow-agent swarm "Research cloud architecture patterns" --strategy research
+  flow-agent swarm "Analyze database performance" --max-agents 3 --parallel
+  flow-agent swarm "Develop user registration feature" --mode distributed
+  flow-agent swarm "Optimize React app performance" --strategy optimization
+  flow-agent swarm "Create microservice" --executor  # Use built-in executor
+  flow-agent swarm "Build API" --claude  # Open Claude Code CLI
+  flow-agent swarm "Build API" --codex   # Open Codex CLI
+  flow-agent swarm "Build API endpoints" --output-format json  # Get JSON output
+  flow-agent swarm "Research AI trends" --output-format json --output-file results.json
 
 DEFAULT BEHAVIOR:
   Swarm attempts to open Claude Code CLI with comprehensive MCP tool instructions
@@ -230,6 +231,7 @@ OPTIONS:
   --no-interactive           Run in non-interactive mode (auto-enabled with --output-format json)
   --auto                     (Deprecated: auto-permissions enabled by default)
   --no-auto-permissions      Disable automatic --dangerously-skip-permissions
+  --auto-mcp                 Ensure Flow-Agent MCP server config before spawning Claude/Codex (default: enabled)
   --analysis                 Enable analysis/read-only mode (no code changes)
   --read-only                Enable read-only mode (alias for --analysis)
 
@@ -797,6 +799,7 @@ The swarm should be self-documenting - use memory_store to save all important in
 
       // If --claude flag is used, force Claude Code even if CLI not available
       if (flags && flags.claude) {
+        await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags.verbose });
         // Inject memory coordination protocol into CLAUDE.md
         try {
           const { injectMemoryProtocol, enhanceSwarmPrompt } = await import('./inject-memory-protocol.js');
@@ -932,6 +935,8 @@ The swarm should be self-documenting - use memory_store to save all important in
           console.log(`📋 Objective: ${objective}`);
           return;
         }
+
+        await ensureMcpServerReady({ provider: 'codex', flags, verbose: flags?.verbose });
 
         // Get current working directory for workspace access
         const workspaceDir = process.cwd();
@@ -1073,8 +1078,8 @@ The swarm should be self-documenting - use memory_store to save all important in
           console.log('\nWould spawn Claude Code with swarm objective:');
           console.log(`📋 Objective: ${objective}`);
           console.log('\nOptions:');
-          console.log('  • Use --executor flag for built-in executor: claude-flow swarm "objective" --executor');
-          console.log('  • Use --claude flag to open Claude Code CLI: claude-flow swarm "objective" --claude');
+          console.log('  • Use --executor flag for built-in executor: flow-agent swarm "objective" --executor');
+          console.log('  • Use --claude flag to open Claude Code CLI: flow-agent swarm "objective" --claude');
         } else {
           // In non-interactive mode, output JSON error
           console.error(JSON.stringify({
@@ -1102,6 +1107,8 @@ The swarm should be self-documenting - use memory_store to save all important in
         console.log('🤖 Running in non-interactive mode with Claude');
         console.log('📋 Command: claude [prompt] -p --output-format stream-json --verbose');
       }
+
+      await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
 
       // Continue with the default swarm behavior if not using --claude flag
 
@@ -1288,7 +1295,7 @@ exit 0
 
         console.log(`\n✅ Swarm launched in background!`);
         console.log(`📄 Logs: tail -f ${logFile}`);
-        console.log(`📊 Status: claude-flow swarm status ${swarmId}`);
+        console.log(`📊 Status: flow-agent swarm status ${swarmId}`);
         console.log(`\nThe swarm will continue running independently.`);
 
         // Exit immediately
@@ -1338,7 +1345,7 @@ exit 0
       console.log(`\n⚠️  Background execution requires the claude-flow-swarm-bg script.`);
       console.log(`\nFor true background execution, use:`);
       console.log(
-        `  nohup claude-flow swarm "${objective}" ${Object.entries(flags)
+        `  nohup flow-agent swarm "${objective}" ${Object.entries(flags)
           .filter(([k, v]) => k !== 'background' && v)
           .map(([k, v]) => `--${k}${v !== true ? ` ${v}` : ''}`)
           .join(' ')} > swarm.log 2>&1 &`,
@@ -1521,6 +1528,8 @@ exit 0
           return;
         }
 
+        await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
+
         // Claude is available, use it to run swarm
         console.log('🚀 Launching swarm via Claude wrapper...');
         if (flags.sparc !== false) {
@@ -1656,16 +1665,16 @@ Begin execution now. Create all necessary files and provide a complete, working 
 
     // Fallback to comprehensive help if there's an import error
     console.log(`
-🐝 Claude Flow Advanced Swarm System
+🐝 Flow-Agent Advanced Swarm System
 
 USAGE:
-  claude-flow swarm <objective> [options]
+  flow-agent swarm <objective> [options]
 
 EXAMPLES:
-  claude-flow swarm "Build a REST API" --strategy development
-  claude-flow swarm "Research cloud architecture" --strategy research --ui
-  claude-flow swarm "Analyze data trends" --strategy analysis --parallel
-  claude-flow swarm "Optimize performance" --distributed --monitor
+  flow-agent swarm "Build a REST API" --strategy development
+  flow-agent swarm "Research cloud architecture" --strategy research --ui
+  flow-agent swarm "Analyze data trends" --strategy analysis --parallel
+  flow-agent swarm "Optimize performance" --distributed --monitor
 
 STRATEGIES:
   auto           Automatically determine best approach (default)
@@ -1719,6 +1728,7 @@ OPTIONS:
   --no-interactive           Run in non-interactive mode (auto-enabled with --output-format json)
   --auto                     (Deprecated: auto-permissions enabled by default)
   --no-auto-permissions      Disable automatic --dangerously-skip-permissions
+  --auto-mcp                 Ensure Flow-Agent MCP server config before spawning Claude/Codex (default: enabled)
   --analysis                 Enable analysis/read-only mode (no code changes)
   --read-only                Enable read-only mode (alias for --analysis)
 
@@ -1731,7 +1741,7 @@ ADVANCED OPTIONS:
   --fault-tolerance <type>   Fault tolerance strategy
 
 For complete documentation and examples:
-https://github.com/ruvnet/claude-code-flow/docs/swarm.md
+https://github.com/whrit/flow-agent/tree/main/docs
 `);
   }
 }

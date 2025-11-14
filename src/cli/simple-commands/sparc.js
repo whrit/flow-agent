@@ -6,6 +6,7 @@ import { promisify } from 'util';
 import { createSparcPrompt } from './sparc-modes/index.js';
 import { cwd, exit, existsSync } from '../node-compat.js';
 import process from 'process';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 export async function sparcCommand(subArgs, flags) {
   const sparcCmd = subArgs[0];
@@ -441,6 +442,8 @@ async function executeClaude(enhancedTask, toolsList, instanceId, memoryNamespac
     } catch (e) {
       console.warn('⚠️  Could not verify claude command location');
     }
+
+    await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
 
     // Use spawn for claude command
     const env = { ...process.env, CLAUDE_INSTANCE_ID: instanceId };
