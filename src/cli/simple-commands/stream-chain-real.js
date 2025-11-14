@@ -6,6 +6,7 @@
 
 import { spawn, execSync } from 'child_process';
 import { Readable, PassThrough } from 'stream';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 /**
  * Check if claude CLI is available
@@ -29,6 +30,8 @@ async function executeStreamChain(prompts, flags = {}) {
     console.log('   Or use Claude Code: https://docs.anthropic.com/claude/docs/claude-cli');
     return;
   }
+
+  await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
 
   console.log('🔗 Starting Real Stream Chain');
   console.log('━'.repeat(50));

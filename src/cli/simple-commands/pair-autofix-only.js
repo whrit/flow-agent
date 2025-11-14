@@ -8,6 +8,7 @@ import path from 'path';
 import { spawn, exec } from 'child_process';
 import { promisify } from 'util';
 import readline from 'readline';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 const execAsync = promisify(exec);
 
@@ -241,6 +242,8 @@ class AutoFixPairSession {
       build: `Fix these build errors. Output only the corrected code:\n\n${errorOutput}`,
       test: `Fix these test failures. Output only the corrected code:\n\n${errorOutput}`
     };
+
+    await ensureMcpServerReady({ provider: 'claude', flags: {}, verbose: false });
 
     return new Promise((resolve, reject) => {
       // Create stream chain using Claude

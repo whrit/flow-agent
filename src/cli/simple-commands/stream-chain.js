@@ -5,6 +5,7 @@
  */
 
 import { spawn, execSync } from 'child_process';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 /**
  * Check if claude command is available
@@ -204,8 +205,9 @@ async function executeChain(prompts, flags) {
 /**
  * Main command
  */
-export async function streamChainCommand(args, flags) {
+export async function streamChainCommand(args, flags = {}) {
   const subcommand = args[0] || 'help';
+  const normalizedFlags = flags || {};
   
   if (subcommand === 'help') {
     showHelp();
@@ -217,22 +219,24 @@ export async function streamChainCommand(args, flags) {
     console.log('Please ensure Claude Code is installed and available');
     return;
   }
-  
+
+  await ensureMcpServerReady({ provider: 'claude', flags: normalizedFlags, verbose: normalizedFlags.verbose });
+
   switch (subcommand) {
     case 'demo':
-      await runDemo(flags);
+      await runDemo(normalizedFlags);
       break;
       
     case 'run':
-      await runCustom(args.slice(1), flags);
+      await runCustom(args.slice(1), normalizedFlags);
       break;
       
     case 'test':
-      await runTest(flags);
+      await runTest(normalizedFlags);
       break;
       
     case 'pipeline':
-      await runPipeline(args.slice(1), flags);
+      await runPipeline(args.slice(1), normalizedFlags);
       break;
       
     default:

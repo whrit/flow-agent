@@ -11,6 +11,7 @@ import path from 'path';
 import os from 'os';
 import readline from 'readline';
 import { trackTokens } from './token-tracker.js';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 // Claude session data locations (platform-specific)
 const CLAUDE_DATA_PATHS = [
@@ -88,6 +89,9 @@ export async function runClaudeWithTelemetry(args, options = {}) {
   const sessionId = options.sessionId || `claude-${Date.now()}`;
   const agentType = options.agentType || 'claude-cli';
   const command = args.join(' ');
+  const normalizedOptions = options || {};
+
+  await ensureMcpServerReady({ provider: 'claude', flags: normalizedOptions, verbose: normalizedOptions.verbose });
   
   // Enable telemetry environment variables
   const env = {
@@ -223,6 +227,7 @@ export async function monitorClaudeSession(sessionId, interval = 5000) {
  * Extract token usage from /cost command
  */
 export async function extractCostCommand() {
+  await ensureMcpServerReady({ provider: 'claude', flags: {}, verbose: false });
   return new Promise((resolve, reject) => {
     const claude = spawn('claude', ['/cost'], {
       stdio: ['pipe', 'pipe', 'pipe']

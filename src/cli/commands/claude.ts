@@ -7,6 +7,7 @@ import { Command } from '../commander-fix.js';
 import chalk from 'chalk';
 import { spawn } from 'node:child_process';
 import { generateId } from '../../utils/helpers.js';
+import { ensureMcpServerReady } from '../simple-commands/utils/mcp-helper.js';
 
 export const claudeCommand = new Command()
   .name('claude')
@@ -84,6 +85,8 @@ claudeCommand
       console.log(chalk.gray(`Task: ${task}`));
       console.log(chalk.gray(`Tools: ${tools}`));
 
+      await ensureMcpServerReady({ provider: 'claude', flags: options, verbose: options?.verbose });
+
       // Spawn Claude process
       const claude = spawn('claude', claudeArgs, {
         stdio: 'inherit',
@@ -130,6 +133,8 @@ claudeCommand
         console.log(chalk.yellow('No tasks found in workflow'));
         return;
       }
+
+      await ensureMcpServerReady({ provider: 'claude', flags: options, verbose: options?.verbose });
 
       for (const task of workflow.tasks) {
         const claudeArgs = [task.description || task.name];

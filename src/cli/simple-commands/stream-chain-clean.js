@@ -5,6 +5,7 @@
  */
 
 import { exec, execSync } from 'child_process';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 /**
  * Check if claude CLI is available
@@ -116,6 +117,7 @@ For real execution, Claude CLI must be installed and configured.
       console.log('❌ Claude CLI not found');
       return;
     }
+    await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
     
     const result = await executeClaudeCommand('Hello, test', 10000);
     console.log('✅ Test result:', result.success ? 'PASSED' : 'FAILED');
@@ -157,7 +159,7 @@ For real execution, Claude CLI must be installed and configured.
 /**
  * Execute a chain of prompts
  */
-async function runChain(prompts, flags) {
+async function runChain(prompts, flags = {}) {
   const timeout = (flags.timeout || 20) * 1000;
   const useMock = flags.mock || !checkClaudeAvailable();
   
@@ -165,6 +167,7 @@ async function runChain(prompts, flags) {
     console.log('ℹ️  Using mock mode (Claude CLI not available or --mock flag used)');
   } else {
     console.log('ℹ️  Using real Claude CLI execution');
+    await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
   }
   
   console.log(`📝 Chain length: ${prompts.length} steps\n`);

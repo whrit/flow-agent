@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { cwd, exit } from './node-compat.js';
+import { ensureMcpServerReady } from './simple-commands/utils/mcp-helper.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -165,6 +166,8 @@ Use all available tools including file operations, web search, and code executio
 
     // Execute Claude non-interactively by piping the prompt
     const { spawn } = await import('child_process');
+
+    await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
 
     const claudeArgs = [];
 

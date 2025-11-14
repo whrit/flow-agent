@@ -7,6 +7,7 @@
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
 import { TrainingPipeline } from './training-pipeline.js';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 export class TrainAndStreamSystem {
   constructor() {
@@ -99,6 +100,8 @@ export class TrainAndStreamSystem {
   async executeStreamChain(task, strategy, options) {
     const startTime = Date.now();
     const steps = this.decomposeTask(task, strategy.name);
+
+    await ensureMcpServerReady({ provider: 'claude', flags: options || {}, verbose: options?.verbose });
     
     console.log(`\n📝 Task decomposed into ${steps.length} steps:`);
     steps.forEach((step, i) => {

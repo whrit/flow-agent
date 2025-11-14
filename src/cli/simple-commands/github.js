@@ -8,6 +8,7 @@ import { printSuccess, printError, printWarning } from '../utils.js';
 import { platform } from 'os';
 import { access, constants } from 'fs/promises';
 import { join } from 'path';
+import { ensureMcpServerReady } from './utils/mcp-helper.js';
 
 /**
  * Cross-platform check for executable availability
@@ -303,6 +304,8 @@ Begin execution now. Create all necessary GitHub workflow files and configuratio
 
     // Execute Claude with the GitHub prompt
     const { spawn } = await import('child_process');
+
+    await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
 
     const claudeArgs = [];
 

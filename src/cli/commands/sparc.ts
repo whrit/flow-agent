@@ -1,6 +1,7 @@
 import { success, error, warning, info } from '../cli-core.js';
 import type { CommandContext } from '../cli-core.js';
 import chalk from 'chalk';
+import { ensureMcpServerReady } from '../simple-commands/utils/mcp-helper.js';
 const { blue, yellow, green, magenta, cyan } = chalk;
 
 interface SparcMode {
@@ -479,6 +480,7 @@ async function executeClaudeWithSparc(
 
   try {
     const { spawn } = await import('child_process');
+    await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
     const child = spawn('claude', claudeArgs, {
       env: {
         ...process.env,

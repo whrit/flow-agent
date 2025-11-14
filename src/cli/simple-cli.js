@@ -27,6 +27,7 @@ import process from 'process';
 import readline from 'readline';
 import { getMainHelp, getCommandHelp, getStandardizedCommandHelp } from './help-text.js';
 import { VERSION } from '../core/version.js';
+import { ensureMcpServerReady } from './simple-commands/utils/mcp-helper.js';
 
 // Legacy agent type mapping for backward compatibility
 const LEGACY_AGENT_MAPPING = {
@@ -1528,6 +1529,8 @@ ${flags.mode === 'full' || !flags.mode ? `Full-stack development covering all as
                   `claude ${claudeArgs.map((arg) => (arg.includes(' ') || arg.includes('\n') ? `"${arg}"` : arg)).join(' ')}`,
                 );
               }
+
+              await ensureMcpServerReady({ provider: 'claude', flags, verbose: flags?.verbose });
 
               const child = spawn('claude', claudeArgs, {
                 env: {

@@ -14,6 +14,7 @@ import { Logger } from '../core/logger.js';
 import { generateId } from '../utils/helpers.js';
 import { ClaudeFlowSDKAdapter } from '../sdk/sdk-config.js';
 import { ClaudeClientV25 } from '../api/claude-client-v2.5.js';
+import { ensureMcpServerReady } from '../cli/simple-commands/utils/mcp-helper.js';
 import {
   TaskDefinition,
   AgentState,
@@ -273,6 +274,7 @@ export class TaskExecutorSDK extends EventEmitter {
     agent: AgentState
   ): Promise<ExecutionResult> {
     const startTime = Date.now();
+    await ensureMcpServerReady({ provider: 'claude', flags: {}, verbose: false });
 
     return new Promise((resolve) => {
       const args = ['--no-visual', task.description];
